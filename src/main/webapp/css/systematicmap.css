@@ -1,0 +1,20 @@
+
+.color-primary{
+	color: #337ab7;
+}
+.well{
+	padding: 19px 39px;
+}
+.panel-body {
+  	padding: 15px 30px;
+}
+.clear-both{
+	clear: both;
+}
+.padding-h-none{
+	padding-left: 0;
+	padding-right: 0;
+}
+.padding-left-none{
+	padding-left: 0;
+}
