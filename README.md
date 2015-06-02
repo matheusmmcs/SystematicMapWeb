@@ -1,4 +1,4 @@
-# VRaptor music jungle
+# Systematic Map Web
 
 This is an example application to help you to learn about VRaptor. 
 
