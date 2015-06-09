@@ -74,6 +74,7 @@
 								<tr>
 									<td>
 										${s.index + 1}
+									</td>
 									<td>
 										${member.name}
 									</td>
@@ -111,15 +112,12 @@
 					<table class="table table-striped table-bordered table-hover">
 						<thead>
 							<tr>
-								<th>#</th>
 								<th><fmt:message key="mapstudy.criteria.description"/></th>
 							</tr>
 						</thead>
 						<tbody>
 							<c:forEach var="criteria" items="${map.inclusionCriterias}" varStatus="s">
 								<tr>
-									<td>
-										${s.index + 1}
 									<td>
 										${criteria.description}
 									</td>
@@ -157,17 +155,18 @@
 					<table class="table table-striped table-bordered table-hover">
 						<thead>
 							<tr>
-								<th>#</th>
 								<th><fmt:message key="mapstudy.criteria.description"/></th>
+								<th><fmt:message key="remove"/></th>
 							</tr>
 						</thead>
 						<tbody>
 							<c:forEach var="criteria" items="${map.exclusionCriterias}" varStatus="s">
 								<tr>
 									<td>
-										${s.index + 1}
-									<td>
 										${criteria.description}
+									</td>
+									<td class="text-center">
+										<a class="btn btn-danger" href="${linkTo[MapStudyController].removeexclusioncriteriapage(map.id, criteria.id)}"><i class="glyphicon glyphicon-remove"></i></a>
 									</td>
 								</tr>
 							</c:forEach>

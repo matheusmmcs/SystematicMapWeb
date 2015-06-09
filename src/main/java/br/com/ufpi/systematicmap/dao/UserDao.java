@@ -2,6 +2,7 @@ package br.com.ufpi.systematicmap.dao;
 
 import java.util.List;
 
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -9,6 +10,7 @@ import javax.persistence.NoResultException;
 import br.com.ufpi.systematicmap.model.MapStudy;
 import br.com.ufpi.systematicmap.model.User;
 
+@RequestScoped
 public class UserDao extends Dao<User> {
 	
 	private final EntityManager entityManager;

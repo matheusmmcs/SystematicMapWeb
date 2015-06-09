@@ -59,6 +59,7 @@ public class FilterArticles {
 			
 			System.out.println("Total de artigos: "+papers.size());
 			System.out.println("Probs autores: "+filterAuthors());
+			System.out.println("Patentes: "+filterPatents());
 			filterRegex(limiartitulo, limiarabstract, limiarkeywords, limiartotal);
 			System.out.println("Probs palavras: "+countPapers(ClassificationEnum.WORDS_DONT_MATCH));
 			if(levenshtein != -1){
@@ -82,6 +83,18 @@ public class FilterArticles {
 		return count;
 	}
 	
+	private int filterPatents() {
+		int count = 0;
+		for(Article p : papers){
+			if(p.getAbstrct().equals("")){
+				p.setClassification(ClassificationEnum.PATENT);
+				p.setComments(p.getComments() + ClassificationEnum.PATENT.toString());
+				count++;
+			}
+		}
+		return count;
+	}
+	
 	private void filterRegex(int limiarTitle, int limiarAbs, int limiarKeys, int limiarTotal) {
 		for(Article p : papers){
 			Set<String> termos = new HashSet<String>();
@@ -98,28 +111,25 @@ public class FilterArticles {
 	private void calcTitleLevenshteinDistance(int limiar) {
 		double count = 0, size = papers.size();
 		for(Article p : papers){
-			int minDist = Integer.MAX_VALUE;
-			Article minDistPaper = null;
-			String pTitle = p.getTitle().toLowerCase();
-			
-			for(Article p2 : papers){
-				if(p.getId() != p2.getId()){
-					int dist = Utils.getLevenshteinDistance(pTitle, p2.getTitle().toLowerCase());
-					
-					if(minDist > dist){
-						minDist = dist;
-						minDistPaper = p2;
+			if(p.getClassification() == null){
+				for(Article p2 : papers){
+					if(p.getId() != p2.getId() &&
+							p2.getClassification() == null){
+						
+						int dist = Utils.getLevenshteinDistance(p.getTitle().toLowerCase(), p2.getTitle().toLowerCase());
+						
+						if(dist <= limiar){
+							p2.setClassification(ClassificationEnum.REPEAT);
+							p2.setComments(p.getComments() + " " + ClassificationEnum.REPEAT.toString());
+							p2.setMinLevenshteinDistance(dist);
+							p2.setPaperMinLevenshteinDistance(p);
+							//
+							p.setMinLevenshteinDistance(dist);
+							p.setPaperMinLevenshteinDistance(p2);
+						}
+						
 					}
 				}
-			}
-			
-			p.setMinLevenshteinDistance(minDist);
-			p.setPaperMinLevenshteinDistance(minDistPaper);
-			
-			
-			if(minDist <= limiar){
-				p.setClassification(ClassificationEnum.REPEAT);
-				p.setComments(p.getComments() + " " + ClassificationEnum.REPEAT.toString());
 			}
 			count++;
 			System.out.println("loading:"+(count/size)*100);

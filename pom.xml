@@ -3,7 +3,7 @@
 
 	<groupId>br.com.caelum</groupId>
 	<artifactId>SystematicMap</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.5</version>
 	<packaging>war</packaging>
 
 	<description>Example application to use with VRaptor 4</description>
@@ -30,6 +30,12 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>
 			<version>4.3.0.Final</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-c3p0</artifactId>
+			<version>4.3.8.Final</version>
 		</dependency>
 
 		<dependency>

@@ -38,12 +38,13 @@
 			<input type="hidden" name="mapid" value="${map.id}" />
 			<input type="hidden" name="articleid" value="${article.id}" />
 			<input type="hidden" name="evaluationid" value="${evaluationDone.id}" />
+			<input type="hidden" name="nextArticleId" value="${nextArticleId}" />
 			
 			<p> 
 				<strong>
 					<fmt:message key="mapstudy.inclusion.criterias"/>:
 				</strong><br/>
-				<c:forEach items="${map.inclusionCriterias}" var="criteria" varStatus="c">
+				<c:forEach items="${inclusionOrdered}" var="criteria" varStatus="c">
 				
 					<c:set var="containsExc" value="false" />
 					<c:forEach var="done" items="${evaluationDone.inclusionCriterias}">
@@ -68,18 +69,21 @@
 				<fmt:message key="mapstudy.include"/>
 			</button>
 		</form>
+		
+		<hr/>
 			
 		<form action="${linkTo[MapStudyController].excludearticle}" method="post">
 			<input type="hidden" name="mapid" value="${map.id}" />
 			<input type="hidden" name="articleid" value="${article.id}" />
 			<input type="hidden" name="evaluationid" value="${evaluationDone.id}" />
+			<input type="hidden" name="nextArticleId" value="${nextArticleId}" />
 			
 			<p> 
 				<strong>
 					<fmt:message key="mapstudy.exclusion.criterias"/>:
 				</strong><br/>
 				
-				<c:forEach items="${map.exclusionCriterias}" var="criteria" varStatus="c">
+				<c:forEach items="${exclusionOrdered}" var="criteria" varStatus="c">
 				
 					<c:set var="containsExc" value="false" />
 					<c:forEach var="done" items="${evaluationDone.exclusionCriterias}">

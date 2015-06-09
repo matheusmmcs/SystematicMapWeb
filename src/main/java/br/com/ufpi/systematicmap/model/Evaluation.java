@@ -112,6 +112,6 @@ public class Evaluation implements Serializable {
 	}
 	
 	public String getClassification(){
-		return inclusionCriterias.size() > 0 ? "ACCEPTED" : (exclusionCriterias.size() > 0 ? "REJECTED" : "-");
+		return inclusionCriterias.size() > 0 ? "ACCEPTED" : (exclusionCriterias.size() > 0 ? "REJECTED" : "-NOT DEFINED-");
 	}
 }

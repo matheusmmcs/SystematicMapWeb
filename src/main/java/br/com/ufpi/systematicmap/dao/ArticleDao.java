@@ -2,6 +2,7 @@ package br.com.ufpi.systematicmap.dao;
 
 import java.util.List;
 
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -13,6 +14,7 @@ import br.com.ufpi.systematicmap.model.Article;
 import br.com.ufpi.systematicmap.model.MapStudy;
 import br.com.ufpi.systematicmap.model.User;
 
+@RequestScoped
 public class ArticleDao extends Dao<Article> {
 	
 	/**

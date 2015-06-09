@@ -1,9 +1,13 @@
 package br.com.ufpi.systematicmap.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
@@ -221,20 +225,56 @@ public class MapStudyController {
 		
 		validator.onErrorForwardTo(this).show(mapid);
 		
-		List<Article> articlesToEvaluate = articleDao.getArticlesToEvaluate(userInfo.getUser(), mapStudy);//mapStudy.getArticlesToEvaluate(userInfo.getUser());
+		List<Article> articlesToEvaluate = articleDao.getArticlesToEvaluate(userInfo.getUser(), mapStudy);
 		List<Evaluation> evaluations = evaluationDao.getEvaluations(userInfo.getUser(), mapStudy);
 		
-		Article article;
+		validator.check((articlesToEvaluate.size() > 0), 
+				new SimpleMessage("mapstudy", "mapstudy.evaluate.articles.complete"));
+		
+		Article article = null, nextArticle = null;
+		Long nextArticleId = null;
 		if(articleid != 0){
 			article = articleDao.find(articleid);
 		}else{
-			article = (Article) articlesToEvaluate.toArray()[0];
+			article = getNextToEvaluate(articlesToEvaluate, null);
+			articleid = article.getId();
 		}
+		
+		if(article != null){
+			nextArticle = getNextToEvaluate(articlesToEvaluate, articleid);
+			if(nextArticle != null){
+				nextArticleId = nextArticle.getId();
+			}
+		}
+		
+		validator.check((article != null), 
+				new SimpleMessage("mapstudy", "mapstudy.evaluate.articles.none"));
 		
 		Evaluation evaluationDone = evaluationDao.getEvaluation(userInfo.getUser(), mapStudy, article);
 		
+		//sort criterias
+		TreeSet<InclusionCriteria> inclusionOrdered = new TreeSet<InclusionCriteria>(new Comparator<InclusionCriteria>(){
+		    public int compare(InclusionCriteria a, InclusionCriteria b){
+		        return a.getDescription().compareTo(b.getDescription());
+		    }
+		});
+		inclusionOrdered.addAll(mapStudy.getInclusionCriterias());
+		//
+		TreeSet<ExclusionCriteria> exclusionOrdered = new TreeSet<ExclusionCriteria>(new Comparator<ExclusionCriteria>(){
+		    public int compare(ExclusionCriteria a, ExclusionCriteria b){
+		        return a.getDescription().compareTo(b.getDescription());
+		    }
+		});
+		exclusionOrdered.addAll(mapStudy.getExclusionCriterias());
+		
+		
+		
 		result.include("map", mapStudy);
+		result.include("exclusionOrdered", exclusionOrdered);
+		result.include("inclusionOrdered", inclusionOrdered);
+		
 		result.include("article", article);
+		result.include("nextArticleId", nextArticleId);
 		result.include("articlesToEvaluate", articlesToEvaluate);
 		result.include("percentEvaluated", mapStudy.percentEvaluated(
 				articleDao.countArticleNotRefined(mapStudy).intValue(), 
@@ -244,16 +284,33 @@ public class MapStudyController {
 		result.include("evaluationDone", evaluationDone);
 	}
 	
+	private static Article getNextToEvaluate(List<Article> articlesToEvaluate, Long actual){
+		if(actual == null){
+			return articlesToEvaluate.size() > 0 ? articlesToEvaluate.get(0) : null;
+		}else{
+			Article next = null;
+			for(Article a : articlesToEvaluate){
+				if(!a.getId().equals(actual)){
+					next = a;
+					break;
+				}
+			}
+			return next;
+		}
+	}
+	
 	@Post("/maps/includearticle")
-	public void includearticle(Long mapid, Long articleid, Long evaluationid, List<Long> inclusions, String comment){
+	public void includearticle(Long mapid, Long articleid, Long evaluationid, Long nextArticleId, List<Long> inclusions, String comment){
 		doEvaluate(mapid, articleid, evaluationid, inclusions, comment, true);
-		result.redirectTo(this).evaluateArticle(mapid, articleid);
+		nextArticleId = nextArticleId != null ? nextArticleId : 0l;
+		result.redirectTo(this).evaluateArticle(mapid, nextArticleId);
 	}
 	
 	@Post("/maps/excludearticle")
-	public void excludearticle(Long mapid, Long articleid, Long evaluationid, List<Long> exclusions, String comment){
+	public void excludearticle(Long mapid, Long articleid, Long evaluationid, Long nextArticleId, List<Long> exclusions, String comment){
 		doEvaluate(mapid, articleid, evaluationid, exclusions, comment, false);
-		result.redirectTo(this).evaluateArticle(mapid, articleid);
+		nextArticleId = nextArticleId != null ? nextArticleId : 0l;
+		result.redirectTo(this).evaluateArticle(mapid, nextArticleId);
 	}
 	
 	private void doEvaluate(Long mapid, Long articleid, Long evaluationid, List<Long> ids, String comment, boolean include){
@@ -289,6 +346,54 @@ public class MapStudyController {
 		evaluationDao.insert(e);
 	}
 	
+	/* Remove Criteria */
+	
+	@Get("/maps/{studyMapId}/removeexclusioncriteria/{criteriaId}")
+	public void removeexclusioncriteriapage(Long studyMapId, Long criteriaId) {
+		validator.onErrorForwardTo(this).show(studyMapId);
+		
+		ExclusionCriteria criteria = exclusionDao.find(criteriaId);
+		Set<Evaluation> evaluations = criteria.getEvaluations();
+		
+		List<Evaluation> evaluationsImpacted = new ArrayList<Evaluation>();
+		List<Evaluation> evaluationsRemoved = new ArrayList<Evaluation>();
+		for(Evaluation e : evaluations){
+			if(e.getExclusionCriterias().size() == 1 &&
+				e.getExclusionCriterias().contains(criteria)){
+				evaluationsRemoved.add(e);
+			}
+			evaluationsImpacted.add(e);
+		}
+		
+		result.include("criteria", criteria);
+		result.include("evaluationsImpacted", evaluationsImpacted);
+		result.include("evaluationsRemoved", evaluationsRemoved);
+	}
+	
+	@Post("/maps/removeexclusioncriteria/")
+	public void removeexclusioncriteria(Long studyMapId, Long criteriaId) {
+		validator.onErrorForwardTo(this).show(studyMapId);
+		
+
+//com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Cannot delete or update a parent row: a foreign key constraint fails (`systematicmap`.`evaluations_exclusions`, CONSTRAINT `FK_5rm03fhb8j4nuj61k7cn9dcoq` FOREIGN KEY (`exclusion_id`) REFERENCES `ExclusionCriteria` (`id`))
+		
+		ExclusionCriteria criteria = exclusionDao.find(criteriaId);
+		Set<Evaluation> evaluations = criteria.getEvaluations();
+		
+		for(Evaluation e : evaluations){
+			if(e.getExclusionCriterias().size() == 1 &&
+				e.getExclusionCriterias().contains(criteria)){
+				evaluationDao.delete(e.getId());
+			}else{
+				e.getExclusionCriterias().remove(criteria);
+				evaluationDao.update(e);
+			}
+		}
+		
+		exclusionDao.delete(criteriaId);
+		
+		result.redirectTo(this).show(studyMapId);
+	}
 	
 	
 	/*

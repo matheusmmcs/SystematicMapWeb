@@ -5,13 +5,13 @@ import java.util.List;
 
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import org.hibernate.Session;
 
-import br.com.ufpi.systematicmap.model.User;
-
+@RequestScoped
 public abstract class Dao <T> {
 	
 	    private Class<T> entityClass;
