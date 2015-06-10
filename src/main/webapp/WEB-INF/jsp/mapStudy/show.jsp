@@ -32,6 +32,14 @@
 					<a class="btn btn-primary pull-right" href="${linkTo[MapStudyController].evaluate(map.id)}"><fmt:message key="mapstudy.evaluate"/></a>
 					<div class="clear-both"></div>
 				<p>
+				
+				<p>
+					<strong>
+						<fmt:message key="mapstudy.evaluations.results"/>:
+					</strong> 
+					<a class="btn btn-default pull-right" href="${linkTo[MapStudyController].showEvaluates(map.id)}"><fmt:message key="view"/></a>
+					<div class="clear-both"></div>
+				<p>
 			</div>
 		</div>
 		
@@ -67,6 +75,7 @@
 							<tr>
 								<th>#</th>
 								<th><fmt:message key="mapstudy.members"/></th>
+								<th><fmt:message key="mapstudy.evaluations.percentconclusion"/></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -76,7 +85,10 @@
 										${s.index + 1}
 									</td>
 									<td>
-										${member.name}
+										${member.key.name}
+									</td>
+									<td>
+										${member.value}
 									</td>
 								</tr>
 							</c:forEach>
@@ -306,9 +318,11 @@
 						</div>
 					</div>
 					
-					<button type="submit" id="submit" class="btn btn-large btn-primary" style="display: inline-block;">
+					<button type="submit" id="submit" class="btn btn-large btn-primary pull-right" style="display: inline-block; margin: 15px;">
 						<fmt:message key="mapstudy.article.refine"/>
 					</button>
+					
+					<div class="clear-both"></div>
 					
 				</form>
 				

@@ -37,7 +37,6 @@
 		<form action="${linkTo[MapStudyController].includearticle}" method="post">
 			<input type="hidden" name="mapid" value="${map.id}" />
 			<input type="hidden" name="articleid" value="${article.id}" />
-			<input type="hidden" name="evaluationid" value="${evaluationDone.id}" />
 			<input type="hidden" name="nextArticleId" value="${nextArticleId}" />
 			
 			<p> 
@@ -75,7 +74,6 @@
 		<form action="${linkTo[MapStudyController].excludearticle}" method="post">
 			<input type="hidden" name="mapid" value="${map.id}" />
 			<input type="hidden" name="articleid" value="${article.id}" />
-			<input type="hidden" name="evaluationid" value="${evaluationDone.id}" />
 			<input type="hidden" name="nextArticleId" value="${nextArticleId}" />
 			
 			<p> 

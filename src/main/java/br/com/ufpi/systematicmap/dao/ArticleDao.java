@@ -29,6 +29,14 @@ public class ArticleDao extends Dao<Article> {
 		super(entityManager);
 	}
 	
+	public List<Article> getArticles(MapStudy mapStudy){
+		List<Article> articles = entityManager
+			.createQuery("select a from Article a where a.mapStudy = :mapStudy order by a.title asc", Article.class)
+				.setParameter("mapStudy", mapStudy)
+				.getResultList();
+		return articles;
+	}
+	
 	public List<Article> getArticlesToEvaluate(User user, MapStudy mapStudy){
 		List<Article> articles = entityManager
 			.createQuery("select a from Article a where a.classification = null and a.mapStudy = :mapStudy and a.id not in (select e.article.id from Evaluation e where e.user = :user and e.mapStudy = :mapStudy) order by a.title asc", Article.class)

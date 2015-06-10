@@ -87,8 +87,8 @@ public class FilterArticles {
 		int count = 0;
 		for(Article p : papers){
 			if(p.getAbstrct().equals("")){
-				p.setClassification(ClassificationEnum.PATENT);
-				p.setComments(p.getComments() + ClassificationEnum.PATENT.toString());
+				p.setClassification(ClassificationEnum.WITHOUT_ABSTRACT);
+				p.setComments(p.getComments() + ClassificationEnum.WITHOUT_ABSTRACT.toString());
 				count++;
 			}
 		}

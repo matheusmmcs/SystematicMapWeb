@@ -18,6 +18,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import br.com.ufpi.systematicmap.model.enums.ClassificationEnum;
+import br.com.ufpi.systematicmap.model.enums.EvaluationStatusEnum;
 
 @Entity
 public class Article implements Serializable {
@@ -275,6 +276,15 @@ public class Article implements Serializable {
 
 	public void setSource(String source) {
 		this.source = source;
+	}
+	
+	public String getEvaluationClassification(User user){
+		for(Evaluation e : evaluations){
+			if(e.getUser().equals(user)){
+				return e.getClassification();
+			}
+		}
+		return EvaluationStatusEnum.NOT_EVALUATED.toString();
 	}
 	
 }

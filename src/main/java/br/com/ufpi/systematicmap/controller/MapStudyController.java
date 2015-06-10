@@ -1,9 +1,13 @@
 package br.com.ufpi.systematicmap.controller;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,9 +24,13 @@ import org.jbibtex.ParseException;
 
 import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Get;
+import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.observer.download.Download;
+import br.com.caelum.vraptor.observer.download.FileDownload;
 import br.com.caelum.vraptor.observer.upload.UploadedFile;
+import br.com.caelum.vraptor.validator.Severity;
 import br.com.caelum.vraptor.validator.SimpleMessage;
 import br.com.caelum.vraptor.validator.Validator;
 import br.com.ufpi.systematicmap.components.FilterArticles;
@@ -41,6 +49,8 @@ import br.com.ufpi.systematicmap.model.InclusionCriteria;
 import br.com.ufpi.systematicmap.model.MapStudy;
 import br.com.ufpi.systematicmap.model.User;
 import br.com.ufpi.systematicmap.model.enums.ArticleSourceEnum;
+import br.com.ufpi.systematicmap.model.enums.ClassificationEnum;
+import br.com.ufpi.systematicmap.model.enums.EvaluationStatusEnum;
 import br.com.ufpi.systematicmap.utils.BibtexToArticleUtils;
 import br.com.ufpi.systematicmap.utils.BibtexUtils;
 
@@ -125,8 +135,16 @@ public class MapStudyController {
 		validator.onErrorForwardTo(this).list();
 		
 		MapStudy mapStudy = mapStudyDao.find(id);
-		List<User> mapStudyUsers = userDao.mapStudyUsers(mapStudy);
+		List<User> mapStudyUsersList = userDao.mapStudyUsers(mapStudy);
 		List<User> mapStudyArentUsers = userDao.mapStudyArentUsers(mapStudy);
+		
+		HashMap<User, String> mapStudyUsers = new HashMap<User, String>();
+		for(User u : mapStudyUsersList){
+			mapStudyUsers.put(u, mapStudy.percentEvaluated(
+	    		articleDao.countArticleNotRefined(mapStudy).intValue(),
+	    		articleDao.countArticleToEvaluate(u, mapStudy).intValue()
+	    	));
+		}
 		
 	    result.include("map", mapStudy);
 	    result.include("sources", ArticleSourceEnum.values());
@@ -223,13 +241,8 @@ public class MapStudyController {
 		validator.check((mapStudy.getArticles().size() > 0), 
 				new SimpleMessage("mapstudy", "mapstudy.evaluate.articles.none"));
 		
-		validator.onErrorForwardTo(this).show(mapid);
-		
 		List<Article> articlesToEvaluate = articleDao.getArticlesToEvaluate(userInfo.getUser(), mapStudy);
 		List<Evaluation> evaluations = evaluationDao.getEvaluations(userInfo.getUser(), mapStudy);
-		
-		validator.check((articlesToEvaluate.size() > 0), 
-				new SimpleMessage("mapstudy", "mapstudy.evaluate.articles.complete"));
 		
 		Article article = null, nextArticle = null;
 		Long nextArticleId = null;
@@ -237,7 +250,9 @@ public class MapStudyController {
 			article = articleDao.find(articleid);
 		}else{
 			article = getNextToEvaluate(articlesToEvaluate, null);
-			articleid = article.getId();
+			if(article != null){
+				articleid = article.getId();
+			}
 		}
 		
 		if(article != null){
@@ -247,8 +262,8 @@ public class MapStudyController {
 			}
 		}
 		
-		validator.check((article != null), 
-				new SimpleMessage("mapstudy", "mapstudy.evaluate.articles.none"));
+		validator.check((article != null), new SimpleMessage("mapstudy", "mapstudy.evaluate.articles.none"));
+		validator.onErrorRedirectTo(this).show(mapid);
 		
 		Evaluation evaluationDone = evaluationDao.getEvaluation(userInfo.getUser(), mapStudy, article);
 		
@@ -300,20 +315,20 @@ public class MapStudyController {
 	}
 	
 	@Post("/maps/includearticle")
-	public void includearticle(Long mapid, Long articleid, Long evaluationid, Long nextArticleId, List<Long> inclusions, String comment){
-		doEvaluate(mapid, articleid, evaluationid, inclusions, comment, true);
+	public void includearticle(Long mapid, Long articleid, Long nextArticleId, List<Long> inclusions, String comment){
+		doEvaluate(mapid, articleid, inclusions, comment, true);
 		nextArticleId = nextArticleId != null ? nextArticleId : 0l;
 		result.redirectTo(this).evaluateArticle(mapid, nextArticleId);
 	}
 	
 	@Post("/maps/excludearticle")
-	public void excludearticle(Long mapid, Long articleid, Long evaluationid, Long nextArticleId, List<Long> exclusions, String comment){
-		doEvaluate(mapid, articleid, evaluationid, exclusions, comment, false);
+	public void excludearticle(Long mapid, Long articleid, Long nextArticleId, List<Long> exclusions, String comment){
+		doEvaluate(mapid, articleid, exclusions, comment, false);
 		nextArticleId = nextArticleId != null ? nextArticleId : 0l;
 		result.redirectTo(this).evaluateArticle(mapid, nextArticleId);
 	}
 	
-	private void doEvaluate(Long mapid, Long articleid, Long evaluationid, List<Long> ids, String comment, boolean include){
+	private void doEvaluate(Long mapid, Long articleid, List<Long> ids, String comment, boolean include){
 		validator.check((ids != null), 
 				new SimpleMessage("mapstudy", "mapstudy.evaluate.criterias.none"));
 		validator.onErrorRedirectTo(this).evaluateArticle(mapid, articleid);
@@ -321,8 +336,10 @@ public class MapStudyController {
 		MapStudy mapStudy = mapStudyDao.find(mapid);
 		Article article = articleDao.find(articleid);
 		
-		if(evaluationid != null){
-			evaluationDao.delete(evaluationid);
+		//remove last evaluation
+		Evaluation existingEvaluation = evaluationDao.getEvaluation(userInfo.getUser(), mapStudy, article);
+		if(existingEvaluation != null){
+			evaluationDao.delete(existingEvaluation.getId());
 		}
 		
 		Evaluation e = new Evaluation();
@@ -374,9 +391,6 @@ public class MapStudyController {
 	public void removeexclusioncriteria(Long studyMapId, Long criteriaId) {
 		validator.onErrorForwardTo(this).show(studyMapId);
 		
-
-//com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Cannot delete or update a parent row: a foreign key constraint fails (`systematicmap`.`evaluations_exclusions`, CONSTRAINT `FK_5rm03fhb8j4nuj61k7cn9dcoq` FOREIGN KEY (`exclusion_id`) REFERENCES `ExclusionCriteria` (`id`))
-		
 		ExclusionCriteria criteria = exclusionDao.find(criteriaId);
 		Set<Evaluation> evaluations = criteria.getEvaluations();
 		
@@ -393,6 +407,115 @@ public class MapStudyController {
 		exclusionDao.delete(criteriaId);
 		
 		result.redirectTo(this).show(studyMapId);
+	}
+	
+	/*  */
+	@Get("/maps/{studyMapId}/evaluates/")
+	public void showEvaluates(Long studyMapId) {
+		MapStudy mapStudy = mapStudyDao.find(studyMapId);
+		
+		validator.check((mapStudy != null), 
+				new SimpleMessage("mapstudy", "mapstudy.evaluate.criterias.none"));
+		
+		validator.onErrorRedirectTo(this).list();
+		
+		List<Evaluation> evaluations = evaluationDao.getEvaluations(userInfo.getUser(), mapStudy);
+		List<Article> articles = articleDao.getArticles(mapStudy);
+		
+		HashMap<InclusionCriteria, Integer> inclusionCriterias = new HashMap<InclusionCriteria, Integer>();
+		HashMap<ExclusionCriteria, Integer> exclusionCriterias = new HashMap<ExclusionCriteria, Integer>();
+		
+		int countRejected = 0, countAccepted = 0, countToDo = 0;
+		for(Evaluation e : evaluations){
+			if(e.getEvaluationStatus().equals(EvaluationStatusEnum.ACCEPTED)){
+				countAccepted++;
+			}else if(e.getEvaluationStatus().equals(EvaluationStatusEnum.REJECTED)){
+				countRejected++;
+			}
+			
+			if(e.getEvaluationStatus().equals(EvaluationStatusEnum.ACCEPTED)){
+				for(InclusionCriteria i : e.getInclusionCriterias()){
+					if(inclusionCriterias.containsKey(i)){
+						inclusionCriterias.put(i, inclusionCriterias.get(i)+1);
+					}else{
+						inclusionCriterias.put(i, 1);
+					}
+				}
+			}else if(e.getEvaluationStatus().equals(EvaluationStatusEnum.REJECTED)){
+				for(ExclusionCriteria ec : e.getExclusionCriterias()){
+					if(exclusionCriterias.containsKey(ec)){
+						exclusionCriterias.put(ec, exclusionCriterias.get(ec)+1);
+					}else{
+						exclusionCriterias.put(ec, 1);
+					}
+				}
+			}
+		}
+		
+		int countRepeated = 0, countDontMatch = 0, countWithoutAuthors = 0, countWithoutAbstracts = 0, countWithoutClassification = 0, countClassified= 0;
+		for(Article a : articles){
+			if(a.getClassification() != null){
+				if(a.getClassification().equals(ClassificationEnum.REPEAT)){
+					countRepeated++;
+				}else if(a.getClassification().equals(ClassificationEnum.WORDS_DONT_MATCH)){
+					countDontMatch++;
+				}else if(a.getClassification().equals(ClassificationEnum.WITHOUT_AUTHORS)){
+					countWithoutAuthors++;
+				}else if(a.getClassification().equals(ClassificationEnum.WITHOUT_ABSTRACT)){
+					countWithoutAbstracts++;
+				}
+				countClassified++;
+			}else{
+				countWithoutClassification++;
+			}
+		}
+		
+		result.include("user", userInfo.getUser());
+		result.include("mapStudy", mapStudy);
+		result.include("articles", articles);
+		result.include("inclusionCriteriasMap", inclusionCriterias);
+		result.include("exclusionCriteriasMap", exclusionCriterias);
+		
+		result.include("percentEvaluated", mapStudy.percentEvaluated(
+	    		articleDao.countArticleNotRefined(mapStudy).intValue(),
+	    		articleDao.countArticleToEvaluate(userInfo.getUser(), mapStudy).intValue())
+	    );
+		result.include("countAccepted", countAccepted);
+		result.include("countRejected", countRejected);
+		result.include("countToDo", countToDo);
+		
+		result.include("countRepeated", countRepeated);
+		result.include("countDontMatch", countDontMatch);
+		result.include("countWithoutAuthors", countWithoutAuthors);
+		result.include("countWithoutAbstracts", countWithoutAbstracts);
+		result.include("countWithoutClassification", countWithoutClassification);
+		result.include("countClassified", countClassified);
+	}
+	
+	//articleToBibTeX
+	@Path("/maps/download/{mapStudyId}")
+	@Get
+	public Download download(Long mapStudyId) throws IOException {
+		MapStudy mapStudy = mapStudyDao.find(mapStudyId);
+		
+		Article a = null;
+		List<Evaluation> evaluations = evaluationDao.getEvaluations(userInfo.getUser(), mapStudy);
+		for(Evaluation e : evaluations){
+			if(e.getEvaluationStatus().equals(EvaluationStatusEnum.ACCEPTED)){
+				a = e.getArticle();
+				break;
+			}
+		}
+			
+		String filename = mapStudy.getTitle().replaceAll(" ", "_")+ ".bib";
+		File file = new File(filename);
+		FileWriter fooWriter = new FileWriter(file, false);
+		fooWriter.write(BibtexToArticleUtils.articleToBibTeX(a).toString());
+		fooWriter.close();
+		
+		String contentType = "text/plain";
+
+		return new FileDownload(file, contentType, filename);
 	}
 	
 	

@@ -1,9 +1,14 @@
 package br.com.ufpi.systematicmap.utils;
 
+import java.io.IOException;
 import java.util.Map;
 
+import org.jbibtex.BibTeXDatabase;
 import org.jbibtex.BibTeXEntry;
+import org.jbibtex.BibTeXInclude;
 import org.jbibtex.Key;
+import org.jbibtex.StringValue;
+import org.jbibtex.StringValue.Style;
 import org.jbibtex.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +45,26 @@ public class BibtexToArticleUtils {
 		}
 		
 		return article;
+	}
+	
+	static public BibTeXDatabase articleToBibTeX(Article article) throws IOException {
+		
+		BibTeXDatabase bib = new BibTeXDatabase();
+		
+		bib.addObject(new BibTeXEntry(BibTeXEntry.KEY_AUTHOR, new Key(article.getAuthor())));
+		bib.addObject(new BibTeXEntry(BibTeXEntry.KEY_TITLE, new Key(article.getTitle())));
+		bib.addObject(new BibTeXEntry(BibTeXEntry.KEY_JOURNAL, new Key(article.getJournal())));
+		bib.addObject(new BibTeXEntry(BibTeXEntry.KEY_VOLUME, new Key(article.getVolume().toString())));
+		bib.addObject(new BibTeXEntry(BibTeXEntry.KEY_PAGES, new Key(article.getPages())));
+		bib.addObject(new BibTeXEntry(BibTeXEntry.KEY_DOI, new Key(article.getDoi())));
+		
+		bib.addObject(new BibTeXEntry(new Key("abstract"), new Key(article.getAbstrct())));
+		bib.addObject(new BibTeXEntry(new Key("keywords"), new Key(article.getKeywords())));
+		bib.addObject(new BibTeXEntry(new Key("language"), new Key(article.getLanguage())));
+		
+		BibTeXInclude teste = new BibTeXInclude(new StringValue("teste", Style.QUOTED), bib);
+		
+		return bib;
 	}
 	
 	static private Integer getAttrInt(Map<Key, Value> fields, Key key){

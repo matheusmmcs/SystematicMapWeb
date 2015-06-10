@@ -58,4 +58,5 @@ public class BibtexUtils {
 			writer.close();
 		}
 	}
+	
 }

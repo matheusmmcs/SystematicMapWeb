@@ -13,6 +13,8 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
+import br.com.ufpi.systematicmap.model.enums.EvaluationStatusEnum;
+
 @Entity
 public class Evaluation implements Serializable {
 
@@ -112,6 +114,10 @@ public class Evaluation implements Serializable {
 	}
 	
 	public String getClassification(){
-		return inclusionCriterias.size() > 0 ? "ACCEPTED" : (exclusionCriterias.size() > 0 ? "REJECTED" : "-NOT DEFINED-");
+		return getEvaluationStatus().toString();
+	}
+	
+	public EvaluationStatusEnum getEvaluationStatus(){
+		return inclusionCriterias.size() > 0 ? EvaluationStatusEnum.ACCEPTED : (exclusionCriterias.size() > 0 ? EvaluationStatusEnum.REJECTED : EvaluationStatusEnum.NOT_EVALUATED);
 	}
 }
