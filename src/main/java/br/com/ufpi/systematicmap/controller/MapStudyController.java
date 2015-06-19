@@ -5,7 +5,9 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +53,7 @@ import br.com.ufpi.systematicmap.model.User;
 import br.com.ufpi.systematicmap.model.enums.ArticleSourceEnum;
 import br.com.ufpi.systematicmap.model.enums.ClassificationEnum;
 import br.com.ufpi.systematicmap.model.enums.EvaluationStatusEnum;
+import br.com.ufpi.systematicmap.model.vo.ArticleCompareVO;
 import br.com.ufpi.systematicmap.utils.BibtexToArticleUtils;
 import br.com.ufpi.systematicmap.utils.BibtexUtils;
 
@@ -140,18 +143,15 @@ public class MapStudyController {
 		
 		HashMap<User, String> mapStudyUsers = new HashMap<User, String>();
 		for(User u : mapStudyUsersList){
-			mapStudyUsers.put(u, mapStudy.percentEvaluated(
-	    		articleDao.countArticleNotRefined(mapStudy).intValue(),
-	    		articleDao.countArticleToEvaluate(u, mapStudy).intValue()
-	    	));
+			Double percentEvaluatedDouble = mapStudy.percentEvaluatedDouble(articleDao, u);
+			mapStudyUsers.put(u, mapStudy.percentEvaluated(percentEvaluatedDouble));
 		}
+		
+		Double percentEvaluatedDouble = mapStudy.percentEvaluatedDouble(articleDao, userInfo.getUser());
 		
 	    result.include("map", mapStudy);
 	    result.include("sources", ArticleSourceEnum.values());
-	    result.include("percentEvaluated", mapStudy.percentEvaluated(
-	    		articleDao.countArticleNotRefined(mapStudy).intValue(),
-	    		articleDao.countArticleToEvaluate(userInfo.getUser(), mapStudy).intValue())
-	    );
+	    result.include("percentEvaluated", mapStudy.percentEvaluated(percentEvaluatedDouble));
 	    result.include("mapStudyUsers", mapStudyUsers);
 	    result.include("mapStudyArentUsers", mapStudyArentUsers);
 	}
@@ -282,7 +282,7 @@ public class MapStudyController {
 		});
 		exclusionOrdered.addAll(mapStudy.getExclusionCriterias());
 		
-		
+		Double percentEvaluatedDouble = mapStudy.percentEvaluatedDouble(articleDao, userInfo.getUser());
 		
 		result.include("map", mapStudy);
 		result.include("exclusionOrdered", exclusionOrdered);
@@ -291,10 +291,7 @@ public class MapStudyController {
 		result.include("article", article);
 		result.include("nextArticleId", nextArticleId);
 		result.include("articlesToEvaluate", articlesToEvaluate);
-		result.include("percentEvaluated", mapStudy.percentEvaluated(
-				articleDao.countArticleNotRefined(mapStudy).intValue(), 
-				articlesToEvaluate.size())
-		);
+		result.include("percentEvaluated", mapStudy.percentEvaluated(percentEvaluatedDouble));
 		result.include("evaluations", evaluations);
 		result.include("evaluationDone", evaluationDone);
 	}
@@ -470,16 +467,17 @@ public class MapStudyController {
 			}
 		}
 		
+		Double percentEvaluatedDouble = mapStudy.percentEvaluatedDouble(articleDao, userInfo.getUser());
+		
 		result.include("user", userInfo.getUser());
 		result.include("mapStudy", mapStudy);
 		result.include("articles", articles);
 		result.include("inclusionCriteriasMap", inclusionCriterias);
 		result.include("exclusionCriteriasMap", exclusionCriterias);
 		
-		result.include("percentEvaluated", mapStudy.percentEvaluated(
-	    		articleDao.countArticleNotRefined(mapStudy).intValue(),
-	    		articleDao.countArticleToEvaluate(userInfo.getUser(), mapStudy).intValue())
-	    );
+		result.include("percentEvaluated", mapStudy.percentEvaluated(percentEvaluatedDouble));
+		result.include("percentEvaluatedDouble", percentEvaluatedDouble);
+				
 		result.include("countAccepted", countAccepted);
 		result.include("countRejected", countRejected);
 		result.include("countToDo", countToDo);
@@ -492,30 +490,131 @@ public class MapStudyController {
 		result.include("countClassified", countClassified);
 	}
 	
-	//articleToBibTeX
-	@Path("/maps/download/{mapStudyId}")
+	@Path("/maps/{mapStudyId}/accepted/mine")
 	@Get
-	public Download download(Long mapStudyId) throws IOException {
+	public Download downloadMine(Long mapStudyId) throws IOException {
 		MapStudy mapStudy = mapStudyDao.find(mapStudyId);
-		
-		Article a = null;
 		List<Evaluation> evaluations = evaluationDao.getEvaluations(userInfo.getUser(), mapStudy);
+		List<Article> articles = new ArrayList<Article>();
 		for(Evaluation e : evaluations){
 			if(e.getEvaluationStatus().equals(EvaluationStatusEnum.ACCEPTED)){
-				a = e.getArticle();
-				break;
+				articles.add(e.getArticle());
 			}
 		}
-			
-		String filename = mapStudy.getTitle().replaceAll(" ", "_")+ ".bib";
+		return generateFile(mapStudy, articles);
+	}
+	
+	@Path("/maps/{mapStudyId}/accepted/all")
+	@Get
+	public Download downloadAll(Long mapStudyId) throws IOException {
+		MapStudy mapStudy = mapStudyDao.find(mapStudyId);
+		List<Article> articles = articleDao.getArticlesFinalAccepted(mapStudy);
+		return generateFile(mapStudy, articles);
+	}
+	
+	private Download generateFile(MapStudy mapStudy, List<Article> articles) throws IOException {
+		//create file
+		String filename = mapStudy.getTitle().replaceAll(" ", "_")+ ".csv";
 		File file = new File(filename);
-		FileWriter fooWriter = new FileWriter(file, false);
-		fooWriter.write(BibtexToArticleUtils.articleToBibTeX(a).toString());
-		fooWriter.close();
+		FileWriter writer = new FileWriter(file, false);
 		
-		String contentType = "text/plain";
-
+		String delimiter = ";";
+		
+		//create header
+		writer.append("Author"+delimiter);
+		writer.append("Title"+delimiter);
+	    writer.append("Journal"+delimiter);
+//	    writer.append("Year"+delimiter);
+//	    writer.append("Pages"+delimiter);
+	    writer.append("Doi"+delimiter);
+//	    writer.append("URL"+delimiter);
+	    writer.append("DocType"+delimiter);
+	    writer.append("Source"+delimiter);
+//	    writer.append("Language"+delimiter);
+//	    writer.append("Abstract"+delimiter);
+//	    writer.append("Keywords");
+	    writer.append('\n');
+		
+		for(Article a : articles){
+			writer.append(a.getAuthor()+delimiter);
+			writer.append(a.getTitle()+delimiter);
+		    writer.append(a.getJournal()+delimiter);
+//			writer.append(a.getYear()+delimiter);
+//			writer.append(a.getPages()+delimiter);
+		    writer.append(a.getDoi()+delimiter);
+//			writer.append(a.getUrl()+delimiter);
+		    writer.append(a.getDocType()+delimiter);
+		    writer.append(a.getSource()+delimiter);
+//			writer.append(a.getLanguage()+delimiter);
+//			writer.append(a.getAbstrct()+delimiter);
+//			writer.append(a.getKeywords());
+		    writer.append('\n');
+		}
+		writer.flush();
+	    writer.close();
+		
+		String contentType = "text/csv";
 		return new FileDownload(file, contentType, filename);
+	}
+	
+	//comparar as avaliações dos usuários
+	@Path("/maps/{mapStudyId}/compare")
+	@Get
+	public void compareEvaluations(Long mapStudyId){
+		MapStudy mapStudy = mapStudyDao.find(mapStudyId);
+		
+		validator.check((mapStudy != null), 
+				new SimpleMessage("mapstudy", "mapstudy.evaluate.criterias.none"));
+		validator.onErrorRedirectTo(this).show(mapStudyId);
+		
+		Double percentEvaluatedDouble = mapStudy.percentEvaluatedDouble(articleDao, userInfo.getUser());
+		
+		validator.check((percentEvaluatedDouble >= 100), 
+				new SimpleMessage("mapstudy", "mapstudy.evaluations.compare.undone"));
+		validator.onErrorRedirectTo(this).list();
+		
+		List<Article> articles = articleDao.getArticlesToEvaluate(mapStudy);
+		ArrayList<User> members = new ArrayList<User>(mapStudy.getMembers());
+		Collections.sort(members, new Comparator<User>() {
+			@Override
+			public int compare(User u1, User u2){
+				return u1.getLogin().compareTo(u2.getLogin());
+			}
+		});
+		
+		List<ArticleCompareVO> articlesCompare = new ArrayList<ArticleCompareVO>();
+		List<ArticleCompareVO> articlesAcceptedCompare = new ArrayList<ArticleCompareVO>();
+		for(Article a : articles){
+			HashMap<User, Evaluation> evaluations = new HashMap<User, Evaluation>();
+			boolean hasAccepted = false;
+			for(User u : members){
+				Evaluation evaluation = a.getEvaluation(u);
+				evaluations.put(u, evaluation);
+				if(evaluation != null && evaluation.getEvaluationStatus().equals(EvaluationStatusEnum.ACCEPTED)){
+					hasAccepted = true;
+				}
+			}
+			ArticleCompareVO acvo = new ArticleCompareVO(a, members, evaluations);
+			articlesCompare.add(acvo);
+			if(hasAccepted){
+				articlesAcceptedCompare.add(acvo);
+			}
+		}
+		
+		result.include("mapStudy", mapStudy);
+		result.include("members", members);
+		result.include("articles", articlesCompare);
+		result.include("articlesAccepted", articlesAcceptedCompare);
+		result.include("evaluationStatus", EvaluationStatusEnum.values());
+	}
+	
+	@Path("/maps/finalEvaluate")
+	@Post
+	public void finalEvaluate(Long mapStudyId, Long articleId, EvaluationStatusEnum evaluation){
+		Article article = articleDao.find(articleId);
+		article.setFinalEvaluation(evaluation);
+		articleDao.update(article);
+		result.redirectTo(this).compareEvaluations(mapStudyId);
 	}
 	
 	

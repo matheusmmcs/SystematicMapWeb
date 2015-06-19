@@ -29,6 +29,31 @@
 						<fmt:message key="mapstudy.evaluation.rate"/>:
 					</strong> ${percentEvaluated}%
 				<p>
+				
+				<hr/>
+				
+				<p>
+					<strong>
+						<fmt:message key="mapstudy.evaluations.compare"/>:
+					</strong>
+					<c:if test="${percentEvaluatedDouble >= 100}">
+						<a class="btn btn-primary" href="${linkTo[MapStudyController].compareEvaluations(mapStudy.id)}"><fmt:message key="mapstudy.evaluations.compare"/></a>
+					</c:if>
+					<c:if test="${percentEvaluatedDouble < 100}">
+						<fmt:message key="mapstudy.evaluations.compare.undone"/>
+					</c:if>
+					<div class="clear-both"></div>
+				<p>
+				
+				<p>
+					<strong>
+						<fmt:message key="mapstudy.evaluations.export"/>:
+					</strong> 
+					<a class="btn btn-default" href="${linkTo[MapStudyController].downloadMine(mapStudy.id)}"><fmt:message key="mapstudy.evaluations.export.csv.mine"/></a>
+					<a class="btn btn-default" href="${linkTo[MapStudyController].downloadAll(mapStudy.id)}"><fmt:message key="mapstudy.evaluations.export.csv.all"/></a>
+					<div class="clear-both"></div>
+				<p>
+				 
 			</div>
 		</div>
 		
@@ -103,15 +128,6 @@
 				<p>
 				
 				<hr/>
-				<!--
-				<p>
-					<strong>
-						<fmt:message key="mapstudy.evaluations.export"/>:
-					</strong> 
-					<a class="btn btn-primary pull-right" href="${linkTo[MapStudyController].download(mapStudy.id)}"><fmt:message key="mapstudy.evaluations.export.bibtex"/></a>
-					<div class="clear-both"></div>
-				<p>
-				 -->
 			</div>
 		</div>
 		

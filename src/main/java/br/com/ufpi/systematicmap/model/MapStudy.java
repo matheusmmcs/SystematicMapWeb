@@ -16,6 +16,8 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
+import br.com.ufpi.systematicmap.dao.ArticleDao;
+
 
 @Entity 
 public class MapStudy implements Serializable{
@@ -133,7 +135,14 @@ public class MapStudy implements Serializable{
 		criteria.setMapStudy(this);
 	}
 	
-	public String percentEvaluated(int total, int toEvaluate){
+	public String percentEvaluated(Double percentEvaluated){
+		return String.format("%.2f", percentEvaluated);
+	}
+	
+	public Double percentEvaluatedDouble(ArticleDao articleDao, User user){
+		int total = articleDao.countArticleNotRefined(this).intValue(),
+		    toEvaluate = articleDao.countArticleToEvaluate(user, this).intValue();
+		 
 		BigDecimal tot = new BigDecimal(total);
 		BigDecimal dontEval = new BigDecimal(toEvaluate);
 		BigDecimal bigdecimal;
@@ -148,7 +157,7 @@ public class MapStudy implements Serializable{
 			}
 		}
 		
-		return String.format("%.2f", bigdecimal.floatValue());
+		return bigdecimal.doubleValue();
 	}
 
 	@Override

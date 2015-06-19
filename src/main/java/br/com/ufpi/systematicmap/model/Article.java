@@ -38,6 +38,9 @@ public class Article implements Serializable {
 	@OneToMany(mappedBy="article")
 	private Set<Evaluation> evaluations = new HashSet<>();
 	
+	@Enumerated(EnumType.STRING)
+	private EvaluationStatusEnum finalEvaluation;
+	
 	@Size(max=1000)
 	private String author;
 	
@@ -278,6 +281,14 @@ public class Article implements Serializable {
 		this.source = source;
 	}
 	
+	public EvaluationStatusEnum getFinalEvaluation() {
+		return finalEvaluation;
+	}
+
+	public void setFinalEvaluation(EvaluationStatusEnum finalEvaluation) {
+		this.finalEvaluation = finalEvaluation;
+	}
+
 	public String getEvaluationClassification(User user){
 		for(Evaluation e : evaluations){
 			if(e.getUser().equals(user)){
@@ -285,6 +296,19 @@ public class Article implements Serializable {
 			}
 		}
 		return EvaluationStatusEnum.NOT_EVALUATED.toString();
+	}
+	
+	public Evaluation getEvaluation(User user){
+		for(Evaluation e : evaluations){
+			if(e.getUser().equals(user)){
+				return e;
+			}
+		}
+		return null;
+	}
+	
+	public EvaluationStatusEnum showFinalEvaluation(){
+		return finalEvaluation != null ? finalEvaluation : EvaluationStatusEnum.NOT_EVALUATED;
 	}
 	
 }

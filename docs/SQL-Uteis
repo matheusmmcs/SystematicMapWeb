@@ -1,0 +1,11 @@
+/* Descobrir avaliações repetidas para um mesmo artigo */
+SELECT * FROM Evaluation e1 inner join Evaluation e2 on e2.id != e1.id and e1.article_id = e2.article_id and e1.user_id = e2.user_id;
+
+/* Avalições que possuem apenas um determinado critério de exclusão */
+SELECT * FROM Evaluation WHERE id in (
+	SELECT e.evaluation_id FROM systematicmap.evaluations_exclusions e 
+	where e.exclusion_id = 14 
+	and e.evaluation_id not in (
+		select e2.evaluation_id FROM systematicmap.evaluations_exclusions e2 where e2.exclusion_id != 14
+	)
+);

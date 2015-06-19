@@ -13,6 +13,7 @@ import javax.persistence.criteria.Root;
 import br.com.ufpi.systematicmap.model.Article;
 import br.com.ufpi.systematicmap.model.MapStudy;
 import br.com.ufpi.systematicmap.model.User;
+import br.com.ufpi.systematicmap.model.enums.EvaluationStatusEnum;
 
 @RequestScoped
 public class ArticleDao extends Dao<Article> {
@@ -37,6 +38,14 @@ public class ArticleDao extends Dao<Article> {
 		return articles;
 	}
 	
+	public List<Article> getArticlesToEvaluate(MapStudy mapStudy){
+		List<Article> articles = entityManager
+			.createQuery("select a from Article a where a.classification = null and a.mapStudy = :mapStudy order by a.title asc", Article.class)
+				.setParameter("mapStudy", mapStudy)
+				.getResultList();
+		return articles;
+	}
+	
 	public List<Article> getArticlesToEvaluate(User user, MapStudy mapStudy){
 		List<Article> articles = entityManager
 			.createQuery("select a from Article a where a.classification = null and a.mapStudy = :mapStudy and a.id not in (select e.article.id from Evaluation e where e.user = :user and e.mapStudy = :mapStudy) order by a.title asc", Article.class)
@@ -51,6 +60,15 @@ public class ArticleDao extends Dao<Article> {
 			.createQuery("select a from Article a where a.classification = null and a.mapStudy = :mapStudy and a.id in (select e.article.id from Evaluation e where e.user = :user and e.mapStudy = :mapStudy) order by a.title asc", Article.class)
 				.setParameter("user", user)
 				.setParameter("mapStudy", mapStudy)
+				.getResultList();
+		return articles;
+	}
+	
+	public List<Article> getArticlesFinalAccepted(MapStudy mapStudy){
+		List<Article> articles = entityManager
+			.createQuery("select a from Article a where a.finalEvaluation = :finalEvaluation and a.mapStudy = :mapStudy order by a.title asc", Article.class)
+				.setParameter("mapStudy", mapStudy)
+				.setParameter("finalEvaluation", EvaluationStatusEnum.ACCEPTED)
 				.getResultList();
 		return articles;
 	}
