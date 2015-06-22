@@ -18,3 +18,20 @@
 .padding-left-none{
 	padding-left: 0;
 }
+
+.success-eval{
+	background-color: #EFFAD7;
+	color: #668C06;
+}
+
+.error-eval{
+	color: #8C0623;
+	background-color: #FAD7DE;	
+}
+.no-eval{}
+
+@media (min-width: 768px){
+	#page-wrapper {
+	  padding: 5px 30px;
+	}
+}

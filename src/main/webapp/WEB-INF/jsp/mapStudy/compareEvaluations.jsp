@@ -5,6 +5,51 @@
 
 <div class="row">
   	<div class="col-lg-12">
+  	
+  		<div class="panel panel-default">
+			<div class="panel-heading">
+				<b><fmt:message key="mapstudy.details"/></b>
+			</div>
+			<!-- /.panel-heading -->
+			<div class="panel-body">
+				<p> 
+					<strong>
+						<fmt:message key="mapstudy.title"/>:
+					</strong> ${mapStudy.title}
+				<p>
+				
+				<hr/>
+				
+				<p>
+					<strong>
+						<fmt:message key="mapstudy.evaluations.fleisskappa"/>:
+					</strong> 
+					<span id="kappa-members"><fmt:message key="mapstudy.evaluations.fleisskappa.all"/></span> = <span id="kappa-value">${kappa}</span>
+				<p>
+				
+				<p>
+					<strong>
+						<fmt:message key="mapstudy.evaluations.fleisskappa.calculate"/>:
+					</strong>
+					<form id="kappa-form">
+						<input type="hidden" id="mapStudyId" name="mapStudyId" value="${mapStudy.id}" />
+						<c:forEach var="member" items="${members}">
+							<div class="checkbox">
+							  <label>
+							    <input type="checkbox" name="members[${u.index}]" value="${member.id}" />
+							    ${member.name}
+							  </label>
+							</div>
+						</c:forEach>
+						<a class="btn btn-default" id="kappa-submit" href="#"><fmt:message key="mapstudy.evaluations.fleisskappa.calculate"/></a>
+					</form>
+					
+					
+					<div class="clear-both"></div>
+				<p>
+				 
+			</div>
+		</div>
   		
 		<h4>
 			<fmt:message key="mapstudy.evaluations.all"/>
@@ -23,12 +68,14 @@
 				</thead>
 				<tbody>
 					<c:forEach var="acvo" items="${articles}" varStatus="s">
-						<tr class="${s.index % 2 == 0 ? 'even' : 'odd'} gradeA">
-							<td>${acvo.article.id}</td>
+						<tr class="${s.index % 2 == 0 ? 'even' : 'odd'} gradeA text-center article-to-read">
+							<td class="article-id">${acvo.article.id}</td>
 							<c:forEach var="u" items="${members}" varStatus="s">
-								<td>${acvo.getEvaluationClassification(u)}</td>
+								<td class="${acvo.getEvaluationClassification(u) == 'ACCEPTED' ? 'success-eval' : (acvo.getEvaluationClassification(u) == 'REJECTED' ? 'error-eval' : 'no-eval')}">
+									${acvo.getEvaluationClassification(u)}
+								</td>
 							</c:forEach>
-							<td>${acvo.article.showFinalEvaluation()}</td>
+							<td class="${acvo.article.showFinalEvaluation() == 'ACCEPTED' ? 'success-eval' : (acvo.article.showFinalEvaluation() == 'REJECTED' ? 'error-eval' : 'no-eval')}">${acvo.article.showFinalEvaluation()}</td>
 						</tr>
 					</c:forEach>
 				</tbody>
@@ -40,6 +87,34 @@
 		<h4>
 			<fmt:message key="mapstudy.evaluations.article.final.evaluate" />
 		</h4>
+		
+		<div id="article-popup" style="display:none">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<b><fmt:message key="mapstudy.article.details"/> <span id="article-id"></span></b>
+					<a href="#" class="btn btn-default pull-right article-close">
+						<i class="glyphicon glyphicon-remove"></i>
+					</a>
+				</div>
+				<div class="panel-body">
+					<p> 
+						<strong>
+							<fmt:message key="mapstudy.article.title"/>:
+						</strong>
+						<span id="article-title"></span>
+					</p>
+					<hr/>
+					<p>
+						<strong>
+							<fmt:message key="mapstudy.article.abstract"/>:
+						</strong>
+						<span id="article-abstract"></span>
+					</p>
+					<div id="article-evaluations"></div>
+				</div>
+			</div>
+		</div>
+		
 		<form action="${linkTo[MapStudyController].finalEvaluate}" method="post">
 			<input type="hidden" name="mapStudyId" value="${mapStudy.id}" />
 			
@@ -68,6 +143,7 @@
 		<h4>
 			<fmt:message key="mapstudy.evaluations.accepted"/>
 		</h4>
+		
 		<div class="dataTable_wrapper">
 			<table
 				class="table table-striped table-bordered table-hover personalized-table">
@@ -82,17 +158,109 @@
 				</thead>
 				<tbody>
 					<c:forEach var="acvo" items="${articlesAccepted}" varStatus="s">
-						<tr class="${s.index % 2 == 0 ? 'even' : 'odd'} gradeA">
-							<td>${acvo.article.id}</td>
+						<tr class="${s.index % 2 == 0 ? 'even' : 'odd'} gradeA text-center article-to-read">
+							<td class="article-id">${acvo.article.id}</td>
 							<c:forEach var="u" items="${members}" varStatus="s">
-								<td title="${u.login} - ${acvo.getEvaluationClassification(u)}">${acvo.getEvaluationClassification(u)}</td>
+								<td title="${u.login} - ${acvo.getEvaluationClassification(u)}" class="${acvo.getEvaluationClassification(u) == 'ACCEPTED' ? 'success-eval' : (acvo.getEvaluationClassification(u) == 'REJECTED' ? 'error-eval' : 'no-eval')}">
+									${acvo.getEvaluationClassification(u)}
+								</td>
 							</c:forEach>
-							<td>${acvo.article.showFinalEvaluation()}</td>
+							<td class="${acvo.article.showFinalEvaluation() == 'ACCEPTED' ? 'success-eval' : (acvo.article.showFinalEvaluation() == 'REJECTED' ? 'error-eval' : 'no-eval')}">${acvo.article.showFinalEvaluation()}</td>
 						</tr>
 					</c:forEach>
 				</tbody>
 			</table>
 		</div>
+
+		<br/>
   		
 	</div>
 </div>
+
+
+<script>
+	(function($){
+		$(document).ready(function(){
+			
+			$(document).on('click', '#kappa-submit', function(e){
+				e.preventDefault();
+				
+				var ids = "";
+			    $('#kappa-form :checked').each(function() {
+			       console.log($(this).val());
+			       ids += $(this).val() + ";";
+			    });
+			    
+			    var formData = {
+					usersIds : ids,
+					mapStudyId : $('#mapStudyId').val()
+				}
+			    
+				$.ajax({
+					data: formData,
+					url: "/SystematicMap/maps/kappa",
+					method: "POST",
+					success: function(data){
+						console.log(data);
+						if(data.hashMap){
+							$('#kappa-members').html(data.hashMap.members);
+							$('#kappa-value').html(data.hashMap.kappa);
+						}
+					},
+					error: function(err){
+						console.log(err);
+					}
+				});
+			});
+			
+			$(document).on('click', '.article-to-read', function(e){
+				e.preventDefault();
+				var id = $(this).children('.article-id').html();
+				
+				$.ajax({
+					url: "/SystematicMap/maps/article/"+id+"/details",
+					method: "GET",
+					success: function(data){
+						console.log(data);
+						if(data.hashMap){
+							var x = data.hashMap;
+							$('#article-id').html(x.id);
+							$('#articleId').val(x.id);
+							$('#article-title').html(x.title);
+							$('#article-abstract').html(x['abstract']);
+							
+							var evals = "";
+							for(var user in x.evaluations){
+								var criterias = x.evaluations[user].criterias;
+								var comment = x.evaluations[user].comment;
+								
+								evals += '<hr/><p><strong>'+user+':</strong><ul>';
+								for(var c in criterias){
+									evals += '<li><span>'+criterias[c]+'</span></li>';
+								}
+								evals += '</ul></p>';
+								
+								if(comment){
+									evals += '<p><b>Comment</b>: '+comment+'</p>';
+								}
+							}
+							
+							$('#article-evaluations').html(evals);
+							
+							$('#article-popup').fadeIn();
+						}
+					},
+					error: function(err){
+						console.log(err);
+					}
+				});
+			});
+			
+			$(document).on('click', '.article-close', function(e){
+				e.preventDefault();
+				$("#article-popup").fadeOut();
+			})
+			
+		});
+	})(jQuery);
+</script>

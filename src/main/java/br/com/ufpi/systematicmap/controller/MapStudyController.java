@@ -1,11 +1,9 @@
 package br.com.ufpi.systematicmap.controller;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -32,9 +30,9 @@ import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.observer.download.Download;
 import br.com.caelum.vraptor.observer.download.FileDownload;
 import br.com.caelum.vraptor.observer.upload.UploadedFile;
-import br.com.caelum.vraptor.validator.Severity;
 import br.com.caelum.vraptor.validator.SimpleMessage;
 import br.com.caelum.vraptor.validator.Validator;
+import br.com.caelum.vraptor.view.Results;
 import br.com.ufpi.systematicmap.components.FilterArticles;
 import br.com.ufpi.systematicmap.dao.ArticleDao;
 import br.com.ufpi.systematicmap.dao.EvaluationDao;
@@ -56,6 +54,7 @@ import br.com.ufpi.systematicmap.model.enums.EvaluationStatusEnum;
 import br.com.ufpi.systematicmap.model.vo.ArticleCompareVO;
 import br.com.ufpi.systematicmap.utils.BibtexToArticleUtils;
 import br.com.ufpi.systematicmap.utils.BibtexUtils;
+import br.com.ufpi.systematicmap.utils.FleissKappa;
 
 @Controller
 public class MapStudyController {
@@ -606,6 +605,7 @@ public class MapStudyController {
 		result.include("articles", articlesCompare);
 		result.include("articlesAccepted", articlesAcceptedCompare);
 		result.include("evaluationStatus", EvaluationStatusEnum.values());
+		result.include("kappa", FleissKappa.combineKappas(articlesCompare, members));
 	}
 	
 	@Path("/maps/finalEvaluate")
@@ -615,6 +615,71 @@ public class MapStudyController {
 		article.setFinalEvaluation(evaluation);
 		articleDao.update(article);
 		result.redirectTo(this).compareEvaluations(mapStudyId);
+	}
+	
+	@Path("/maps/kappa")
+	@Post
+	public void calcKappa(Long mapStudyId, String usersIds){
+		MapStudy mapStudy = mapStudyDao.find(mapStudyId);
+		List<Article> articles = articleDao.getArticlesToEvaluate(mapStudy);
+		List<User> users = new ArrayList<User>();
+		HashMap<String, Object> retorno = new HashMap<String, Object>();
+		
+		for(String s : usersIds.split(";")){
+			users.add(userDao.find(Long.parseLong(s)));
+		}
+		
+		List<ArticleCompareVO> articlesCompare = new ArrayList<ArticleCompareVO>();
+		for(Article a : articles){
+			HashMap<User, Evaluation> evaluations = new HashMap<User, Evaluation>();
+			for(User u : users){
+				Evaluation evaluation = a.getEvaluation(u);
+				evaluations.put(u, evaluation);
+			}
+			ArticleCompareVO acvo = new ArticleCompareVO(a, users, evaluations);
+			articlesCompare.add(acvo);
+		}
+		retorno = FleissKappa.combineKappasMap(articlesCompare, users);
+		
+		result.use(Results.json()).from(retorno).serialize();
+	}
+	
+	@Path("/maps/article/{articleId}/details")
+	@Get
+	public void articleDetail(Long articleId){
+		Article article = articleDao.find(articleId);
+		
+		HashMap<String, Object> retorno = new HashMap<String, Object>();
+		retorno.put("id", article.getId());
+		retorno.put("title", article.getTitle());
+		retorno.put("abstract", article.getAbstrct());
+		
+		HashMap<String, Object> evaluations = new HashMap<String, Object>();
+		for(Evaluation e : article.getEvaluations()){
+			HashMap<String, Object> evaluation = new HashMap<String, Object>();
+			String user = e.getUser().getName();
+			String comment = e.getComment();
+			
+			List<String> criterias = new ArrayList<String>();
+			if(e.getEvaluationStatus().equals(EvaluationStatusEnum.ACCEPTED)){
+				for(InclusionCriteria c : e.getInclusionCriterias()){
+					criterias.add(c.getDescription());
+				}
+			}else if(e.getEvaluationStatus().equals(EvaluationStatusEnum.REJECTED)){
+				for(ExclusionCriteria c : e.getExclusionCriterias()){
+					criterias.add(c.getDescription());
+				}
+			}
+			
+			evaluation.put("criterias", criterias);
+			evaluation.put("comment", comment);
+			
+			evaluations.put(user, evaluation);
+		}
+		
+		retorno.put("evaluations", evaluations);
+		
+		result.use(Results.json()).from(retorno).serialize();
 	}
 	
 	
