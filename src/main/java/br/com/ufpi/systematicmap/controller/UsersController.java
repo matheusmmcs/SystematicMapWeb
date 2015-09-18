@@ -16,8 +16,14 @@
  */
 package br.com.ufpi.systematicmap.controller;
 
+import static br.com.caelum.vraptor.view.Results.json;
+
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.validation.Valid;
+
+import com.sun.mail.handlers.message_rfc822;
 
 import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Get;
@@ -25,6 +31,9 @@ import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Put;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.validator.Message;
+import br.com.caelum.vraptor.validator.Messages;
+import br.com.caelum.vraptor.validator.Severity;
 import br.com.caelum.vraptor.validator.SimpleMessage;
 import br.com.caelum.vraptor.validator.Validator;
 import br.com.ufpi.systematicmap.dao.MapStudyDao;
@@ -33,6 +42,8 @@ import br.com.ufpi.systematicmap.interceptor.Public;
 import br.com.ufpi.systematicmap.interceptor.UserInfo;
 import br.com.ufpi.systematicmap.model.MapStudy;
 import br.com.ufpi.systematicmap.model.User;
+import br.com.ufpi.systematicmap.utils.GenerateHashPasswordUtil;
+import br.com.ufpi.systematicmap.validation.EmailAvailable;
 import br.com.ufpi.systematicmap.validation.LoginAvailable;
 
 /**
@@ -73,15 +84,28 @@ public class UsersController {
 	@Path("/users")
 	@Post
 	@Public
-	public void add(@Valid @LoginAvailable User user) {
-        validator.onErrorUsePageOf(HomeController.class).login();
+	public void add(@Valid @LoginAvailable @EmailAvailable User user) {
+        validator.onErrorUsePageOf(HomeController.class).create();
+        
+        user.setPassword(GenerateHashPasswordUtil.generateHash(user.getPassword()));        
         
 		userDao.insert(user);
 
 		// you can add objects to result even in redirects. Added objects will
 		// survive one more request when redirecting.
-		result.include("notice", "User " + user.getName() + " successfully added");
+//		result.include("notice", "User " + user.getName() + " successfully added");
+		validator.add(new SimpleMessage("create", "Usuario criado com sucesso !", Severity.INFO));
 		result.redirectTo(HomeController.class).login();
+	}
+	
+	@Path("/users/seek.json")
+	@Get
+	@Public
+	public void seekJson(String query) {
+		List<User> users = userDao.findUserName(query);
+		System.out.println("Entrou json " + users.size()+" palavra: " + query);
+		result.use(json()).withoutRoot().from(users)
+				.exclude("email", "login", "password").serialize();
 	}
 	
 	/*

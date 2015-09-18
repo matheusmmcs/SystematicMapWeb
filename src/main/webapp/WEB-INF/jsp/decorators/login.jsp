@@ -1,7 +1,5 @@
-<%@ taglib uri="http://www.opensymphony.com/sitemesh/decorator"
-	prefix="decorator"%>
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.opensymphony.com/sitemesh/decorator"	prefix="decorator"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
@@ -20,10 +18,10 @@
 	<decorator:head/>
 	
     <!-- Bootstrap Core CSS -->
-    <link href="<c:url value="/vendor/bootstrap/css/bootstrap.min.css" />" rel="stylesheet">
+    <link href="<c:url value="/vendor/bootstrap/css/bootstrap.min.css"/>" rel="stylesheet">
 
     <!-- MetisMenu CSS -->
-    <link href="<c:url value="/vendor/metisMenu/metisMenu.min.css" />" rel="stylesheet">
+    <link href="<c:url value="/vendor/metisMenu/metisMenu.min.css"/>" rel="stylesheet">
 
     <!-- Custom CSS -->
     <link href="<c:url value="/css/sb-admin-2.css" />" rel="stylesheet">
@@ -48,6 +46,8 @@
 
     <!-- jQuery -->
     <script src="<c:url value="/vendor/jquery/jquery.min.js" />"></script>
+    <!-- jQuery Validate-->
+    <script src="<c:url value="/vendor/jquery/jquery.validate.min.js" />"></script>
 
     <!-- Bootstrap Core JavaScript -->
     <script src="<c:url value="/vendor/bootstrap/js/bootstrap.min.js" />"></script>

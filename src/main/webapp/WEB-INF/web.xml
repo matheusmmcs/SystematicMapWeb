@@ -5,6 +5,11 @@
 	version="3.0">
 
 	<display-name>SystemaicMap</display-name>
+	
+<!-- 	<context-param>   -->
+<!--     <param-name>br.com.caelum.vraptor.environment</param-name>   -->
+<!--     <param-value>production</param-value>   -->
+<!-- 	</context-param> -->
 
 	<context-param>
 		<param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>

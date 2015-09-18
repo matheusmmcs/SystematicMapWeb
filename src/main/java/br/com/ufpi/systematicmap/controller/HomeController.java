@@ -6,6 +6,9 @@ import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.validator.Message;
+import br.com.caelum.vraptor.validator.Messages;
+import br.com.caelum.vraptor.validator.Severity;
 import br.com.caelum.vraptor.validator.SimpleMessage;
 import br.com.caelum.vraptor.validator.Validator;
 import br.com.ufpi.systematicmap.dao.UserDao;
@@ -54,6 +57,16 @@ public class HomeController {
 		validator.onErrorUsePageOf(this).login();
 
 		userInfo.login(currentUser);
+		
+//		result.include("notice", currentUser.getName() + " login feito com sucesso !");
+		validator.add(new SimpleMessage("login",currentUser.getName() + " login feito com sucesso !", Severity.INFO));
+		validator.add(new SimpleMessage("login", "nome do cliente possui acentuação", Severity.WARN));
+//		validator.add(new SimpleMessage("login", "nome do cliente possui acentuação", Severity.ERROR));
+		Messages m = new Messages();
+		for (Message men : m.getAll()) {
+			System.out.println(men.getMessage());
+		}
+		
 		result.redirectTo(MapStudyController.class).list();
 	}
 
@@ -65,6 +78,16 @@ public class HomeController {
 	@Public
 	@Get
 	public void login() {
+	}
+	
+	@Public
+	@Get
+	public void create() {
+	}
+	
+	@Public
+	@Get
+	public void recovery() {
 	}
 
 }

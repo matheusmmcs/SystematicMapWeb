@@ -4,13 +4,13 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.Size;
 
@@ -36,8 +36,14 @@ public class MapStudy implements Serializable{
     @Size(min = 3)
 	private String description;
     
+    @ManyToOne
+    private User masterUser;
+    
     @ManyToMany(mappedBy = "mapStudys")
 	private Set<User> members = new HashSet<>();
+//FIXME	    
+//  @OneToMany(mappedBy = "mapStudy", cascade = CascadeType.ALL)
+//	private Collection<UsersMapStudys> usersAnsMapStudys;
     
     @OneToMany(mappedBy="mapStudy")
 	private Set<Article> articles = new HashSet<>();
@@ -120,6 +126,11 @@ public class MapStudy implements Serializable{
 		user.getMapStudys().add(this);
 	}
 	
+	public void removeUser(User user) {
+		getMembers().remove(user);
+		user.getMapStudys().remove(this);
+	}
+	
 	public void addArticle(Article article) {
 		getArticles().add(article);
 		article.setMapStudy(this);
@@ -189,11 +200,40 @@ public class MapStudy implements Serializable{
 		}
 		return true;
 	}
+	
+	/**
+	 * @return the masterUser
+	 */
+	public User getMasterUser() {
+		return masterUser;
+	}
+
+	/**
+	 * @param masterUser the masterUser to set
+	 */
+	public void setMasterUser(User masterUser) {
+		this.masterUser = masterUser;
+	}
 
 	@Override
 	public String toString() {
 		return "MapStudy [id=" + id + ", title=" + title + 
 			", description=" + description + "]";
 	}
+	
+//	/**
+//	 * @return the usersAnsMapStudys
+//	 */
+//	public Collection<UsersMapStudys> getUsersAnsMapStudys() {
+//		return usersAnsMapStudys;
+//	}
+//
+//	/**
+//	 * @param usersAnsMapStudys the usersAnsMapStudys to set
+//	 */
+//	public void setUsersAnsMapStudys(Collection<UsersMapStudys> usersAnsMapStudys) {
+//		this.usersAnsMapStudys = usersAnsMapStudys;
+//	}
+
 	
 }

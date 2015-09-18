@@ -15,8 +15,7 @@
 	<link href="<c:url value="/css/musicjungle.css"/>" rel="stylesheet" type="text/css"/>
 	
 	<script type="text/javascript" src="<c:url value='/js/jquery.js'/>"></script>
-	<script type="text/javascript" src="<c:url value='/bootstrap/js/bootstrap.min.js'/>"></script>	
-	
+	<script type="text/javascript" src="<c:url value='/bootstrap/js/bootstrap.min.js'/>"></script>		
     <!--[if lt IE 7]>
 	    <script src="http://ie7-js.googlecode.com/svn/version/2.0(beta3)/IE7.js" 
 	    	type="text/javascript"></script>
@@ -35,7 +34,7 @@
 		<div class="navbar-inner">
 			<div class="collapse navbar-collapse navbar-ex1-collapse">
 				<ul class="nav navbar-nav">
-					<li class="active"><a href="${path}"></i> Home</a></li>
+					<li class="active"><a href="${path}"> Home</a></li>
 					<c:if test="${not empty userInfo.user}">
 						<li>
 							<a href="${linkTo[MapStudyController].list}"> 

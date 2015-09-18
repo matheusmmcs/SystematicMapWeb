@@ -1,7 +1,5 @@
-<%@ taglib uri="http://www.opensymphony.com/sitemesh/decorator"
-	prefix="decorator"%>
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.opensymphony.com/sitemesh/decorator" prefix="decorator"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
@@ -38,6 +36,10 @@
 
     <!-- DataTables Responsive CSS -->
     <link href="<c:url value="/vendor/datatables/css/dataTables.responsive.css" />" rel="stylesheet">
+    
+    <!-- Autocomplete -->
+    <link href="<c:url value="/vendor/chosen/chosen.min.css" />" rel="stylesheet">
+    <link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css" rel="stylesheet" />
 
 	<link href="<c:url value="/css/bootstrap-fileupload.min.css"/>" rel="stylesheet" type="text/css"/>
 	<link href="<c:url value="/css/systematicmap.css" />" rel="stylesheet">
@@ -53,7 +55,9 @@
     
     <!-- jQuery -->
     <script src="<c:url value="/vendor/jquery/jquery.min.js" />"></script>
-
+    <!-- jQuery Validate-->
+    <script src="<c:url value="/vendor/jquery/jquery.validate.min.js" />"></script>
+    
     <!-- Bootstrap Core JavaScript -->
     <script src="<c:url value="/vendor/bootstrap/js/bootstrap.min.js" />"></script>
     <script type="text/javascript" src="<c:url value="/js/bootstrap-fileupload.min.js"/>"></script>
@@ -126,17 +130,39 @@
         </nav>
         
         <div id="page-wrapper">
-        	
-        	<c:if test="${not empty errors}">
+
+						<c:if test="${not empty errors}">
 				<div class="alert alert-danger">
 					<button type="button" class="close" data-dismiss="alert">&times;</button>
 					<c:forEach items="${errors}" var="error">
-						<b><fmt:message key="${error.category}"/></b> - <fmt:message key="${error.message}"/> <br/>
+						<b><fmt:message key="${error.category}" /></b> - <fmt:message
+							key="${error.message}" />
+						<br />
 					</c:forEach>
 				</div>
 			</c:if>
-			
-        	<decorator:body/>
+
+			<c:if test="${not empty messages.info}">
+				<div class="alert alert-info">
+					<button type="button" class="close" data-dismiss="alert">&times;</button>
+					<c:forEach items="${messages.info}" var="info">
+						<fmt:message key="${info.message}" /><br />
+					</c:forEach>
+				</div>
+			</c:if>
+
+			<c:if test="${not empty messages.warnings}">
+				<div class="alert alert-warning">
+					<button type="button" class="close" data-dismiss="alert">&times;</button>
+					<c:forEach items="${messages.warnings}" var="warning">
+						<b><fmt:message key="${warning.category}" /></b> - <fmt:message
+							key="${warning.message}" />
+						<br />
+					</c:forEach>
+				</div>
+			</c:if>
+
+			<decorator:body/>
         </div>
         <!-- /#page-wrapper -->
 
@@ -145,6 +171,8 @@
 
     <!-- Metis Menu Plugin JavaScript -->
     <script src="<c:url value="/vendor/metisMenu/metisMenu.min.js" />"></script>
+    <script src="<c:url value="/vendor/chosen/chosen.jquery.min.js" />"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js"></script>
 
     <!-- Morris Charts JavaScript -->
 <%--     <script src="<c:url value="/vendor/raphael/raphael-min.js" />"></script> --%>
@@ -156,11 +184,34 @@
     
     <script>
 		$(document).ready(function() {
+			//tabela personalizada
 		    $('.personalized-table').dataTable( {
 		        "scrollY":        "300px",
 		        "scrollCollapse": true,
 		        "paging":         false
-		    } );
+		    });
+		    $('.personalized-table-simple').dataTable();
+
+		    //autocomplete
+		    $('.chosen-select').chosen({
+		    	allow_single_deselect:true,
+		    	search_contains:true,
+		    	no_results_text:'<fmt:message key="${autocomplete.nothing}"/>'
+			});
+
+		    function formatState (state) {
+		    	  if (!state.id) { return state.text; }
+		    	  var $state = $(
+		    	    '<span class="select2-name">' + state.text + '<i class="select2-email">' + $(state.element).data('email') + '</i></span>'
+		    	  );
+		    	  
+		    	  console.log(state);
+		    	  return $state;
+		   	};
+		    $('.select2').select2({
+		    	 allowClear: true,
+		    	 templateResult: formatState
+			});
 		});
 	</script>
 </body>

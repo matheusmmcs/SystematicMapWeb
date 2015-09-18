@@ -23,6 +23,7 @@ import org.jbibtex.Key;
 import org.jbibtex.ParseException;
 
 import br.com.caelum.vraptor.Controller;
+import br.com.caelum.vraptor.Delete;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
@@ -101,33 +102,33 @@ public class MapStudyController {
 	
 	@Get("/maps")
 	public void list() {
-		result.include("users", this.userDao.findAll());
+//		result.include("users", this.userDao.findAll());
 	}
 
-
 	@Post("/maps")
-	public void add(final @NotNull @Valid MapStudy mapstudy, List<Integer> members) {
+//	public void add(final @NotNull @Valid MapStudy mapstudy, List<Integer> members) {
+	public void add(final @NotNull @Valid MapStudy mapstudy) {
 		validator.onErrorForwardTo(this).list();
-		
-		
 		
 		User user = userInfo.getUser();
 		userDao.refresh(user);
 		user.add(mapstudy);
 		mapstudy.addUser(user);
+		mapstudy.setMasterUser(user);
 		
-		if(members != null){
-			for(Integer id : members){
-				if(id.longValue() != user.getId()){
-					User member = userDao.find(id.longValue());
-					member.add(mapstudy);
-					mapstudy.addUser(member);
-				}
-			}
-		}
-		
+//		if(members != null){
+//			for(Integer id : members){
+//				if(id.longValue() != user.getId()){
+//					User member = userDao.find(id.longValue());
+//					member.add(mapstudy);
+//					mapstudy.addUser(member);
+//				}
+//			}
+//		}
+//		
 		mapStudyDao.add(mapstudy);
 		
+		result.include("notice", "Mapeamento criado com sucesso !");
 		result.redirectTo(this).list();
 	}
 
@@ -155,13 +156,56 @@ public class MapStudyController {
 	    result.include("mapStudyArentUsers", mapStudyArentUsers);
 	}
 	
+//	@Delete("/maps")
+	@Post("/maps/remove")
+	public void remove(Long id) {
+		validator.onErrorForwardTo(this).list();
+		System.out.println("Select "+id);
+		MapStudy mapStudy = mapStudyDao.find(id);
+		
+		
+//		Set<User> members = mapStudy.getMembers();
+//		
+//		for (User user : members) {
+//			user.getMapStudys().remove(mapStudy);
+//			userDao.refresh(user);
+//		}
+//		
+//		System.out.println("Total members "+ members.size());
+//		
+//		mapStudy.getMembers().clear();
+//		mapStudyDao.refresh(mapStudy);
+//		
+//		System.out.println("Total members "+ members.size());
+		
+		mapStudyDao.delete(mapStudyDao.update(mapStudy));		
+
+		result.redirectTo(this).list();
+	}
+	
 	@Post("/maps/addmember")
 	public void addmember(Long id, Long userId){
+		System.out.println("Entrou addmember");
 		validator.onErrorForwardTo(this).show(id);
 		
 		MapStudy mapStudy = mapStudyDao.find(id);
 		User user = userDao.find(userId);
 		mapStudy.addUser(user);
+		
+		mapStudyDao.update(mapStudy);
+		userDao.update(user);
+		
+		result.redirectTo(this).show(id);
+	}
+	//TODO
+	@Post("/maps/removemember")
+	public void removemember(Long id, Long userId){
+		validator.onErrorForwardTo(this).show(id);
+		
+		MapStudy mapStudy = mapStudyDao.find(id);
+		User user = userDao.find(userId);
+		
+		mapStudy.removeUser(user);
 		
 		mapStudyDao.update(mapStudy);
 		userDao.update(user);

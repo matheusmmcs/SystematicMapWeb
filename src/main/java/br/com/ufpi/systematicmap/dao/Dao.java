@@ -5,13 +5,13 @@ import java.util.List;
 
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import org.hibernate.Session;
-
-@RequestScoped
+//TODO
+@Dependent
 public abstract class Dao <T> {
 	
 	    private Class<T> entityClass;
@@ -52,6 +52,10 @@ public abstract class Dao <T> {
 	        Object ref = this.entityManager.getReference(getEntityClass(), id);
 	        this.entityManager.remove(ref);
 	    }
+	    
+	    public void delete(T t) {
+	        this.entityManager.remove(t);
+	    }
 	 
 	    public T update(T t) {
 	        return (T) this.entityManager.merge(t);
@@ -61,6 +65,7 @@ public abstract class Dao <T> {
 	        this.entityManager.persist(t);
 	    }
 	 
+	    // TODO CriteriaBuilder
 	    @SuppressWarnings("unchecked")
 		@TransactionAttribute(TransactionAttributeType.SUPPORTS)
 	    public List<T> findAll() {
