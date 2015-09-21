@@ -16,45 +16,136 @@ import javax.mail.internet.MimeMessage;
 
 @RequestScoped
 public class EmailUltils {
-	public static String SUBJECT;
-	public static String MENSSAGE;
-	public static String RECEIVER_EMAIL;
-	public static String RECEIVER_NAME;
-
-
-	public static void send() throws AddressException, MessagingException, IOException {
+	private String subject;
+	private String message;
+	private String receiver;
+	private Session session;
+	private Properties properties;
+	private MimeMessage mimeMessage;
+	
+	public EmailUltils(String subject, String menssage, String receiver) throws IOException{
+		this.subject = subject;
+		this.message = menssage;
+		this.receiver = receiver;
 		// create e read values default 
-		final Properties properties = new Properties(); 
-		InputStream in = EmailUltils.class.getResourceAsStream("/mail.properties");  
-		properties.load(in); 
-		in.close(); 
+				properties = new Properties(); 
+				InputStream in = EmailUltils.class.getResourceAsStream("/mail.properties");  
+				properties.load(in); 
+				in.close(); 
 
-		Session session = Session.getInstance(properties,
-				new javax.mail.Authenticator() {
-					protected PasswordAuthentication getPasswordAuthentication() {
-						return new PasswordAuthentication(properties.getProperty("mail.user"), properties.getProperty("mail.password"));
-					}
-				});
+				session = Session.getInstance(properties,
+						new javax.mail.Authenticator() {
+							protected PasswordAuthentication getPasswordAuthentication() {
+								return new PasswordAuthentication(properties.getProperty("mail.user"), properties.getProperty("mail.password"));
+							}
+						});
+	}
+	
+	public EmailUltils() throws IOException {
+		this.subject = "";
+		this.message = "";
+		this.receiver = "";
+		// create e read values default 
+				properties = new Properties(); 
+				InputStream in = EmailUltils.class.getResourceAsStream("/mail.properties");  
+				properties.load(in); 
+				in.close(); 
 
-		final MimeMessage message = new MimeMessage(session);
-
-		message.setFrom(new InternetAddress(properties.getProperty("mail.user")));
+				session = Session.getInstance(properties,
+						new javax.mail.Authenticator() {
+							protected PasswordAuthentication getPasswordAuthentication() {
+								return new PasswordAuthentication(properties.getProperty("mail.user"), properties.getProperty("mail.password"));
+							}
+						});
 		
-		message.addRecipient(Message.RecipientType.TO, new InternetAddress(RECEIVER_EMAIL));
-		message.setContent(MENSSAGE, "text/html");
-		message.setSubject(SUBJECT);
+	}
+	
+	public void send(String subject, String message, String receiver) throws AddressException, MessagingException{	
+		setMessage(message);
+		setSubject(subject);
+		setReceiver(receiver);		
+		
+		mimeMessage = new MimeMessage(session);
+		mimeMessage.setFrom(new InternetAddress(properties.getProperty("mail.user")));
+		
+		mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(this.receiver));
+		mimeMessage.setContent(this.message, "text/html");
+		mimeMessage.setSubject(this.subject);
 //		message.setText(MENSSAGE);
 		
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				try {
-					Transport.send(message);
+					Transport.send(mimeMessage);
 				} catch (MessagingException e) {
 					e.printStackTrace();
 				}
 			}
 		}).start();
+	}
+	
+	public void send() throws AddressException, MessagingException{	
+		mimeMessage = new MimeMessage(session);
+		mimeMessage.setFrom(new InternetAddress(properties.getProperty("mail.user")));
+		
+		mimeMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(this.receiver));
+		mimeMessage.setContent(this.message, "text/html");
+		mimeMessage.setSubject(this.subject);
+//		message.setText(MENSSAGE);
+		
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					Transport.send(mimeMessage);
+				} catch (MessagingException e) {
+					e.printStackTrace();
+				}
+			}
+		}).start();
+	}
+
+	/**
+	 * @return the subject
+	 */
+	public String getSubject() {
+		return subject;
+	}
+
+	/**
+	 * @param subject the subject to set
+	 */
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
+
+	/**
+	 * @return the message
+	 */
+	public String getMessage() {
+		return message;
+	}
+
+	/**
+	 * @param menssage the message to set
+	 */
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	/**
+	 * @return the receiver
+	 */
+	public String getReceiver() {
+		return receiver;
+	}
+
+	/**
+	 * @param receiver the receiver to set
+	 */
+	public void setReceiver(String receiver) {
+		this.receiver = receiver;
 	}
 
 }

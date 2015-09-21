@@ -38,19 +38,69 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
     
+    <!-- jQuery -->
+    <script src="<c:url value="/vendor/jquery/jquery.min.js" />"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="<c:url value="/vendor/bootstrap/js/bootstrap.min.js" />"></script>
+    <!-- jQuery Validate-->
+    <script src="<c:url value="/vendor/jquery/jquery.validate.min.js" />"></script>
+    <script src="<c:url value="/vendor/jquery/localization/messages_pt_BR.min.js" />"></script>
+    
+    
+    <script type="text/javascript">
+		(function($){
+			$(document).ready(function(){
+				$.validator.addMethod("login", function(value, element) {
+					  return this.optional(element) || /^[a-zA-Z0-9_]+$/.test(value);
+				}, "Utilize somente letras, números e  _");
+				$.validator.setDefaults({
+				    errorClass: "control-label",
+				    onkeyup: function(element) { $(element).valid()},
+				    highlight: function(element) {
+				    	if(!$(element).closest('.form-group').is('.has-feedback')){
+				    		 $(element).closest('.form-group').addClass('has-feedback');
+					    }
+					    
+					    $(element).closest('.form-group').removeClass('has-success').addClass('has-error');
+					    var id = this.idOrName (element);
+					    var id2 = id + '-men';
+						id = id + '-icon';
+						$('#'+id.toString()).remove();	
+						$('#'+id2.toString()).remove();
+						 
+						$( element ).attr( "aria-describedby", id);
+					    $(element).after('<span class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="false" id = "'+id2+'"></span>').after('<span id="'+id+'" class="sr-only">(error)</span>');						 
+				    },
+				    unhighlight: function(element) {
+				    	if(!$(element).closest('.form-group').is('.has-feedback')){
+				    		 $(element).closest('.form-group').addClass('has-feedback');
+					    }
+					    
+						$(element).closest('.form-group').removeClass('has-error').addClass('has-success');
+						var id = this.idOrName (element);
+						var id2 = id + '-men';
+						id = id + '-icon';
+						$('#'+id.toString()).remove();	
+						$('#'+id2.toString()).remove();
+						$( element ).attr( "aria-describedby", id);
+				        $(element).after('<span class="glyphicon glyphicon-ok form-control-feedback" aria-hidden="false" id = "'+id2+'"></span>').after('<span id="'+id+'" class="sr-only">(success)</span>'); 
+				    },
+				    errorPlacement: function (error, element) {
+				        if (element.prop('type') === 'checkbox' || element.prop('type') === 'radio') {
+				            error.insertAfter(element.parent());
+				        } else {
+				            error.insertAfter(element);
+				        }
+				    }
+				});
+			});
+		})(jQuery);
+	</script>
 </head>
 <body>
 	<div class="container">
         <decorator:body/>
     </div>
-
-    <!-- jQuery -->
-    <script src="<c:url value="/vendor/jquery/jquery.min.js" />"></script>
-    <!-- jQuery Validate-->
-    <script src="<c:url value="/vendor/jquery/jquery.validate.min.js" />"></script>
-
-    <!-- Bootstrap Core JavaScript -->
-    <script src="<c:url value="/vendor/bootstrap/js/bootstrap.min.js" />"></script>
 
     <!-- Metis Menu Plugin JavaScript -->
     <script src="<c:url value="/vendor/metisMenu/metisMenu.min.js" />"></script>

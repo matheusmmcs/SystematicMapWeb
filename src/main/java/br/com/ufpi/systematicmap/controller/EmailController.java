@@ -26,16 +26,18 @@ public class EmailController {
 	private final UserDao userDao;
 	private final Result result;
 	private final Validator validator;
+	private final EmailUltils emailUtils;
 
 	protected EmailController() {
-		this(null, null, null);
+		this(null, null, null, null);
 	}
 
 	@Inject
-	public EmailController(UserDao userDao, Result result,Validator validator) {
+	public EmailController(UserDao userDao, Result result,Validator validator, EmailUltils emailUtils) {
 		this.userDao = userDao;
 		this.result = result;
 		this.validator = validator;
+		this.emailUtils = emailUtils;
 	}
 	
 	@Public
@@ -44,7 +46,6 @@ public class EmailController {
 	public void recoveryPassword(String email){
 		boolean sucess = false;
 		User user = userDao.findEmail(email);
-//		System.out.println("e-mail: " + email);
 		validator.check(user != null, new SimpleMessage("user.email", "invalid_email"));
 		validator.onErrorUsePageOf(HomeController.class).recovery();
 		
@@ -59,22 +60,16 @@ public class EmailController {
 		String linkRecovery = "http://localhost:8080/SystematicMap/recovery/";
 		linkRecovery = linkRecovery.concat(code);
 		
-		String url = "<a href=\""+linkRecovery+"\" target=\"_blank\">Clique aqui</a> para criar uma nova senha";
+		String url = "<a href=\""+linkRecovery+"\" target=\"_blank\">Clique aqui</a> para criar uma nova senha";		
 		
-//		System.out.println(linkRecovery);
-//		System.out.println(url);		
-		
+		String message = "<p>Ol&aacute; " + user.getName()+ ",</p>"
+				+ "<p>Seu pedido de altera&ccedil;&atilde;o de senha foi atendido com sucesso pelo sistema.</p>"
+				+ "<p>Clique no link a seguir para realizar a altera&ccedil;&atilde;o de sua senha.</p>"
+				+ "<p>"+ url +"</p>";
 		
 		//Send Email
 		try {
-			EmailUltils.RECEIVER_NAME = user.getName();
-			EmailUltils.RECEIVER_EMAIL = user.getEmail();
-			EmailUltils.MENSSAGE = "<p>Ol&aacute; " + user.getName()+ ",</p>"
-					+ "<p>Seu pedido de altera&ccedil;&atilde;o de senha foi atendido com sucesso pelo sistema.</p>"
-					+ "<p>Clique no link a seguir para realizar a altera&ccedil;&atilde;o de sua senha.</p>"
-					+ "<p>"+ url +"</p>";
-			EmailUltils.SUBJECT = "[TheEND] - Solicitação de alteração de senha";
-			EmailUltils.send();
+			emailUtils.send("[TheEND] - Solicitação de alteração de senha", message, user.getEmail());
 			sucess = true;
 		} catch (Exception e) {
 			sucess = false;
@@ -84,15 +79,13 @@ public class EmailController {
 		validator.check(sucess, new SimpleMessage("user.email", "error_email"));
 		// if send mail fail, clear recovery code.
 		if (!sucess){
-			System.out.println("Erro !");
 			user.setRecoveryCode(null);
 			userDao.update(user);
 		}
 		
 		validator.onErrorUsePageOf(HomeController.class).recovery();
 		
-//		result.include("notice", "Um e-mail foi enviado para " + user.getEmail() );
-		validator.add(new SimpleMessage("user.email", "Um e-mail foi enviado para " + user.getEmail(), Severity.INFO));
+		result.include("notice", new SimpleMessage("user.email", "email.recovery.success"));
 		result.redirectTo(HomeController.class).recovery();
 	}
 	
@@ -102,7 +95,7 @@ public class EmailController {
 		final User user = userDao.findCodeRecovery(code);
 		
 		validator.check(user != null, new SimpleMessage("user.email", "invalid_code_recovery"));
-		validator.onErrorUsePageOf(HomeController.class).recovery();
+		validator.onErrorUsePageOf(HomeController.class).login();
 		
 		result.include("code", code);
 	}
@@ -118,7 +111,7 @@ public class EmailController {
 		user.setRecoveryCode(null);
 		userDao.update(user);		
 		
-		result.include("notice", "Senha alterada com sucesso !");
+		result.include("notice", "password.changed.sucess");
 		result.redirectTo(HomeController.class).login();	
 	}
 }

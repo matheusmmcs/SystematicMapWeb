@@ -3,6 +3,26 @@
 
 <meta name="decorator" content="login"/>
 
+<script type="text/javascript">
+	(function($){
+		$(document).ready(function(){
+			$("#formRecoveryPassword").validate({ 
+                 rules: {
+                	 'password' : {
+                          required : true,
+                          minlength : 6
+                      },
+                      'repassword' : {
+                    	  required : true,
+                          minlength : 6,
+                          equalTo: '#password'
+                      }
+                  }
+			});
+		});
+	})(jQuery);
+</script>
+
 <div class="row">
 	<div class="col-md-4 col-md-offset-4">
 
@@ -26,7 +46,7 @@
 		        <h3 class="panel-title"><fmt:message key="recovery.password"/></h3>
 		    </div>
 		    <div class="panel-body">
-		        <form action="${linkTo[EmailController].newPassword}" method="post" class="form-horizontal">
+		        <form action="${linkTo[EmailController].newPassword}" method="post" class="form-horizontal" id="formRecoveryPassword">
 		            <fieldset>
 						<div class="form-group">
 							<label class="sr-only" for="password"><fmt:message key="recovery.chance.password"/></label>
@@ -45,7 +65,9 @@
 						</button>
 		              </fieldset>
 		          </form>
+		          <a id="return" class="btn btn-lg btn-link btn-block" href="<c:url value="/"/>"><fmt:message key="button.back"/></a>
 		      </div>
 		  </div>
+<%--     <a id="return" class="btn btn-lg btn-default" href="<c:url value="/"/>" style="text-align: left;"><fmt:message key="button.back"/></a> --%>
     </div>
 </div>

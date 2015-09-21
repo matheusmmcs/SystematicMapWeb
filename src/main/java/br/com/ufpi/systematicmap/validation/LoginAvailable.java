@@ -17,7 +17,7 @@ import br.com.ufpi.systematicmap.validation.impl.LoginAvailableValidator;
 @Documented
 public @interface LoginAvailable {
 
-    String message() default "{login_already_exists}";
+    String message() default "login_already_exists";
 
     Class<?>[] groups() default {};
 

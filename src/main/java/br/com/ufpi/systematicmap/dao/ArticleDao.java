@@ -29,7 +29,7 @@ public class ArticleDao extends Dao<Article> {
 	public ArticleDao(EntityManager entityManager) {
 		super(entityManager);
 	}
-	
+
 	public List<Article> getArticles(MapStudy mapStudy){
 		List<Article> articles = entityManager
 			.createQuery("select a from Article a where a.mapStudy = :mapStudy order by a.title asc", Article.class)

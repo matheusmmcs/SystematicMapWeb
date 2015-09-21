@@ -81,23 +81,24 @@ public class UserDao extends Dao<User> {
 		return users;
 	}
 	
-	public User findEmail(String mail){
-		TypedQuery<User> query = entityManager.createQuery("select u from User u where u.email = :mail", User.class);
-		query.setParameter("mail", mail);
-		
-		List<User> listUser = query.getResultList();
-		
-		if (listUser.isEmpty())
+	public User findEmail(String email){
+		try {
+			return entityManager.createQuery("select u from User u where u.email = :email", User.class)
+					.setParameter("email", email)
+					.getSingleResult();
+		} catch (NoResultException e) {
 			return null;
-		else
-			return listUser.get(0);
+		}
 	}
 	
 	public User findCodeRecovery(String code){
-		User user = entityManager.createQuery("select u from User u where u.recoveryCode = :recoverycode", User.class)
+		try {
+			return entityManager.createQuery("select u from User u where u.recoveryCode = :recoverycode", User.class)
 					.setParameter("recoverycode", code)
 					.getSingleResult();
-		return user;
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 	
 	public void clearAllCodeRecovery(){

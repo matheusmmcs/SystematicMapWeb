@@ -3,43 +3,39 @@
 
 <meta name="decorator" content="login"/>
 
+<script type="text/javascript">
+	(function($){
+		$(document).ready(function(){
+			$("#formSendEmail").validate({ 
+                 rules: {
+                	 'email' : {
+                         required: true,
+                         email: true,
+                      }
+                  }
+			});
+		});
+	})(jQuery);
+</script>
+
 <div class="row">
 	<div class="col-md-4 col-md-offset-4">
 
-					<c:if test="${not empty errors}">
-				<div class="alert alert-danger">
-					<button type="button" class="close" data-dismiss="alert">&times;</button>
-					<c:forEach items="${errors}" var="error">
-						<b><fmt:message key="${error.category}" /></b> - <fmt:message
-							key="${error.message}" />
-						<br />
-					</c:forEach>
-				</div>
-			</c:if>
-
-			<c:if test="${not empty messages.info}">
-				<div class="alert alert-info">
-					<button type="button" class="close" data-dismiss="alert">&times;</button>
-					<c:forEach items="${messages.info}" var="info">
-						<b><fmt:message key="${info.category}" /></b> - <fmt:message
-							key="${info.message}" />
-						<br />
-					</c:forEach>
-				</div>
-			</c:if>
-
-			<c:if test="${not empty messages.warnings}">
-				<div class="alert alert-warning">
-					<button type="button" class="close" data-dismiss="alert">&times;</button>
-					<c:forEach items="${messages.warnings}" var="warning">
-						<b><fmt:message key="${warning.category}" /></b> - <fmt:message
-							key="${warning.message}" />
-						<br />
-					</c:forEach>
-				</div>
-			</c:if>
-
-		
+	<c:if test="${not empty errors}">
+		<div class="alert alert-danger">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			<c:forEach items="${errors}" var="error">
+				<b><fmt:message key="${error.category}"/></b> - ${error.message} <br/>
+			</c:forEach>
+		</div>
+	</c:if>
+	
+	<c:if test="${not empty notice}">
+		<div class="alert alert-success"> 
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			<fmt:message key="${notice}"/> 
+		</div>
+	</c:if>	
 		
 <div class="login-panel panel panel-default">
 		    <div class="panel-heading">
@@ -47,7 +43,7 @@
 		    </div>
 		    <div class="panel-body">
 <%-- 		     --%>
-		        <form action="${linkTo[EmailController].recoveryPassword}" method="post" class="form-horizontal" autocomplete="off">
+		        <form action="${linkTo[EmailController].recoveryPassword}" method="post" class="form-horizontal" autocomplete="off" id="formSendEmail">
 		            <fieldset>
 						<div class="form-group">
 							<label class="sr-only" for="email"><fmt:message key="user.email"/></label>
@@ -60,7 +56,9 @@
 						</button>
 		              </fieldset>
 		          </form>
+		          <a id="return" class="btn btn-lg btn-link btn-block" href="<c:url value="/"/>"><fmt:message key="button.back"/></a>
 		      </div>
 		  </div>
+<%--    <a id="return" class="btn btn-lg btn-default" href="<c:url value="/"/>" style="text-align: left;"><fmt:message key="button.back"/></a> --%>
     </div>
 </div>

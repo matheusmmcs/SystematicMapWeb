@@ -8,36 +8,21 @@
 <div class="row">
 	<div class="col-md-4 col-md-offset-4">
 
-			<c:if test="${not empty errors}">
-				<div class="alert alert-danger">
-					<button type="button" class="close" data-dismiss="alert">&times;</button>
-					<c:forEach items="${errors}" var="error">
-						<b><fmt:message key="${error.category}" /></b> - <fmt:message
-							key="${error.message}" />
-						<br />
-					</c:forEach>
-				</div>
-			</c:if>
-
-			<c:if test="${not empty messages.info}">
-				<div class="alert alert-info">
-					<button type="button" class="close" data-dismiss="alert">&times;</button>
-					<c:forEach items="${messages.info}" var="info">
-						<fmt:message key="${info.message}" /><br />
-					</c:forEach>
-				</div>
-			</c:if>
-
-			<c:if test="${not empty messages.warnings}">
-				<div class="alert alert-warning">
-					<button type="button" class="close" data-dismiss="alert">&times;</button>
-					<c:forEach items="${messages.warnings}" var="warning">
-						<b><fmt:message key="${warning.category}" /></b> - <fmt:message
-							key="${warning.message}" />
-						<br />
-					</c:forEach>
-				</div>
-			</c:if>
+	<c:if test="${not empty errors}">
+		<div class="alert alert-danger">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			<c:forEach items="${errors}" var="error">
+				<b><fmt:message key="${error.category}"/></b> - ${error.message} <br/>
+			</c:forEach>
+		</div>
+	</c:if>
+	
+	<c:if test="${not empty notice}">
+		<div class="alert alert-success"> 
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			<fmt:message key="${notice}"/> 
+		</div>
+	</c:if>
 
 		<div class="login-panel panel panel-default">
 			<div class="panel-heading">

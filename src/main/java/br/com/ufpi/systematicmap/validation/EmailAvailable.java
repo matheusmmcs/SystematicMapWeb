@@ -17,7 +17,7 @@ import br.com.ufpi.systematicmap.validation.impl.EmailAvailableValidator;
 @Documented
 public @interface EmailAvailable {
 
-    String message() default "{email_already_exists}";
+    String message() default "email_already_exists";
 
     Class<?>[] groups() default {};
 

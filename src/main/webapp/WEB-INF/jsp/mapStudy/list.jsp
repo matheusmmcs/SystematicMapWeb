@@ -1,6 +1,25 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+<script type="text/javascript">
+	(function($){
+		$(document).ready(function(){
+			$("#formAddMapStudy").validate({ 
+                 rules: {
+                	 'mapstudy.title': { 
+                    	 required : true,
+                    	 minlength : 3
+                     },
+                     'mapstudy.description': {
+                         required: true,
+                         minlength : 3
+                     }
+                  }
+			});
+		});
+	})(jQuery);
+</script>
+
 <c:if test="${not empty userInfo.user.mapStudys}">
 <h3 class="color-primary"><fmt:message key="mapstudy.my"/></h3>
 
@@ -29,18 +48,14 @@
 
 <div class="well">
 	<div class="row">
-		<form action="${linkTo[MapStudyController].add}" method="post">
+		<form action="${linkTo[MapStudyController].add}" method="post" id="formAddMapStudy">
 			<div class="form-group">
-				<label for="title" class="control-label"><fmt:message key="mapstudy.title"/></label>
-				<div class="">
-					<input type="text" class="form-control" name="mapstudy.title" value="${mapstudy.title}"/>
-				</div>	
+				<label for="title" class=""><fmt:message key="mapstudy.title"/></label>
+				<input type="text" class="form-control" name="mapstudy.title" id="title" value="${mapstudy.title}"/>
 			</div>
 			<div class="form-group">
-				<label for="description" class="control-label"><fmt:message key="mapstudy.description"/></label>
-				<div class="">
-					<input type="text" class="form-control" name="mapstudy.description" value="${mapstudy.description}"/>
-				</div>	
+				<label for="description" class=""><fmt:message key="mapstudy.description"/></label>
+				<input type="text" class="form-control" name="mapstudy.description" id="description" value="${mapstudy.description}"/>
 			</div>
 			<div class="form-group pull-right">	
 				<button type="submit" class="btn btn-primary"><fmt:message key="mapstudy.create"/></button>
