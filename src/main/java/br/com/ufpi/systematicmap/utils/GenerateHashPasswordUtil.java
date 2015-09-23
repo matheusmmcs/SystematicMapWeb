@@ -1,7 +1,5 @@
 package br.com.ufpi.systematicmap.utils;
 
-import java.util.Random;
-
 import org.springframework.security.authentication.encoding.MessageDigestPasswordEncoder;
 
 public abstract class GenerateHashPasswordUtil {
