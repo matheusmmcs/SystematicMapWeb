@@ -73,7 +73,7 @@
 					  return this.optional(element) || /^[a-zA-Z0-9_]+$/.test(value);
 				}, "Utilize somente letras, números e  _");
 				$.validator.setDefaults({
-				    errorClass: "control-label",
+				    errorClass: "control-label control-label-block",
 				    onkeyup: function(element) { $(element).valid()},
 				    highlight: function(element) {
 				    	if(!$(element).closest('.form-group').is('.has-feedback')){
