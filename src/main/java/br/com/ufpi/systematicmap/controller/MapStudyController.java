@@ -23,7 +23,6 @@ import org.jbibtex.Key;
 import org.jbibtex.ParseException;
 
 import br.com.caelum.vraptor.Controller;
-import br.com.caelum.vraptor.Delete;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
@@ -49,9 +48,11 @@ import br.com.ufpi.systematicmap.model.ExclusionCriteria;
 import br.com.ufpi.systematicmap.model.InclusionCriteria;
 import br.com.ufpi.systematicmap.model.MapStudy;
 import br.com.ufpi.systematicmap.model.User;
+import br.com.ufpi.systematicmap.model.UsersMapStudys;
 import br.com.ufpi.systematicmap.model.enums.ArticleSourceEnum;
 import br.com.ufpi.systematicmap.model.enums.ClassificationEnum;
 import br.com.ufpi.systematicmap.model.enums.EvaluationStatusEnum;
+import br.com.ufpi.systematicmap.model.enums.Roles;
 import br.com.ufpi.systematicmap.model.vo.ArticleCompareVO;
 import br.com.ufpi.systematicmap.utils.BibtexToArticleUtils;
 import br.com.ufpi.systematicmap.utils.BibtexUtils;
@@ -102,33 +103,28 @@ public class MapStudyController {
 	
 	@Get("/maps")
 	public void list() {
-//		result.include("users", this.userDao.findAll());
+		result.include("mapStudys", mapStudyDao.mapStudys(userInfo.getUser()));
 	}
 
 	@Post("/maps")
-//	public void add(final @NotNull @Valid MapStudy mapstudy, List<Integer> members) {
 	public void add(final @NotNull @Valid MapStudy mapstudy) {
 		validator.onErrorForwardTo(this).list();
 		
 		User user = userInfo.getUser();
 		userDao.refresh(user);
-		user.add(mapstudy);
-		mapstudy.addUser(user);
-		mapstudy.setMasterUser(user);
 		
-//		if(members != null){
-//			for(Integer id : members){
-//				if(id.longValue() != user.getId()){
-//					User member = userDao.find(id.longValue());
-//					member.add(mapstudy);
-//					mapstudy.addUser(member);
-//				}
-//			}
-//		}
-//		
+		//TODO Em fase de teste precisa ser testando ainda.
+		UsersMapStudys usersMapStudys = new UsersMapStudys();
+		usersMapStudys.setUser(user);
+		usersMapStudys.setMapStudy(mapstudy);
+		usersMapStudys.setRole(Roles.CREATOR);
+		mapstudy.getUsersMapStudys().add(usersMapStudys);
+		//end test
+		
 		mapStudyDao.add(mapstudy);
+		userDao.update(user);
 		
-		result.include("notice", "Mapeamento criado com sucesso !");
+		result.include("notice", "mapstudy.add.sucess");
 		result.redirectTo(this).list();
 	}
 
@@ -155,28 +151,13 @@ public class MapStudyController {
 	    result.include("mapStudyUsers", mapStudyUsers);
 	    result.include("mapStudyArentUsers", mapStudyArentUsers);
 	}
-	
-//	@Delete("/maps")
+
+	//TODO Não está funcionando
 	@Post("/maps/remove")
 	public void remove(Long id) {
 		validator.onErrorForwardTo(this).list();
 		System.out.println("Select "+id);
 		MapStudy mapStudy = mapStudyDao.find(id);
-		
-		
-//		Set<User> members = mapStudy.getMembers();
-//		
-//		for (User user : members) {
-//			user.getMapStudys().remove(mapStudy);
-//			userDao.refresh(user);
-//		}
-//		
-//		System.out.println("Total members "+ members.size());
-//		
-//		mapStudy.getMembers().clear();
-//		mapStudyDao.refresh(mapStudy);
-//		
-//		System.out.println("Total members "+ members.size());
 		
 		mapStudyDao.delete(mapStudyDao.update(mapStudy));		
 
@@ -185,7 +166,6 @@ public class MapStudyController {
 	
 	@Post("/maps/addmember")
 	public void addmember(Long id, Long userId){
-		System.out.println("Entrou addmember");
 		validator.onErrorForwardTo(this).show(id);
 		
 		MapStudy mapStudy = mapStudyDao.find(id);
@@ -195,9 +175,10 @@ public class MapStudyController {
 		mapStudyDao.update(mapStudy);
 		userDao.update(user);
 		
+		result.include("notice", "member.add.sucess");
 		result.redirectTo(this).show(id);
 	}
-	//TODO
+	//TODO Não está funcionando
 	@Post("/maps/removemember")
 	public void removemember(Long id, Long userId){
 		validator.onErrorForwardTo(this).show(id);
@@ -205,7 +186,7 @@ public class MapStudyController {
 		MapStudy mapStudy = mapStudyDao.find(id);
 		User user = userDao.find(userId);
 		
-		mapStudy.removeUser(user);
+//		mapStudy.removeUser(user);
 		
 		mapStudyDao.update(mapStudy);
 		userDao.update(user);
@@ -233,6 +214,7 @@ public class MapStudyController {
 		
 		mapStudyDao.update(mapStudy);
 		
+		result.include("notice", "articules.add.sucess");
 	    result.redirectTo(this).show(id);
 	}
 	
@@ -245,6 +227,7 @@ public class MapStudyController {
 		inclusionDao.insert(criteria);
 		mapStudyDao.update(mapStudy);
 		
+		result.include("notice", "inclusion.criteria.add.sucess");
 	    result.redirectTo(this).show(id);
 	}
 	
@@ -257,6 +240,7 @@ public class MapStudyController {
 		exclusionDao.insert(criteria);
 		mapStudyDao.update(mapStudy);
 		
+		result.include("notice", "exclusion.criteria.add.sucess");
 	    result.redirectTo(this).show(id);
 	}
 	
@@ -269,6 +253,7 @@ public class MapStudyController {
 		filter.filter();
 		
 		validator.onErrorForwardTo(this).show(id);
+		result.include("notice", "refine.articles.sucess");
 		result.redirectTo(this).show(id);
 	}
 	
@@ -617,7 +602,10 @@ public class MapStudyController {
 		validator.onErrorRedirectTo(this).list();
 		
 		List<Article> articles = articleDao.getArticlesToEvaluate(mapStudy);
-		ArrayList<User> members = new ArrayList<User>(mapStudy.getMembers());
+		//TODO
+//		ArrayList<User> members = new ArrayList<User>(mapStudy.getMembers());
+
+		List<User> members = userDao.mapStudyUsers(mapStudy);
 		Collections.sort(members, new Comparator<User>() {
 			@Override
 			public int compare(User u1, User u2){

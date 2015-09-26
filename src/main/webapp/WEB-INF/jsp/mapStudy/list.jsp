@@ -20,7 +20,7 @@
 	})(jQuery);
 </script>
 
-<c:if test="${not empty userInfo.user.mapStudys}">
+<c:if test="${not empty mapStudys}">
 <h3 class="color-primary"><fmt:message key="mapstudy.my"/></h3>
 
 <table class="table table-striped table-bordered table-hover personalized-table-simple">
@@ -31,7 +31,7 @@
 		</tr>
 	</thead>
 	<tbody>
-		<c:forEach var="map" items="${userInfo.user.mapStudys}" varStatus="s">
+		<c:forEach var="map" items="${mapStudys}" varStatus="s">
 			<tr>
 				<td><a href="${linkTo[MapStudyController].show(map.id)}">${map.title}</a></td>
 				<td>

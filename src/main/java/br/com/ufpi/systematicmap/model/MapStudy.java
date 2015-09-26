@@ -3,20 +3,21 @@ package br.com.ufpi.systematicmap.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
 import br.com.ufpi.systematicmap.dao.ArticleDao;
+import br.com.ufpi.systematicmap.model.enums.Roles;
 
 
 @Entity 
@@ -36,14 +37,11 @@ public class MapStudy implements Serializable{
     @Size(min = 3)
 	private String description;
     
-    @ManyToOne
-    private User masterUser;
+    private boolean remove;
     
-    @ManyToMany(mappedBy = "mapStudys")
-	private Set<User> members = new HashSet<>();
-//FIXME	    
-//  @OneToMany(mappedBy = "mapStudy", cascade = CascadeType.ALL)
-//	private Collection<UsersMapStudys> usersAnsMapStudys;
+    //FIXME	    
+    @OneToMany(mappedBy = "mapStudy", cascade = CascadeType.ALL)
+	private Set<UsersMapStudys> usersMapStudys = new HashSet<>();
     
     @OneToMany(mappedBy="mapStudy")
 	private Set<Article> articles = new HashSet<>();
@@ -81,14 +79,6 @@ public class MapStudy implements Serializable{
 		this.description = description;
 	}
 
-	public Set<User> getMembers() {
-		return members;
-	}
-
-	public void setMembers(Set<User> members) {
-		this.members = members;
-	}
-
 	public Set<Article> getArticles() {
 		return articles;
 	}
@@ -119,16 +109,6 @@ public class MapStudy implements Serializable{
 
 	public void setEvaluations(Set<Evaluation> evaluations) {
 		this.evaluations = evaluations;
-	}
-	
-	public void addUser(User user) {
-		getMembers().add(user);
-		user.getMapStudys().add(this);
-	}
-	
-	public void removeUser(User user) {
-		getMembers().remove(user);
-		user.getMapStudys().remove(this);
 	}
 	
 	public void addArticle(Article article) {
@@ -200,40 +180,46 @@ public class MapStudy implements Serializable{
 		}
 		return true;
 	}
-	
-	/**
-	 * @return the masterUser
-	 */
-	public User getMasterUser() {
-		return masterUser;
-	}
-
-	/**
-	 * @param masterUser the masterUser to set
-	 */
-	public void setMasterUser(User masterUser) {
-		this.masterUser = masterUser;
-	}
 
 	@Override
 	public String toString() {
 		return "MapStudy [id=" + id + ", title=" + title + 
 			", description=" + description + "]";
 	}
-	
-//	/**
-//	 * @return the usersAnsMapStudys
-//	 */
-//	public Collection<UsersMapStudys> getUsersAnsMapStudys() {
-//		return usersAnsMapStudys;
-//	}
-//
-//	/**
-//	 * @param usersAnsMapStudys the usersAnsMapStudys to set
-//	 */
-//	public void setUsersAnsMapStudys(Collection<UsersMapStudys> usersAnsMapStudys) {
-//		this.usersAnsMapStudys = usersAnsMapStudys;
-//	}
 
-	
+	/**
+	 * @return the remove
+	 */
+	public boolean isRemove() {
+		return remove;
+	}
+
+	/**
+	 * @param remove the remove to set
+	 */
+	public void setRemove(boolean remove) {
+		this.remove = remove;
+	}
+
+	/**
+	 * @return the usersMapStudys
+	 */
+	public Set<UsersMapStudys> getUsersMapStudys() {
+		return usersMapStudys;
+	}
+
+	/**
+	 * @param usersMapStudys the usersMapStudys to set
+	 */
+	public void setUsersMapStudys(Set<UsersMapStudys> usersMapStudys) {
+		this.usersMapStudys = usersMapStudys;
+	}
+
+	public void addUser(User user) {
+		UsersMapStudys usersMapStudys = new UsersMapStudys();
+		usersMapStudys.setUser(user);
+		usersMapStudys.setMapStudy(this);
+		usersMapStudys.setRole(Roles.PARTICIPANT);
+		getUsersMapStudys().add(usersMapStudys);
+	}
 }

@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import br.com.ufpi.systematicmap.model.MapStudy;
+import br.com.ufpi.systematicmap.model.User;
 
 @RequestScoped
 public class MapStudyDao extends Dao<MapStudy> {
@@ -36,6 +37,14 @@ public class MapStudyDao extends Dao<MapStudy> {
 				.setParameter("title", "%" + title+ "%")
 				.getResultList();
 		return musics;
+	}
+	
+	public List<MapStudy> mapStudys(User user) {
+		List<MapStudy> maps = entityManager
+				.createQuery("select m from MapStudy m left join m.usersMapStudys ums where ums.user = :user", MapStudy.class)
+					.setParameter("user", user)
+					.getResultList();
+		return maps;
 	}
 	
 	

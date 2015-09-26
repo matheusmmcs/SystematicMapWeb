@@ -4,14 +4,12 @@ import java.util.Random;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.validation.Valid;
 
 import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.validator.Severity;
 import br.com.caelum.vraptor.validator.SimpleMessage;
 import br.com.caelum.vraptor.validator.Validator;
 import br.com.ufpi.systematicmap.dao.UserDao;
@@ -45,6 +43,7 @@ public class EmailController {
 	@Path("/mail/recovery")
 	public void recoveryPassword(String email){
 		boolean sucess = false;
+		GenerateHashPasswordUtil generateHashPasswordUtil = new GenerateHashPasswordUtil();
 		User user = userDao.findEmail(email);
 		validator.check(user != null, new SimpleMessage("user.email", "invalid_email"));
 		validator.onErrorUsePageOf(HomeController.class).recovery();
@@ -52,7 +51,7 @@ public class EmailController {
 		Random random = new Random();
 		
 		// Gerar code de recuperação
-		String code = GenerateHashPasswordUtil.generateCodeRecovery(user.getLogin() + random.nextLong());
+		String code = generateHashPasswordUtil.generateCodeRecovery(user.getLogin() + random.nextLong());
 		
 		user.setRecoveryCode(code);
 		userDao.update(user);

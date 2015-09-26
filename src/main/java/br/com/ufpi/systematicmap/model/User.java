@@ -5,13 +5,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -46,13 +42,12 @@ public class User implements Serializable {
 	@NotNull(message = "required")
 	@Length(min = 3, max = 100)
 	private String name;
+	
+	private boolean remove;
 
-	@ManyToMany
-	@JoinTable(name="users_mapStudys", joinColumns={@JoinColumn(name="user_id")}, inverseJoinColumns={@JoinColumn(name="mapStudy_id")})
-	private Set<MapStudy> mapStudys = new HashSet<>();
-//FIXME	
-//	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-//	private Collection<UsersMapStudys> usersAnsMapStudys;
+	//FIXME	
+	@OneToMany(mappedBy = "user")//, cascade = CascadeType.ALL)
+	private Collection<UsersMapStudys> usersMapStudys = new HashSet<>();
 	
 	@OneToMany(mappedBy="user")
 	private Set<Evaluation> evaluations = new HashSet<>();
@@ -87,19 +82,6 @@ public class User implements Serializable {
 
 	public void setEvaluations(Set<Evaluation> evaluations) {
 		this.evaluations = evaluations;
-	}
-
-	public Set<MapStudy> getMapStudys() {
-		return mapStudys;
-	}
-
-	public void setMapStudys(Set<MapStudy> mapStudys) {
-		this.mapStudys = mapStudys;
-	}
-
-	public void add(MapStudy mapStudys) {
-		getMapStudys().add(mapStudys);
-		mapStudys.getMembers().add(this);
 	}
 
 	public Long getId() {
@@ -138,18 +120,31 @@ public class User implements Serializable {
 		this.recoveryCode = recoveryCode;
 	}
 	
-//	/**
-//	 * @return the usersAnsMapStudys
-//	 */
-//	public Collection<UsersMapStudys> getUsersAnsMapStudys() {
-//		return usersAnsMapStudys;
-//	}
-//
-//	/**
-//	 * @param usersAnsMapStudys the usersAnsMapStudys to set
-//	 */
-//	public void setUsersAnsMapStudys(Collection<UsersMapStudys> usersAnsMapStudys) {
-//		this.usersAnsMapStudys = usersAnsMapStudys;
-//	}
-	
+	/**
+	 * @return the remove
+	 */
+	public boolean isRemove() {
+		return remove;
+	}
+
+	/**
+	 * @param remove the remove to set
+	 */
+	public void setRemove(boolean remove) {
+		this.remove = remove;
+	}
+
+	/**
+	 * @return the usersMapStudys
+	 */
+	public Collection<UsersMapStudys> getUsersMapStudys() {
+		return usersMapStudys;
+	}
+
+	/**
+	 * @param usersMapStudys the usersMapStudys to set
+	 */
+	public void setUsersMapStudys(Collection<UsersMapStudys> usersMapStudys) {
+		this.usersMapStudys = usersMapStudys;
+	}	
 }

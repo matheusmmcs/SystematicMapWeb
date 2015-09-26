@@ -23,24 +23,14 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.validation.Valid;
 
-import com.sun.mail.handlers.message_rfc822;
-
 import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
-import br.com.caelum.vraptor.Put;
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.validator.Message;
-import br.com.caelum.vraptor.validator.Messages;
-import br.com.caelum.vraptor.validator.Severity;
-import br.com.caelum.vraptor.validator.SimpleMessage;
 import br.com.caelum.vraptor.validator.Validator;
-import br.com.ufpi.systematicmap.dao.MapStudyDao;
 import br.com.ufpi.systematicmap.dao.UserDao;
 import br.com.ufpi.systematicmap.interceptor.Public;
-import br.com.ufpi.systematicmap.interceptor.UserInfo;
-import br.com.ufpi.systematicmap.model.MapStudy;
 import br.com.ufpi.systematicmap.model.User;
 import br.com.ufpi.systematicmap.utils.GenerateHashPasswordUtil;
 import br.com.ufpi.systematicmap.validation.EmailAvailable;
@@ -56,24 +46,19 @@ public class UsersController {
 	private final Validator validator;
 	private final Result result;
 	private final UserDao userDao;
-	private final UserInfo userInfo;
-	private final MapStudyDao musicDao;
 
 	/**
 	 * @deprecated CDI eyes only
 	 */
 	protected UsersController() {
-		this(null, null, null, null, null);
+		this(null, null, null);
 	}
 
 	@Inject
-	public UsersController(UserDao dao, Result result, Validator validator, 
-			UserInfo userInfo, MapStudyDao musicDao) {
+	public UsersController(UserDao dao, Result result, Validator validator) {
 		this.userDao = dao;
 		this.result = result;
 		this.validator = validator;
-		this.userInfo = userInfo;
-		this.musicDao = musicDao;
 	}
 
 	@Get("/users")
@@ -86,15 +71,15 @@ public class UsersController {
 	@Public
 	public void add(@Valid @LoginAvailable @EmailAvailable User user) {
         validator.onErrorUsePageOf(HomeController.class).create();
-        
-        user.setPassword(GenerateHashPasswordUtil.generateHash(user.getPassword()));        
+        GenerateHashPasswordUtil generateHashPasswordUtil = new GenerateHashPasswordUtil();
+        user.setPassword(generateHashPasswordUtil.generateHash(user.getPassword()));        
         
 		userDao.insert(user);
 
 		// you can add objects to result even in redirects. Added objects will
 		// survive one more request when redirecting.
-//		result.include("notice", "User " + user.getName() + " successfully added");
-		validator.add(new SimpleMessage("create", "Usuario criado com sucesso !", Severity.INFO));
+		result.include("notice", user.getName() + "create.user.sucess");
+//		validator.add(new SimpleMessage("create", "Usuario criado com sucesso !", Severity.INFO));
 		result.redirectTo(HomeController.class).login();
 	}
 	

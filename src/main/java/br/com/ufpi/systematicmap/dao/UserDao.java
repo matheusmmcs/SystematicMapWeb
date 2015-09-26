@@ -6,10 +6,8 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.TypedQuery;
 import br.com.ufpi.systematicmap.model.MapStudy;
 import br.com.ufpi.systematicmap.model.User;
-import br.com.ufpi.systematicmap.utils.GenerateHashPasswordUtil;
 
 @RequestScoped
 public class UserDao extends Dao<User> {
@@ -30,11 +28,12 @@ public class UserDao extends Dao<User> {
 	}
 
 	public User find(String login, String password) {
+//		GenerateHashPasswordUtil generateHashPasswordUtil = new GenerateHashPasswordUtil();
 		try {
 			User user = entityManager
 				.createQuery("select u from User u where u.login = :login and u.password = :password", User.class)
 					.setParameter("login", login)
-					.setParameter("password", GenerateHashPasswordUtil.generateHash(password))
+					.setParameter("password", password)
 					.getSingleResult();
 			return user;
 		} catch (NoResultException e) {
@@ -60,7 +59,7 @@ public class UserDao extends Dao<User> {
 	
 	public List<User> mapStudyUsers(MapStudy mapStudy) {
 		List<User> users = entityManager
-				.createQuery("select distinct u from User u inner join u.mapStudys m where m = :mapStudy", User.class)
+				.createQuery("select u from User u left join u.usersMapStudys ums where ums.mapStudy = :mapStudy", User.class)
 					.setParameter("mapStudy", mapStudy)
 					.getResultList();
 		return users;
@@ -68,7 +67,7 @@ public class UserDao extends Dao<User> {
 	
 	public List<User> mapStudyArentUsers(MapStudy mapStudy) {
 		List<User> users = entityManager
-				.createQuery("select distinct u from User u where u.id not in (select distinct u2.id from User u2 inner join u2.mapStudys m where m = :mapStudy)", User.class)
+				.createQuery("select distinct u from User u where u.id not in (select distinct u.id from User u left join u.usersMapStudys ums where ums.mapStudy = :mapStudy)", User.class)
 					.setParameter("mapStudy", mapStudy)
 					.getResultList();
 		return users;

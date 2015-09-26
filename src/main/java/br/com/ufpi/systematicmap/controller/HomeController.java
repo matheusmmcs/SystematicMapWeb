@@ -6,15 +6,13 @@ import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.validator.Message;
-import br.com.caelum.vraptor.validator.Messages;
-import br.com.caelum.vraptor.validator.Severity;
 import br.com.caelum.vraptor.validator.SimpleMessage;
 import br.com.caelum.vraptor.validator.Validator;
 import br.com.ufpi.systematicmap.dao.UserDao;
 import br.com.ufpi.systematicmap.interceptor.Public;
 import br.com.ufpi.systematicmap.interceptor.UserInfo;
 import br.com.ufpi.systematicmap.model.User;
+import br.com.ufpi.systematicmap.utils.GenerateHashPasswordUtil;
 
 @Controller
 public class HomeController {
@@ -52,20 +50,14 @@ public class HomeController {
 	@Post
 	@Public
 	public void login(String login, String password) {
-		final User currentUser = dao.find(login, password);
+		GenerateHashPasswordUtil generateHashPasswordUtil = new GenerateHashPasswordUtil();
+		final User currentUser = dao.find(login, generateHashPasswordUtil.generateHash(password));
 		validator.check(currentUser != null, new SimpleMessage("login", "invalid_login_or_password"));
 		validator.onErrorUsePageOf(this).login();
 
 		userInfo.login(currentUser);
 		
-//		result.include("notice", currentUser.getName() + " login feito com sucesso !");
-		validator.add(new SimpleMessage("login",currentUser.getName() + " login feito com sucesso !", Severity.INFO));
-		validator.add(new SimpleMessage("login", "nome do cliente possui acentuação", Severity.WARN));
-//		validator.add(new SimpleMessage("login", "nome do cliente possui acentuação", Severity.ERROR));
-		Messages m = new Messages();
-		for (Message men : m.getAll()) {
-			System.out.println(men.getMessage());
-		}
+		result.include("notice", new SimpleMessage("user.login", "mapstudy.login.success"));
 		
 		result.redirectTo(MapStudyController.class).list();
 	}
