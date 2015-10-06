@@ -1,8 +1,9 @@
 package br.com.ufpi.systematicmap.model;
 
 import java.io.Serializable;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -25,29 +26,29 @@ public class User implements Serializable {
 	private Long id;
 	
 	@NotNull(message = "required")
-	@Length(min = 3, max = 20)
+	@Length(min = 3, max = 20, message = "login_min_max")
 	@Pattern(regexp = "[a-zA-Z0-9_]+", message = "invalid_login")
 	private String login;
 
 	@NotNull(message = "required")
-	@Length(min = 6)
+	@Length(min = 6, message = "password_min")
 	private String password;
 	
 	private String recoveryCode;
 	
 	@NotNull(message = "required")
-	@Email(message = "invalid_mail")
+	@Email(message = "invalid_email")
 	private String email;
 
 	@NotNull(message = "required")
 	@Length(min = 3, max = 100)
 	private String name;
 	
-	private boolean remove;
+	private boolean removed;
 
 	//FIXME	
 	@OneToMany(mappedBy = "user")//, cascade = CascadeType.ALL)
-	private Collection<UsersMapStudys> usersMapStudys = new HashSet<>();
+	private Set<UsersMapStudys> usersMapStudys = new HashSet<>();
 	
 	@OneToMany(mappedBy="user")
 	private Set<Evaluation> evaluations = new HashSet<>();
@@ -119,32 +120,41 @@ public class User implements Serializable {
 	public void setRecoveryCode(String recoveryCode) {
 		this.recoveryCode = recoveryCode;
 	}
-	
+
 	/**
-	 * @return the remove
+	 * @return the removed
 	 */
-	public boolean isRemove() {
-		return remove;
+	public boolean isRemoved() {
+		return removed;
 	}
 
 	/**
-	 * @param remove the remove to set
+	 * @param removed the removed to set
 	 */
-	public void setRemove(boolean remove) {
-		this.remove = remove;
+	public void setRemoved(boolean removed) {
+		this.removed = removed;
 	}
 
 	/**
 	 * @return the usersMapStudys
 	 */
-	public Collection<UsersMapStudys> getUsersMapStudys() {
+	public Set<UsersMapStudys> getUsersMapStudys() {
 		return usersMapStudys;
 	}
 
 	/**
 	 * @param usersMapStudys the usersMapStudys to set
 	 */
-	public void setUsersMapStudys(Collection<UsersMapStudys> usersMapStudys) {
+	public void setUsersMapStudys(Set<UsersMapStudys> usersMapStudys) {
 		this.usersMapStudys = usersMapStudys;
 	}	
+	
+	//TODO mostrar para o matheus e verificar se é melhor que buscar no banco
+	public List<MapStudy> mapStudys(){
+		List<MapStudy> mapStudys = new ArrayList<>();
+		for (UsersMapStudys u : usersMapStudys) {
+			mapStudys.add(u.getMapStudy());
+		}
+		return mapStudys;
+	}
 }

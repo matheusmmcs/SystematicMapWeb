@@ -15,7 +15,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 @RequestScoped
-public class EmailUltils {
+public class MailUtils {
 	private String subject;
 	private String message;
 	private String receiver;
@@ -23,13 +23,13 @@ public class EmailUltils {
 	private Properties properties;
 	private MimeMessage mimeMessage;
 	
-	public EmailUltils(String subject, String menssage, String receiver) throws IOException{
+	public MailUtils(String subject, String menssage, String receiver) throws IOException{
 		this.subject = subject;
 		this.message = menssage;
 		this.receiver = receiver;
 		// create e read values default 
 				properties = new Properties(); 
-				InputStream in = EmailUltils.class.getResourceAsStream("/mail.properties");  
+				InputStream in = MailUtils.class.getResourceAsStream("/mail.properties");  
 				properties.load(in); 
 				in.close(); 
 
@@ -41,13 +41,13 @@ public class EmailUltils {
 						});
 	}
 	
-	public EmailUltils() throws IOException {
+	public MailUtils() throws IOException {
 		this.subject = "";
 		this.message = "";
 		this.receiver = "";
 		// create e read values default 
 				properties = new Properties(); 
-				InputStream in = EmailUltils.class.getResourceAsStream("/mail.properties");  
+				InputStream in = MailUtils.class.getResourceAsStream("/mail.properties");  
 				properties.load(in); 
 				in.close(); 
 

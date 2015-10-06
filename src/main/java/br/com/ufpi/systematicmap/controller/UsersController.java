@@ -28,11 +28,13 @@ import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Path;
 import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.validator.SimpleMessage;
 import br.com.caelum.vraptor.validator.Validator;
 import br.com.ufpi.systematicmap.dao.UserDao;
 import br.com.ufpi.systematicmap.interceptor.Public;
 import br.com.ufpi.systematicmap.model.User;
 import br.com.ufpi.systematicmap.utils.GenerateHashPasswordUtil;
+import br.com.ufpi.systematicmap.utils.MailUtils;
 import br.com.ufpi.systematicmap.validation.EmailAvailable;
 import br.com.ufpi.systematicmap.validation.LoginAvailable;
 
@@ -46,19 +48,21 @@ public class UsersController {
 	private final Validator validator;
 	private final Result result;
 	private final UserDao userDao;
+	private final MailUtils mailUtils;
 
 	/**
 	 * @deprecated CDI eyes only
 	 */
 	protected UsersController() {
-		this(null, null, null);
+		this(null, null, null, null);
 	}
 
 	@Inject
-	public UsersController(UserDao dao, Result result, Validator validator) {
+	public UsersController(UserDao dao, Result result, Validator validator, MailUtils mailUtils) {
 		this.userDao = dao;
 		this.result = result;
 		this.validator = validator;
+		this.mailUtils = mailUtils;
 	}
 
 	@Get("/users")
@@ -69,17 +73,38 @@ public class UsersController {
 	@Path("/users")
 	@Post
 	@Public
-	public void add(@Valid @LoginAvailable @EmailAvailable User user) {
+	public void add(@Valid @LoginAvailable @EmailAvailable User user, String repassword) {
         validator.onErrorUsePageOf(HomeController.class).create();
+        
+        validator.check(user.getPassword().equals(repassword), new SimpleMessage("user.password", "password_different"));
+        validator.onErrorUsePageOf(HomeController.class).create();
+        
         GenerateHashPasswordUtil generateHashPasswordUtil = new GenerateHashPasswordUtil();
         user.setPassword(generateHashPasswordUtil.generateHash(user.getPassword()));        
         
 		userDao.insert(user);
+		
+		String linkRecovery = "http://localhost:8080/SystematicMap/";
+		
+		String url = "<a href=\""+linkRecovery+"\" target=\"_blank\">Clique aqui</a> para acessar o site.";		
+		
+		String message = "<p>Ol&aacute; " + user.getName()+ ",</p>"
+				+ "<p>Sua conta foi criado com sucesso.</p>"
+				+ "<p>Seus dados cadastrais:</p>"
+				+ "<p>Login: "+user.getLogin()+"</p>"
+				+ "<p>Senha:"+repassword+"</p>"
+				+ "<p>"+ url +"</p>";
+		
+		//Send mail
+		try {
+			mailUtils.send("[TheEND] - Cadastro Realizado", message, user.getEmail());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		// you can add objects to result even in redirects. Added objects will
 		// survive one more request when redirecting.
-		result.include("notice", user.getName() + "create.user.sucess");
-//		validator.add(new SimpleMessage("create", "Usuario criado com sucesso !", Severity.INFO));
+		result.include("notice", new SimpleMessage("create", "create.user.sucess"));
 		result.redirectTo(HomeController.class).login();
 	}
 	

@@ -3,8 +3,9 @@ package br.com.ufpi.systematicmap.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -12,9 +13,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
-import org.hibernate.validator.constraints.NotEmpty;
 
 import br.com.ufpi.systematicmap.dao.ArticleDao;
 import br.com.ufpi.systematicmap.model.enums.Roles;
@@ -29,17 +29,16 @@ public class MapStudy implements Serializable{
 	@GeneratedValue
 	private Long id;
 
-	@NotEmpty
-	@Size(min = 3)
+	@NotNull(message = "required")
+	@Size(min = 3, message="mapstudy.min.title")
 	private String title;
 
-    @NotEmpty
-    @Size(min = 3)
+	@NotNull(message = "required")
+    @Size(min = 3, message="mapstudy.min.description")
 	private String description;
     
-    private boolean remove;
-    
-    //FIXME	    
+    private boolean removed;
+        
     @OneToMany(mappedBy = "mapStudy", cascade = CascadeType.ALL)
 	private Set<UsersMapStudys> usersMapStudys = new HashSet<>();
     
@@ -186,19 +185,20 @@ public class MapStudy implements Serializable{
 		return "MapStudy [id=" + id + ", title=" + title + 
 			", description=" + description + "]";
 	}
+	
 
 	/**
-	 * @return the remove
+	 * @return the removed
 	 */
-	public boolean isRemove() {
-		return remove;
+	public boolean isRemoved() {
+		return removed;
 	}
 
 	/**
-	 * @param remove the remove to set
+	 * @param removed the removed to set
 	 */
-	public void setRemove(boolean remove) {
-		this.remove = remove;
+	public void setRemoved(boolean removed) {
+		this.removed = removed;
 	}
 
 	/**
@@ -215,11 +215,51 @@ public class MapStudy implements Serializable{
 		this.usersMapStudys = usersMapStudys;
 	}
 
-	public void addUser(User user) {
+	public void addParticipant(User user) {
 		UsersMapStudys usersMapStudys = new UsersMapStudys();
 		usersMapStudys.setUser(user);
 		usersMapStudys.setMapStudy(this);
 		usersMapStudys.setRole(Roles.PARTICIPANT);
 		getUsersMapStudys().add(usersMapStudys);
+	}
+	
+	public void removeParticipant(User user) {
+		for (UsersMapStudys u : usersMapStudys) {
+			if (u.getUser().equals(user)){
+				u.setRemoved(true);
+			}
+		}
+	}
+	
+	public void addCreator(User user) {
+		UsersMapStudys usersMapStudys = new UsersMapStudys();
+		usersMapStudys.setUser(user);
+		usersMapStudys.setMapStudy(this);
+		usersMapStudys.setRole(Roles.CREATOR);
+		getUsersMapStudys().add(usersMapStudys);
+	}
+	
+	public boolean isCreator(User user) {
+		for (UsersMapStudys u : usersMapStudys) {
+			if (u.getUser().equals(user)){
+				if (u.getRole().equals(Roles.CREATOR)){
+					return true;
+				}else{
+					return false;
+				}
+			}
+		}	
+		
+		return false;
+	}
+	
+	//TODO mostrar para o matheus e verificar se é melhor que buscar no banco
+	public List<User> members(){
+		List<User> members = new ArrayList<>();
+		for (UsersMapStudys u : usersMapStudys) {
+			members.add(u.getUser());
+		}
+		
+		return members;
 	}
 }

@@ -15,29 +15,37 @@ import br.com.caelum.vraptor.validator.Validator;
 import br.com.ufpi.systematicmap.dao.UserDao;
 import br.com.ufpi.systematicmap.interceptor.Public;
 import br.com.ufpi.systematicmap.model.User;
-import br.com.ufpi.systematicmap.utils.EmailUltils;
+import br.com.ufpi.systematicmap.utils.MailUtils;
 import br.com.ufpi.systematicmap.utils.GenerateHashPasswordUtil;
 
+/**
+ * @author Gleison
+ *
+ */
 @Controller
 @Named
 public class EmailController {
 	private final UserDao userDao;
 	private final Result result;
 	private final Validator validator;
-	private final EmailUltils emailUtils;
+	private final MailUtils mailUtils;
 
 	protected EmailController() {
 		this(null, null, null, null);
 	}
 
 	@Inject
-	public EmailController(UserDao userDao, Result result,Validator validator, EmailUltils emailUtils) {
+	public EmailController(UserDao userDao, Result result,Validator validator, MailUtils mailUtils) {
 		this.userDao = userDao;
 		this.result = result;
 		this.validator = validator;
-		this.emailUtils = emailUtils;
+		this.mailUtils = mailUtils;
 	}
 	
+	
+	/**
+	 * @param email
+	 */
 	@Public
 	@Post
 	@Path("/mail/recovery")
@@ -45,7 +53,7 @@ public class EmailController {
 		boolean sucess = false;
 		GenerateHashPasswordUtil generateHashPasswordUtil = new GenerateHashPasswordUtil();
 		User user = userDao.findEmail(email);
-		validator.check(user != null, new SimpleMessage("user.email", "invalid_email"));
+		validator.check(user != null, new SimpleMessage("user.email", "user.email.invalid"));
 		validator.onErrorUsePageOf(HomeController.class).recovery();
 		
 		Random random = new Random();
@@ -66,9 +74,9 @@ public class EmailController {
 				+ "<p>Clique no link a seguir para realizar a altera&ccedil;&atilde;o de sua senha.</p>"
 				+ "<p>"+ url +"</p>";
 		
-		//Send Email
+		//Send mail
 		try {
-			emailUtils.send("[TheEND] - Solicitação de alteração de senha", message, user.getEmail());
+			mailUtils.send("[TheEND] - Solicitação de alteração de senha", message, user.getEmail());
 			sucess = true;
 		} catch (Exception e) {
 			sucess = false;
@@ -76,7 +84,7 @@ public class EmailController {
 		}
 		
 		validator.check(sucess, new SimpleMessage("user.email", "error_email"));
-		// if send mail fail, clear recovery code.
+		
 		if (!sucess){
 			user.setRecoveryCode(null);
 			userDao.update(user);
@@ -110,7 +118,9 @@ public class EmailController {
 		user.setRecoveryCode(null);
 		userDao.update(user);		
 		
-		result.include("notice", "password.changed.sucess");
+		result.include("notice", new SimpleMessage("user.password", "password.changed.sucess"));
 		result.redirectTo(HomeController.class).login();	
 	}
+	
+	
 }

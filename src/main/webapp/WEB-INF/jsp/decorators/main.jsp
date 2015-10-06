@@ -71,7 +71,7 @@
 			$(document).ready(function(){
 				$.validator.addMethod("login", function(value, element) {
 					  return this.optional(element) || /^[a-zA-Z0-9_]+$/.test(value);
-				}, "Utilize somente letras, números e  _");
+				}, '<fmt:message key="invalid_login" />');
 				$.validator.setDefaults({
 				    errorClass: "control-label control-label-block",
 				    onkeyup: function(element) { $(element).valid()},
@@ -180,24 +180,28 @@
             <!-- /.navbar-static-side -->
         </nav>
         
-        <div id="page-wrapper">
-
-	<c:if test="${not empty errors}">
-		<div class="alert alert-danger">
-			<button type="button" class="close" data-dismiss="alert">&times;</button>
-			<c:forEach items="${errors}" var="error">
-				<b><fmt:message key="${error.category}"/></b> - ${error.message} <br/>
-			</c:forEach>
-		</div>
-	</c:if>
+	        <div id="page-wrapper">
 	
-	<c:if test="${not empty notice}">
-		<div class="alert alert-success"> 
-			<button type="button" class="close" data-dismiss="alert">&times;</button>
-			<b><fmt:message key="${notice.category}"/></b> - ${notice.message} <br/>
-			 
-		</div>
-	</c:if>
+				<c:if test="${not empty errors}">
+					<div class="alert alert-danger">
+						<button type="button" class="close" data-dismiss="alert">&times;</button>
+						<c:forEach items="${errors}" var="error">
+							<b><fmt:message key="${error.category}" /></b> - <fmt:message
+								key="${error.message}" />
+							<br />
+						</c:forEach>
+					</div>
+				</c:if>
+				<c:if test="${not empty notice}">
+					<div class="alert alert-info">
+						<button type="button" class="close" data-dismiss="alert">&times;</button>
+						<%-- <c:forEach items="${notices}" var="notice"> --%>
+						<b><fmt:message key="${notice.category}" /></b> - <fmt:message
+							key="${notice.message}" />
+						<br />
+						<%--</c:forEach> --%>
+					</div>
+				</c:if>
 
 			<decorator:body/>
         </div>

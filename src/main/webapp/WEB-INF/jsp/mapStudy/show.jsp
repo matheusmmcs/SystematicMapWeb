@@ -40,7 +40,6 @@
 				<p>
 			</div>
 		</div>
-		<!-- MUDAR FORMA DE ADD MEMBROS		 -->
 		<div class="panel panel-default">
 			<div class="panel-heading">
 				<b><fmt:message key="mapstudy.members" /></b>
@@ -55,12 +54,6 @@
 
 					<div class="form-group">
 						<div class="col-lg-9 padding-left-none">
-<%-- 							<select data-placeholder="<fmt:message key="mapstudy.members.choose" />" class="form-control chosen-select"  --%>
-<!-- 								name="userId" style="" tabindex="2"> -->
-<%--          						<c:forEach var="member" items="${mapStudyArentUsers}"> --%>
-<%-- 									<option value="${member.id}">${member.name} <span class="email">${member.email}</span></option> --%>
-<%-- 								</c:forEach> --%>
-<!-- 				            </select> -->
 							<select data-placeholder="<fmt:message key="mapstudy.members.choose" />" class="form-control select2" 
 								name="userId" tabindex="2">
          						<c:forEach var="member" items="${mapStudyArentUsers}">
@@ -68,12 +61,16 @@
 								</c:forEach>
 				            </select>
 						</div>
-						<button type="submit" id="submit"
-							class="btn btn-large btn-primary col-lg-3 float-right">
+						<button type="submit" id="submit" class="btn btn-large btn-primary col-lg-3 float-right">
 							<fmt:message key="add" />
 						</button>
 						<div class="clear-both"></div>
 					</div>
+					<div class="checkbox">
+							<label>
+	      						<input type="checkbox" name="notify"> <fmt:message key="notify.member" />
+	    					</label>
+	    				</div>
 				</form>
 
 				
@@ -83,8 +80,9 @@
 							<tr>
 								<th>#</th>
 								<th><fmt:message key="mapstudy.members" /></th>
-								<th><fmt:message
-										key="mapstudy.evaluations.percentconclusion" /></th>
+								<th><fmt:message key="mapstudy.evaluations.percentconclusion" /></th>
+								<th><fmt:message key="remove" /></th>
+								
 							</tr>
 						</thead>
 						<tbody>
@@ -93,6 +91,14 @@
 									<td>${s.index + 1}</td>
 									<td>${member.key.name}</td>
 									<td>${member.value}</td>
+									<c:choose>
+									    <c:when test="${!map.isCreator(member.key)}">
+									        <td class="text-center"><a class="btn btn-danger" href="${linkTo[MapStudyController].removemember(map.id, member.key.id)}"><i class="glyphicon glyphicon-remove"></i></a></td>
+									    </c:when>
+									    <c:otherwise>
+									        <td></td>
+									    </c:otherwise>
+									</c:choose>
 								</tr>
 							</c:forEach>
 						</tbody>

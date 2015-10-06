@@ -14,6 +14,15 @@
                          required: true,
                          minlength : 3
                      }
+                  }, messages: {
+                	  'mapstudy.title': {
+                          required: '<fmt:message key="required" />',
+                          minlength: '<fmt:message key="mapstudy.min.title" />'
+                      },
+                      'mapstudy.description': {
+                          required: '<fmt:message key="required" />',
+                          minlength: '<fmt:message key="mapstudy.min.description" />'
+                      }
                   }
 			});
 		});

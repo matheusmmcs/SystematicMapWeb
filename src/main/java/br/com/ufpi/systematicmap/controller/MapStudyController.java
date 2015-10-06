@@ -48,15 +48,14 @@ import br.com.ufpi.systematicmap.model.ExclusionCriteria;
 import br.com.ufpi.systematicmap.model.InclusionCriteria;
 import br.com.ufpi.systematicmap.model.MapStudy;
 import br.com.ufpi.systematicmap.model.User;
-import br.com.ufpi.systematicmap.model.UsersMapStudys;
 import br.com.ufpi.systematicmap.model.enums.ArticleSourceEnum;
 import br.com.ufpi.systematicmap.model.enums.ClassificationEnum;
 import br.com.ufpi.systematicmap.model.enums.EvaluationStatusEnum;
-import br.com.ufpi.systematicmap.model.enums.Roles;
 import br.com.ufpi.systematicmap.model.vo.ArticleCompareVO;
 import br.com.ufpi.systematicmap.utils.BibtexToArticleUtils;
 import br.com.ufpi.systematicmap.utils.BibtexUtils;
 import br.com.ufpi.systematicmap.utils.FleissKappa;
+import br.com.ufpi.systematicmap.utils.MailUtils;
 
 @Controller
 public class MapStudyController {
@@ -72,12 +71,13 @@ public class MapStudyController {
 	private final InclusionCriteriaDao inclusionDao;
 	private final ExclusionCriteriaDao exclusionDao;
 	private final EvaluationDao evaluationDao;
+	private final MailUtils mailUtils;
 	
 	/**
 	 * @deprecated CDI eyes only
 	 */
 	protected MapStudyController() {
-		this(null, null, null, null, null, null, null, null, null, null);
+		this(null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 
@@ -87,7 +87,7 @@ public class MapStudyController {
 				UserDao userDao, ArticleDao articleDao, 
 				InclusionCriteriaDao inclusionDao,
 				ExclusionCriteriaDao exclusionDao,
-				EvaluationDao evaluationDao) {
+				EvaluationDao evaluationDao, MailUtils mailUtils) {
 		this.mapStudyDao = musicDao;
 		this.result = result;
         this.validator = validator;
@@ -98,6 +98,7 @@ public class MapStudyController {
 		this.inclusionDao = inclusionDao;
 		this.exclusionDao = exclusionDao;
 		this.evaluationDao = evaluationDao;
+		this.mailUtils = mailUtils;
 	}
 	
 	
@@ -112,28 +113,44 @@ public class MapStudyController {
 		
 		User user = userInfo.getUser();
 		userDao.refresh(user);
-		
-		//TODO Em fase de teste precisa ser testando ainda.
-		UsersMapStudys usersMapStudys = new UsersMapStudys();
-		usersMapStudys.setUser(user);
-		usersMapStudys.setMapStudy(mapstudy);
-		usersMapStudys.setRole(Roles.CREATOR);
-		mapstudy.getUsersMapStudys().add(usersMapStudys);
-		//end test
+		//set member creator map 
+		mapstudy.addCreator(user);
 		
 		mapStudyDao.add(mapstudy);
 		userDao.update(user);
 		
-		result.include("notice", "mapstudy.add.sucess");
+		result.include("notice", new SimpleMessage("mapstudy", "mapstudy.add.sucess"));
+		result.redirectTo(this).list();
+	}
+	
+	@Post("/maps/remove")
+	public void remove(Long mapId) {
+		validator.onErrorForwardTo(this).list();
+		MapStudy mapStudy = mapStudyDao.find(mapId);
+		
+		validator.check(mapStudy.isCreator(userInfo.getUser()), new SimpleMessage("user", "user.is.not.creator"));
+		validator.onErrorRedirectTo(this).list();
+		
+		//TODO seta todos removed ou somente o mapeamento ?
+		mapStudy.setRemoved(true);
+		mapStudyDao.update(mapStudy);
+		
+		result.include("notice", new SimpleMessage("mapstudy", "mapstudy.remove.sucess"));
 		result.redirectTo(this).list();
 	}
 
 	
 	@Get("/maps/{id}")
 	public void show(Long id) {
-		validator.onErrorForwardTo(this).list();
-		
 		MapStudy mapStudy = mapStudyDao.find(id);
+		User user = userInfo.getUser();
+		
+		validator.check(mapStudy != null, new SimpleMessage("mapstudy", "mapstudy.is.not.exist"));
+		validator.onErrorRedirectTo(this).list();
+		
+		validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.is.not.mapstudy"));
+		validator.onErrorRedirectTo(this).list();		
+		
 		List<User> mapStudyUsersList = userDao.mapStudyUsers(mapStudy);
 		List<User> mapStudyArentUsers = userDao.mapStudyArentUsers(mapStudy);
 		
@@ -152,45 +169,65 @@ public class MapStudyController {
 	    result.include("mapStudyArentUsers", mapStudyArentUsers);
 	}
 
-	//TODO Não está funcionando
-	@Post("/maps/remove")
-	public void remove(Long id) {
-		validator.onErrorForwardTo(this).list();
-		System.out.println("Select "+id);
-		MapStudy mapStudy = mapStudyDao.find(id);
-		
-		mapStudyDao.delete(mapStudyDao.update(mapStudy));		
+	//TODO Não está completo
+	@Get("/maps/{id}/removemember/{userId}")
+	public void removemember(Long id, Long userId){
+		validator.onErrorForwardTo(this).show(id);
 
-		result.redirectTo(this).list();
+		MapStudy mapStudy = mapStudyDao.find(id);
+		User user = userDao.find(userId);
+		User currentUser = userInfo.getUser();
+		
+		validator.check(mapStudy.isCreator(currentUser), new SimpleMessage("user", "user.is.not.creator"));
+		validator.onErrorRedirectTo(this).show(id);
+		
+		validator.check(!currentUser.equals(user), new SimpleMessage("user", "user.is.not.remove.creator"));
+		validator.onErrorRedirectTo(this).show(id);	
+		
+		mapStudy.removeParticipant(user);
+		mapStudyDao.refresh(mapStudy);
+		mapStudyDao.update(mapStudy);
+		
+		result.include("notice", new SimpleMessage("mapstudy", "member.remove.sucess"));
+		result.redirectTo(this).show(id);
 	}
 	
 	@Post("/maps/addmember")
-	public void addmember(Long id, Long userId){
-		validator.onErrorForwardTo(this).show(id);
-		
-		MapStudy mapStudy = mapStudyDao.find(id);
-		User user = userDao.find(userId);
-		mapStudy.addUser(user);
-		
-		mapStudyDao.update(mapStudy);
-		userDao.update(user);
-		
-		result.include("notice", "member.add.sucess");
-		result.redirectTo(this).show(id);
-	}
-	//TODO Não está funcionando
-	@Post("/maps/removemember")
-	public void removemember(Long id, Long userId){
+	public void addmember(Long id, Long userId, boolean notify){
 		validator.onErrorForwardTo(this).show(id);
 		
 		MapStudy mapStudy = mapStudyDao.find(id);
 		User user = userDao.find(userId);
 		
-//		mapStudy.removeUser(user);
+		validator.check(mapStudy.isCreator(userInfo.getUser()), new SimpleMessage("user", "user.is.not.creator"));
+		validator.onErrorRedirectTo(this).show(id);
+		
+		mapStudy.addParticipant(user);
 		
 		mapStudyDao.update(mapStudy);
 		userDao.update(user);
 		
+		if (notify){
+			String linkRecovery = "http://localhost:8080/SystematicMap/";
+			
+			String url = "<a href=\""+linkRecovery+"\" target=\"_blank\">Clique aqui</a> para acessar o site.";		
+			
+			String message = "<p>Ol&aacute; " + user.getName()+ ",</p>"
+					+ "<p>Voc&ecirc; foi adicionado a um mapeamento sistemático.</p>"
+					+ "<p>T&iacute;tulo: "+mapStudy.getTitle()+"</p>"
+					+ "<p>Descri&ccedil;&atilde;o: "+mapStudy.getDescription()+"</p>"
+					+ "<p>Adicionado por: "+userInfo.getUser().getName()+"</p>"
+					+ "<p>Contato: "+userInfo.getUser().getEmail()+"</p>"
+					+ "<p>"+ url +"</p>";
+			//Send mail
+			try {
+				mailUtils.send("[TheEND] - Convite de Participação", message, user.getEmail());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		result.include("notice", new SimpleMessage("mapstudy", "member.add.sucess"));
 		result.redirectTo(this).show(id);
 	}
 	
@@ -199,6 +236,9 @@ public class MapStudyController {
 		validator.onErrorForwardTo(this).show(id);
 		
 		MapStudy mapStudy = mapStudyDao.find(id);
+		
+		validator.check(mapStudy.isCreator(userInfo.getUser()), new SimpleMessage("user", "user.is.not.creator"));
+		validator.onErrorRedirectTo(this).show(id);
 		
 		files.save(upFile, mapStudy);
 		
@@ -214,7 +254,7 @@ public class MapStudyController {
 		
 		mapStudyDao.update(mapStudy);
 		
-		result.include("notice", "articules.add.sucess");
+		result.include("notice", new SimpleMessage("articules", "articules.add.sucess"));
 	    result.redirectTo(this).show(id);
 	}
 	
@@ -223,11 +263,15 @@ public class MapStudyController {
 		validator.onErrorForwardTo(this).show(id);
 		
 		MapStudy mapStudy = mapStudyDao.find(id);
+		
+		validator.check(mapStudy.isCreator(userInfo.getUser()), new SimpleMessage("user", "user.is.not.creator"));
+		validator.onErrorRedirectTo(this).show(id);		
+		
 		mapStudy.addInclusionCriteria(criteria);
 		inclusionDao.insert(criteria);
 		mapStudyDao.update(mapStudy);
 		
-		result.include("notice", "inclusion.criteria.add.sucess");
+		result.include("notice", new SimpleMessage("mapstudy", "inclusion.criteria.add.sucess"));
 	    result.redirectTo(this).show(id);
 	}
 	
@@ -236,11 +280,15 @@ public class MapStudyController {
 		validator.onErrorForwardTo(this).show(id);
 		
 		MapStudy mapStudy = mapStudyDao.find(id);
+		
+		validator.check(mapStudy.isCreator(userInfo.getUser()), new SimpleMessage("user", "user.is.not.creator"));
+		validator.onErrorRedirectTo(this).show(id);		
+		
 		mapStudy.addExclusionCriteria(criteria);
 		exclusionDao.insert(criteria);
 		mapStudyDao.update(mapStudy);
 		
-		result.include("notice", "exclusion.criteria.add.sucess");
+		result.include("notice", new SimpleMessage("mapstudy", "exclusion.criteria.add.sucess"));
 	    result.redirectTo(this).show(id);
 	}
 	
@@ -253,12 +301,20 @@ public class MapStudyController {
 		filter.filter();
 		
 		validator.onErrorForwardTo(this).show(id);
-		result.include("notice", "refine.articles.sucess");
+		result.include("notice", new SimpleMessage("mapstudy", "refine.articles.sucess"));
 		result.redirectTo(this).show(id);
 	}
 	
 	@Get("/maps/evaluate/{mapid}")
 	public void evaluate(Long mapid) {
+		MapStudy mapStudy = mapStudyDao.find(mapid);
+		User user = userInfo.getUser();
+		
+		validator.check(mapStudy != null, new SimpleMessage("mapstudy", "mapstudy.is.not.exist"));
+		validator.onErrorRedirectTo(this).list();
+		
+		validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.is.not.mapstudy"));
+		validator.onErrorRedirectTo(this).list();
 		result.redirectTo(this).evaluateArticle(mapid, 0l);
 	}
 	
@@ -266,8 +322,7 @@ public class MapStudyController {
 	public void evaluateArticle(Long mapid, Long articleid) {
 		MapStudy mapStudy = mapStudyDao.find(mapid);
 		
-		validator.check((mapStudy.getArticles().size() > 0), 
-				new SimpleMessage("mapstudy", "mapstudy.evaluate.articles.none"));
+		validator.check((mapStudy.getArticles().size() > 0), new SimpleMessage("mapstudy", "mapstudy.evaluate.articles.none"));
 		
 		List<Article> articlesToEvaluate = articleDao.getArticlesToEvaluate(userInfo.getUser(), mapStudy);
 		List<Evaluation> evaluations = evaluationDao.getEvaluations(userInfo.getUser(), mapStudy);
@@ -354,8 +409,7 @@ public class MapStudyController {
 	}
 	
 	private void doEvaluate(Long mapid, Long articleid, List<Long> ids, String comment, boolean include){
-		validator.check((ids != null), 
-				new SimpleMessage("mapstudy", "mapstudy.evaluate.criterias.none"));
+		validator.check((ids != null), new SimpleMessage("mapstudy", "mapstudy.evaluate.criterias.none"));
 		validator.onErrorRedirectTo(this).evaluateArticle(mapid, articleid);
 		
 		MapStudy mapStudy = mapStudyDao.find(mapid);
@@ -389,11 +443,20 @@ public class MapStudyController {
 	}
 	
 	/* Remove Criteria */
-	
+	//TODO Estudar
 	@Get("/maps/{studyMapId}/removeexclusioncriteria/{criteriaId}")
 	public void removeexclusioncriteriapage(Long studyMapId, Long criteriaId) {
 		validator.onErrorForwardTo(this).show(studyMapId);
 		
+		MapStudy mapStudy = mapStudyDao.find(studyMapId);
+		User user = userInfo.getUser();
+		
+		validator.check(mapStudy != null, new SimpleMessage("mapstudy", "mapstudy.is.not.exist"));
+		validator.onErrorRedirectTo(this).list();
+		
+		validator.check(mapStudy.isCreator(user), new SimpleMessage("user", "user.is.not.creator"));
+		validator.onErrorRedirectTo(this).show(studyMapId);
+				
 		ExclusionCriteria criteria = exclusionDao.find(criteriaId);
 		Set<Evaluation> evaluations = criteria.getEvaluations();
 		
@@ -430,6 +493,7 @@ public class MapStudyController {
 		}
 		
 		exclusionDao.delete(criteriaId);
+		result.include("notice", new SimpleMessage("mapstudy", "exclusion.criteria.remove.sucess"));
 		
 		result.redirectTo(this).show(studyMapId);
 	}
@@ -438,13 +502,18 @@ public class MapStudyController {
 	@Get("/maps/{studyMapId}/evaluates/")
 	public void showEvaluates(Long studyMapId) {
 		MapStudy mapStudy = mapStudyDao.find(studyMapId);
+		User user = userInfo.getUser();
 		
-		validator.check((mapStudy != null), 
-				new SimpleMessage("mapstudy", "mapstudy.evaluate.criterias.none"));
-		
+		validator.check(mapStudy != null, new SimpleMessage("mapstudy", "mapstudy.is.not.exist"));
 		validator.onErrorRedirectTo(this).list();
 		
-		List<Evaluation> evaluations = evaluationDao.getEvaluations(userInfo.getUser(), mapStudy);
+		validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.is.not.mapstudy"));
+		validator.onErrorRedirectTo(this).list();
+		
+		validator.check((mapStudy != null), new SimpleMessage("mapstudy", "mapstudy.evaluate.criterias.none"));
+		validator.onErrorRedirectTo(this).list();
+		
+		List<Evaluation> evaluations = evaluationDao.getEvaluations(user, mapStudy);
 		List<Article> articles = articleDao.getArticles(mapStudy);
 		
 		HashMap<InclusionCriteria, Integer> inclusionCriterias = new HashMap<InclusionCriteria, Integer>();
@@ -495,9 +564,9 @@ public class MapStudyController {
 			}
 		}
 		
-		Double percentEvaluatedDouble = mapStudy.percentEvaluatedDouble(articleDao, userInfo.getUser());
+		Double percentEvaluatedDouble = mapStudy.percentEvaluatedDouble(articleDao, user);
 		
-		result.include("user", userInfo.getUser());
+		result.include("user", user);
 		result.include("mapStudy", mapStudy);
 		result.include("articles", articles);
 		result.include("inclusionCriteriasMap", inclusionCriterias);
@@ -590,20 +659,20 @@ public class MapStudyController {
 	@Get
 	public void compareEvaluations(Long mapStudyId){
 		MapStudy mapStudy = mapStudyDao.find(mapStudyId);
+		User user = userInfo.getUser();
 		
-		validator.check((mapStudy != null), 
-				new SimpleMessage("mapstudy", "mapstudy.evaluate.criterias.none"));
+		validator.check((mapStudy != null), new SimpleMessage("mapstudy", "mapstudy.evaluate.criterias.none"));
 		validator.onErrorRedirectTo(this).show(mapStudyId);
 		
-		Double percentEvaluatedDouble = mapStudy.percentEvaluatedDouble(articleDao, userInfo.getUser());
+		validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.is.not.mapstudy"));
+		validator.onErrorRedirectTo(this).list();
 		
-		validator.check((percentEvaluatedDouble >= 100), 
-				new SimpleMessage("mapstudy", "mapstudy.evaluations.compare.undone"));
+		Double percentEvaluatedDouble = mapStudy.percentEvaluatedDouble(articleDao, user);
+		
+		validator.check((percentEvaluatedDouble >= 100), new SimpleMessage("mapstudy", "mapstudy.evaluations.compare.undone"));
 		validator.onErrorRedirectTo(this).list();
 		
 		List<Article> articles = articleDao.getArticlesToEvaluate(mapStudy);
-		//TODO
-//		ArrayList<User> members = new ArrayList<User>(mapStudy.getMembers());
 
 		List<User> members = userDao.mapStudyUsers(mapStudy);
 		Collections.sort(members, new Comparator<User>() {
@@ -680,6 +749,9 @@ public class MapStudyController {
 	@Get
 	public void articleDetail(Long articleId){
 		Article article = articleDao.find(articleId);
+		
+		validator.check(article != null, new SimpleMessage("articule", "article.is.not.exist"));
+		validator.onErrorRedirectTo(this).list();
 		
 		HashMap<String, Object> retorno = new HashMap<String, Object>();
 		retorno.put("id", article.getId());

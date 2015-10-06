@@ -34,6 +34,8 @@ public class UsersMapStudys {
 	@ManyToOne
 	@JoinColumn(name = "mapStudy_id")
 	private MapStudy mapStudy;
+	
+	private boolean removed;
 
 	/**
 	 * @return the id
@@ -90,6 +92,20 @@ public class UsersMapStudys {
 	 */
 	public void setMapStudy(MapStudy mapStudy) {
 		this.mapStudy = mapStudy;
+	}
+
+	/**
+	 * @return the removed
+	 */
+	public boolean isRemoved() {
+		return removed;
+	}
+
+	/**
+	 * @param removed the removed to set
+	 */
+	public void setRemoved(boolean removed) {
+		this.removed = removed;
 	}
 
 }
