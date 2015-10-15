@@ -26,9 +26,7 @@
 				<p>
 				<p>
 					<strong> <fmt:message key="mapstudy.evaluation.rate" />:
-					</strong> ${percentEvaluated}% <a class="btn btn-primary pull-right"
-						href="${linkTo[MapStudyController].evaluate(map.id)}"><fmt:message
-							key="mapstudy.evaluate" /></a>
+					</strong> ${percentEvaluated}% <a class="btn btn-primary pull-right" href="${linkTo[MapStudyController].evaluate(map.id)}"><fmt:message key="mapstudy.evaluate" /></a>
 				<div class="clear-both"></div>
 				<p>
 				<p>
@@ -81,7 +79,9 @@
 								<th>#</th>
 								<th><fmt:message key="mapstudy.members" /></th>
 								<th><fmt:message key="mapstudy.evaluations.percentconclusion" /></th>
+								<c:if test="${map.isCreator(userInfo.user)}">
 								<th><fmt:message key="remove" /></th>
+								</c:if>
 								
 							</tr>
 						</thead>
@@ -91,14 +91,16 @@
 									<td>${s.index + 1}</td>
 									<td>${member.key.name}</td>
 									<td>${member.value}</td>
+									<c:if test="${map.isCreator(userInfo.user)}">
 									<c:choose>
 									    <c:when test="${!map.isCreator(member.key)}">
-									        <td class="text-center"><a class="btn btn-danger" href="${linkTo[MapStudyController].removemember(map.id, member.key.id)}"><i class="glyphicon glyphicon-remove"></i></a></td>
+									        <td class="text-center"><a class="btn btn-danger confirmation-modal" data-conf-modal-body="<fmt:message key="member.excluir.message" />" href="${linkTo[MapStudyController].removemember(map.id, member.key.id)}"><i class="glyphicon glyphicon-remove"></i></a></td>
 									    </c:when>
 									    <c:otherwise>
 									        <td></td>
 									    </c:otherwise>
 									</c:choose>
+									</c:if>
 								</tr>
 							</c:forEach>
 						</tbody>
@@ -138,6 +140,7 @@
 						<thead>
 							<tr>
 								<th><fmt:message key="mapstudy.criteria.description" /></th>
+								<th><fmt:message key="remove" /></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -145,7 +148,9 @@
 								varStatus="s">
 								<tr>
 									<td>${criteria.description}</td>
-								</tr>
+									<td class="text-center"><a class="btn btn-danger" href="${linkTo[MapStudyController].removeinclusioncriteriapage(map.id, criteria.id)}"><i
+											class="glyphicon glyphicon-remove"></i></a></td>
+								</tr>								
 							</c:forEach>
 						</tbody>
 					</table>
@@ -167,12 +172,10 @@
 					<input type="hidden" name="id" value="${map.id}" />
 					<div class="form-group">
 						<div class="col-lg-9 padding-left-none">
-							<input type="text" class="form-control" id="excdescription"
-								name="criteria.description"
+							<input type="text" class="form-control" id="excdescription"	name="criteria.description"
 								placeholder="<fmt:message key="mapstudy.exclusion.criteria"/>" />
 						</div>
-						<button type="submit" id="submit"
-							class="btn btn-large btn-primary col-lg-3 float-right">
+						<button type="submit" id="submit" class="btn btn-large btn-primary col-lg-3 float-right">
 							<fmt:message key="add" />
 						</button>
 						<div class="clear-both"></div>
@@ -192,8 +195,7 @@
 								varStatus="s">
 								<tr>
 									<td>${criteria.description}</td>
-									<td class="text-center"><a class="btn btn-danger"
-										href="${linkTo[MapStudyController].removeexclusioncriteriapage(map.id, criteria.id)}"><i
+									<td class="text-center"><a class="btn btn-danger" href="${linkTo[MapStudyController].removeexclusioncriteriapage(map.id, criteria.id)}"><i
 											class="glyphicon glyphicon-remove"></i></a></td>
 								</tr>
 							</c:forEach>

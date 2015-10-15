@@ -118,6 +118,16 @@ public class UsersController {
 				.exclude("email", "login", "password").serialize();
 	}
 	
+	@Path("/users/profile/{id}")
+	@Get
+	@Public
+	public void profile(Long id) {
+		User user = userDao.find(id);
+		result.include("user", user);
+		result.include("notice", new SimpleMessage("user.profile", "user.profile.sucess"));
+		
+	}
+	
 	/*
     @Path("/users/{user.login}/musics/{id}")
     @Put

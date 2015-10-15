@@ -114,8 +114,7 @@
 					<div class="alert alert-info">
 						<button type="button" class="close" data-dismiss="alert">&times;</button>
 						<%-- <c:forEach items="${notices}" var="notice"> --%>
-						<b><fmt:message key="${notice.category}" /></b> - <fmt:message
-							key="${notice.message}" />
+						<b><fmt:message key="${notice.category}" /></b> - <fmt:message key="${notice.message}" />
 						<br />
 						<%--</c:forEach> --%>
 					</div>

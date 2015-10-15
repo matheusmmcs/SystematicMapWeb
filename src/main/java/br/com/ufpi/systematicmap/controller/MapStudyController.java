@@ -123,10 +123,13 @@ public class MapStudyController {
 		result.redirectTo(this).list();
 	}
 	
-	@Post("/maps/remove")
+	@Get("/maps/{mapId}/remove")
 	public void remove(Long mapId) {
 		validator.onErrorForwardTo(this).list();
 		MapStudy mapStudy = mapStudyDao.find(mapId);
+		
+		validator.check(mapStudy != null, new SimpleMessage("mapstudy", "mapstudy.is.not.exist"));
+		validator.onErrorRedirectTo(this).list();
 		
 		validator.check(mapStudy.isCreator(userInfo.getUser()), new SimpleMessage("user", "user.is.not.creator"));
 		validator.onErrorRedirectTo(this).list();
@@ -178,14 +181,18 @@ public class MapStudyController {
 		User user = userDao.find(userId);
 		User currentUser = userInfo.getUser();
 		
+		validator.check(mapStudy != null, new SimpleMessage("mapstudy", "mapstudy.is.not.exist"));
+		validator.onErrorRedirectTo(this).list();
+		
 		validator.check(mapStudy.isCreator(currentUser), new SimpleMessage("user", "user.is.not.creator"));
 		validator.onErrorRedirectTo(this).show(id);
 		
 		validator.check(!currentUser.equals(user), new SimpleMessage("user", "user.is.not.remove.creator"));
 		validator.onErrorRedirectTo(this).show(id);	
 		
+		// Um usuario esta associado a avaliações e outras coisas caso o mesmo seja removido apos o inicio dos trabalhos devemos ocultar suas avaliações mas não removelas
+		
 		mapStudy.removeParticipant(user);
-		mapStudyDao.refresh(mapStudy);
 		mapStudyDao.update(mapStudy);
 		
 		result.include("notice", new SimpleMessage("mapstudy", "member.remove.sucess"));
@@ -232,7 +239,7 @@ public class MapStudyController {
 	}
 	
 	@Post("/maps/addarticles")
-	public void addarticles(Long id, UploadedFile upFile, ArticleSourceEnum source) throws IOException, ParseException {
+	public void addarticles(Long id, UploadedFile upFile, ArticleSourceEnum source){
 		validator.onErrorForwardTo(this).show(id);
 		
 		MapStudy mapStudy = mapStudyDao.find(id);
@@ -242,21 +249,101 @@ public class MapStudyController {
 		
 		files.save(upFile, mapStudy);
 		
-		BibTeXDatabase database = BibtexUtils.parseBibTeX(files.getFile(mapStudy));
+		BibTeXDatabase database = null;
+		try {
+			database = BibtexUtils.parseBibTeX(files.getFile(mapStudy));
+		} catch (IOException | ParseException e) {
+//			e.printStackTrace();
+		}
+		
+		validator.check(database!=null, new SimpleMessage("path", "no.select.path"));
+		validator.onErrorRedirectTo(this).show(id);
+		
 	    Map<Key, BibTeXEntry> entryMap = database.getEntries();
 	    Collection<BibTeXEntry> entries = entryMap.values();
+//	    Long number = 1l;
 	    
 		for(BibTeXEntry entry : entries){
-			Article a = BibtexToArticleUtils.bibtexToArticle(entry, source);
+			Article a = BibtexToArticleUtils.bibtexToArticle(entry, source);//, number++);
 			mapStudy.addArticle(a);
 			articleDao.insert(a);
 		}
 		
 		mapStudyDao.update(mapStudy);
 		
-		result.include("notice", new SimpleMessage("articules", "articules.add.sucess"));
+		result.include("notice", new SimpleMessage("mapstudy.articles", "articles.add.sucess"));
 	    result.redirectTo(this).show(id);
 	}
+	//TODO teste de inserir trabalhos manualmente @Get e @Post
+	@Get("/maps/{mapId}/addmanuallyarticles")
+	public void addmanuallyarticles(Long mapId){
+		validator.onErrorForwardTo(this).show(mapId);
+		
+		MapStudy mapStudy = mapStudyDao.find(mapId);
+		
+		validator.check(mapStudy != null, new SimpleMessage("mapstudy", "mapstudy.is.not.exist"));
+		validator.onErrorRedirectTo(this).list();
+		
+		validator.check(mapStudy.isCreator(userInfo.getUser()), new SimpleMessage("user", "user.is.not.creator"));
+		validator.onErrorRedirectTo(this).show(mapId);
+		
+		result.include("map", mapStudy);
+	}
+	
+	@Post("/maps/addmanuallyarticles")
+	public void addmanuallyarticlesform(Long mapId, final @NotNull @Valid Article article){
+		validator.onErrorForwardTo(this).addmanuallyarticles(mapId);
+		
+		MapStudy mapStudy = mapStudyDao.find(mapId);
+		
+		article.setSource(ArticleSourceEnum.MANUALLY.toString());
+		
+		mapStudy.addArticle(article);
+		article.setMapStudy(mapStudy);
+		
+		articleDao.insert(article);
+		mapStudyDao.update(mapStudy);
+		
+		result.include("notice", new SimpleMessage("mapstudy.articles", "article.add.sucess"));
+	    result.redirectTo(this).show(mapStudy.getId());
+	}
+	
+	@Get("/maps/{mapId}/removearticles")
+	public void removearticles(Long mapId){
+		validator.onErrorForwardTo(this).show(mapId);
+		
+		MapStudy mapStudy = mapStudyDao.find(mapId);
+		
+		validator.check(mapStudy != null, new SimpleMessage("mapstudy", "mapstudy.is.not.exist"));
+		validator.onErrorRedirectTo(this).list();
+		
+		validator.check(mapStudy.isCreator(userInfo.getUser()), new SimpleMessage("user", "user.is.not.creator"));
+		validator.onErrorRedirectTo(this).show(mapId);
+		
+		
+		result.include("articles", articleDao.getArticles(mapStudy));
+		result.include("map", mapStudy);
+	}
+	
+	@Post("/maps/removearticles")
+	public void removearticlesform(Long mapId, final List<Integer> articlesIds){
+		validator.onErrorForwardTo(this).show(mapId);
+		
+//		MapStudy mapStudy = mapStudyDao.find(mapId);
+		
+		validator.check(articlesIds != null, new SimpleMessage("mapstudy.articles", "article.is.not.select"));
+		validator.onErrorRedirectTo(this).show(mapId);
+
+		for (Integer id : articlesIds) {
+			articleDao.delete(id.longValue());
+		}
+		
+		result.include("notice", new SimpleMessage("mapstudy.articles", "article.remove.sucess"));
+		result.redirectTo(this).show(mapId);		
+	}
+	
+	
+	
 	
 	@Post("/maps/addinclusion")
 	public void addinclusion(Long id, InclusionCriteria criteria) {
@@ -315,6 +402,7 @@ public class MapStudyController {
 		
 		validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.is.not.mapstudy"));
 		validator.onErrorRedirectTo(this).list();
+		//TODO verificar se tem uma forma mais elegante de determinar primeiro id de avaliação
 		result.redirectTo(this).evaluateArticle(mapid, 0l);
 	}
 	
@@ -322,7 +410,11 @@ public class MapStudyController {
 	public void evaluateArticle(Long mapid, Long articleid) {
 		MapStudy mapStudy = mapStudyDao.find(mapid);
 		
+		validator.check(mapStudy != null, new SimpleMessage("mapstudy", "mapstudy.is.not.exist"));
+		validator.onErrorRedirectTo(this).list();
+		
 		validator.check((mapStudy.getArticles().size() > 0), new SimpleMessage("mapstudy", "mapstudy.evaluate.articles.none"));
+		validator.onErrorRedirectTo(this).show(mapid);
 		
 		List<Article> articlesToEvaluate = articleDao.getArticlesToEvaluate(userInfo.getUser(), mapStudy);
 		List<Evaluation> evaluations = evaluationDao.getEvaluations(userInfo.getUser(), mapStudy);
@@ -498,6 +590,62 @@ public class MapStudyController {
 		result.redirectTo(this).show(studyMapId);
 	}
 	
+	/* Remove Criteria Inclusion*/
+	//TODO Estudar
+	@Get("/maps/{studyMapId}/removeinclusioncriteria/{criteriaId}")
+	public void removeinclusioncriteriapage(Long studyMapId, Long criteriaId) {
+		validator.onErrorForwardTo(this).show(studyMapId);
+		
+		MapStudy mapStudy = mapStudyDao.find(studyMapId);
+		User user = userInfo.getUser();
+		
+		validator.check(mapStudy != null, new SimpleMessage("mapstudy", "mapstudy.is.not.exist"));
+		validator.onErrorRedirectTo(this).list();
+		
+		validator.check(mapStudy.isCreator(user), new SimpleMessage("user", "user.is.not.creator"));
+		validator.onErrorRedirectTo(this).show(studyMapId);
+				
+		InclusionCriteria criteria = inclusionDao.find(criteriaId);
+		Set<Evaluation> evaluations = criteria.getEvaluations();
+		
+		List<Evaluation> evaluationsImpacted = new ArrayList<Evaluation>();
+		List<Evaluation> evaluationsRemoved = new ArrayList<Evaluation>();
+		for(Evaluation e : evaluations){
+			if(e.getInclusionCriterias().size() == 1 &&
+				e.getInclusionCriterias().contains(criteria)){
+				evaluationsRemoved.add(e);
+			}
+			evaluationsImpacted.add(e);
+		}
+		
+		result.include("criteria", criteria);
+		result.include("evaluationsImpacted", evaluationsImpacted);
+		result.include("evaluationsRemoved", evaluationsRemoved);
+	}
+	
+	@Post("/maps/removeinclusioncriteria/")
+	public void removeinclusioncriteria(Long studyMapId, Long criteriaId) {
+		validator.onErrorForwardTo(this).show(studyMapId);
+		
+		InclusionCriteria criteria = inclusionDao.find(criteriaId);
+		Set<Evaluation> evaluations = criteria.getEvaluations();
+		
+		for(Evaluation e : evaluations){
+			if(e.getInclusionCriterias().size() == 1 &&
+				e.getInclusionCriterias().contains(criteria)){
+				evaluationDao.delete(e.getId());
+			}else{
+				e.getInclusionCriterias().remove(criteria);
+				evaluationDao.update(e);
+			}
+		}
+		
+		inclusionDao.delete(criteriaId);
+		result.include("notice", new SimpleMessage("mapstudy", "inclusion.criteria.remove.sucess"));
+		
+		result.redirectTo(this).show(studyMapId);
+	}
+	
 	/*  */
 	@Get("/maps/{studyMapId}/evaluates/")
 	public void showEvaluates(Long studyMapId) {
@@ -609,6 +757,7 @@ public class MapStudyController {
 		return generateFile(mapStudy, articles);
 	}
 	
+	//TODO precisa ser refatorado
 	private Download generateFile(MapStudy mapStudy, List<Article> articles) throws IOException {
 		//create file
 		String filename = mapStudy.getTitle().replaceAll(" ", "_")+ ".csv";

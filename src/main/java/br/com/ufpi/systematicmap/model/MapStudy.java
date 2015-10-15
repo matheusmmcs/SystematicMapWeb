@@ -215,11 +215,20 @@ public class MapStudy implements Serializable{
 		this.usersMapStudys = usersMapStudys;
 	}
 
+	//TODO Matheus analisar
+	
 	public void addParticipant(User user) {
+		for (UsersMapStudys u : usersMapStudys) {
+			if (u.getUser().equals(user) && u.isRemoved()){
+				u.setRemoved(false);
+				return;
+			}
+		}
+		
 		UsersMapStudys usersMapStudys = new UsersMapStudys();
 		usersMapStudys.setUser(user);
 		usersMapStudys.setMapStudy(this);
-		usersMapStudys.setRole(Roles.PARTICIPANT);
+		usersMapStudys.setRole(Roles.PARTICIPANT);		
 		getUsersMapStudys().add(usersMapStudys);
 	}
 	
@@ -227,6 +236,7 @@ public class MapStudy implements Serializable{
 		for (UsersMapStudys u : usersMapStudys) {
 			if (u.getUser().equals(user)){
 				u.setRemoved(true);
+				return;
 			}
 		}
 	}
@@ -253,13 +263,11 @@ public class MapStudy implements Serializable{
 		return false;
 	}
 	
-	//TODO mostrar para o matheus e verificar se é melhor que buscar no banco
 	public List<User> members(){
 		List<User> members = new ArrayList<>();
 		for (UsersMapStudys u : usersMapStudys) {
 			members.add(u.getUser());
 		}
-		
 		return members;
 	}
 }

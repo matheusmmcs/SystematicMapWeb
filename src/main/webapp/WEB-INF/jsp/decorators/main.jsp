@@ -2,6 +2,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="gravatar" uri="http://www.paalgyula.hu/schemas/tld/gravatar" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -39,7 +40,7 @@
     
     <!-- Autocomplete -->
     <link href="<c:url value="/vendor/chosen/chosen.min.css" />" rel="stylesheet">
-    <link href="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.min.css" rel="stylesheet" />
+    <link href="<c:url value="/css/select2.min.css" />" rel="stylesheet" />
 
 	<link href="<c:url value="/css/bootstrap-fileupload.min.css"/>" rel="stylesheet" type="text/css"/>
 	<link href="<c:url value="/css/systematicmap.css" />" rel="stylesheet">
@@ -144,11 +145,11 @@
                         <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-user">
-                        <li><a href="${linkTo[MapStudyController].list}"><i class="fa fa-user fa-fw"></i> <fmt:message key="mapstudy.my.short" /></a>
-                        </li>
+                    	<li><a href="${linkTo[UsersController].profile(userInfo.user.id)}"><i class="fa fa-user fa-fw"></i> <fmt:message key="user.profile" /></a></li>
+                    	<li class="divider"></li>
+                        <li><a href="${linkTo[MapStudyController].list}"><i class="glyphicon glyphicon-log-in"></i>  <fmt:message key="mapstudy.my.short" /></a></li>
                         <li class="divider"></li>
-                        <li><a href="${linkTo[HomeController].logout}"><i class="fa fa-sign-out fa-fw"></i> <fmt:message key="logout" /></a>
-                        </li>
+                        <li><a href="${linkTo[HomeController].logout}"><i class="fa fa-sign-out fa-fw"></i> <fmt:message key="logout" /></a></li>
                     </ul>
                     <!-- /.dropdown-user -->
                 </li>
@@ -170,9 +171,17 @@
                             </div>
                             <!-- /input-group -->
                         </li>
+<%--                         <center> --%>
+<!--                         <li> -->
+<%-- 						<img src="<gravatar:image email="${userInfo.user.email}" size="192"/>" alt="Gravatar" title="${userInfo.user.name }" class="img-responsive"/> --%>
+<!--                         </li> -->
+<!--                         <li> </li> -->
+<!--                         <li class="divider"> </li> -->
+<%--                         </center> --%>
                         <li>
                             <a href="${linkTo[MapStudyController].list}"><i class="fa fa-dashboard fa-fw"></i> <fmt:message key="mapstudy.my.short" /></a>
                         </li>
+                        
                     </ul>
                 </div>
                 <!-- /.sidebar-collapse -->
@@ -209,11 +218,32 @@
 
     </div>
     <!-- /#wrapper -->
+    
+    <!-- Modal -->
+    <div id="generic-modal" class="modal fade">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title"><fmt:message key="confirm.delete" /></h4>
+	      </div>
+	      <div class="modal-body">
+	        <p>One fine body&hellip;</p>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal"><fmt:message key="close" /></button>
+	        <button type="button" class="btn btn-danger" id="generic-modal-confirmation"><fmt:message key="confirm.delete" /></button>
+	      </div>
+	    </div><!-- /.modal-content -->
+	  </div><!-- /.modal-dialog -->
+	</div>
+	<!-- /.modal -->
 
     <!-- Metis Menu Plugin JavaScript -->
     <script src="<c:url value="/vendor/metisMenu/metisMenu.min.js" />"></script>
     <script src="<c:url value="/vendor/chosen/chosen.jquery.min.js" />"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.min.js"></script>
+    
+    <script src="<c:url value="/js/select2.min.js" />"></script>
 
     <!-- Morris Charts JavaScript -->
 <%--     <script src="<c:url value="/vendor/raphael/raphael-min.js" />"></script> --%>
@@ -252,6 +282,22 @@
 		    $('.select2').select2({
 		    	 allowClear: true,
 		    	 templateResult: formatState
+			});
+
+			//padrao de modal
+			$(document).on('click', '.confirmation-modal', function(e){
+				e.preventDefault();
+				var $this = $(this), 
+					$modal = $('#generic-modal'),
+					body = $this.data('conf-modal-body');
+				if(body){
+					$modal.find('.modal-body').html(body);
+				}
+				$modal.modal('show');
+				$modal.find('#generic-modal-confirmation').unbind('click').on('click', function(e){
+// 					console.log('hadouken', $this.attr('href'));
+					document.location.href = $this.attr('href');
+				});
 			});
 		});
 	</script>

@@ -6,6 +6,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+
 import br.com.ufpi.systematicmap.model.MapStudy;
 import br.com.ufpi.systematicmap.model.User;
 
@@ -59,7 +60,7 @@ public class UserDao extends Dao<User> {
 	
 	public List<User> mapStudyUsers(MapStudy mapStudy) {
 		List<User> users = entityManager
-				.createQuery("select u from User u left join u.usersMapStudys ums where ums.mapStudy = :mapStudy", User.class)
+				.createQuery("select u from User u left join u.usersMapStudys ums where ums.mapStudy = :mapStudy and ums.removed = false and u.removed = false", User.class)
 					.setParameter("mapStudy", mapStudy)
 					.getResultList();
 		return users;
@@ -67,7 +68,7 @@ public class UserDao extends Dao<User> {
 	
 	public List<User> mapStudyArentUsers(MapStudy mapStudy) {
 		List<User> users = entityManager
-				.createQuery("select distinct u from User u where u.id not in (select distinct u.id from User u left join u.usersMapStudys ums where ums.mapStudy = :mapStudy)", User.class)
+				.createQuery("select distinct u from User u where u.id not in (select distinct u.id from User u left join u.usersMapStudys ums where ums.mapStudy = :mapStudy and ums.removed = false and u.removed = false)", User.class)
 					.setParameter("mapStudy", mapStudy)
 					.getResultList();
 		return users;
@@ -110,6 +111,12 @@ public class UserDao extends Dao<User> {
 				.setParameter("email", email)
 				.getSingleResult();
 		return count > 0;
+	}
+	
+	@Override
+	public User find(Long id) {
+		User user = entityManager.createQuery("select u from User u where u.id =:id and u.removed = false", User.class).setParameter("id", id).getSingleResult();
+		return user;
 	}
 
 	

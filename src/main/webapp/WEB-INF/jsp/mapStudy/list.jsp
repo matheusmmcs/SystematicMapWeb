@@ -45,7 +45,9 @@
 				<td><a href="${linkTo[MapStudyController].show(map.id)}">${map.title}</a></td>
 				<td>
 				<a class="btn btn-primary" href="${linkTo[MapStudyController].show(map.id)}"><i class="glyphicon glyphicon-log-in"></i> <fmt:message key="open"/> </a>
-				<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#excluirMapeamentoModal"><i class="glyphicon glyphicon-remove"></i> <fmt:message key="remove"/> </button>
+				<c:if test="${map.isCreator(userInfo.user)}">
+				<a class="btn btn-danger confirmation-modal" data-conf-modal-body="<fmt:message key="mapstudy.excluir.message" />" href="${linkTo[MapStudyController].remove(map.id)}" ><i class="glyphicon glyphicon-remove"></i> <fmt:message key="remove"/> </a>
+				</c:if>
 				</td>
 			</tr>
 		</c:forEach>
@@ -72,25 +74,3 @@
 		</form>
 	</div>		
 </div>
-
-					<!-- Modal -->
-<!-- <div class="modal fade" id="excluirMapeamentoModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"> -->
-<!--   <div class="modal-dialog" role="document"> -->
-<!--     <div class="modal-content"> -->
-<!--       <div class="modal-header"> -->
-<!--         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button> -->
-<%--         <h4 class="modal-title" id="myModalLabel"><fmt:message key="mapstudy.remove"/></h4> --%>
-<!--       </div> -->
-<!--       <div class="modal-body"> -->
-<%--         <fmt:message key="mapstudy.remove.message"/> --%>
-<!--       </div> -->
-<!--       <div class="modal-footer"> -->
-<%--         <button type="button" class="btn btn-default" data-dismiss="modal"><fmt:message key="no"/></button> --%>
-<%--         <form action="${linkTo[MapStudyController].excluir}" method="post"> --%>
-<%--         <input type="hidden" name="id" value="${map.id}" /> --%>
-<%--         	<button type="button" class="btn btn-primary" ><fmt:message key="yes"/></button> --%>
-<!--         </form> -->
-<!--       </div> -->
-<!--     </div> -->
-<!--   </div> -->
-<!-- </div>	 -->

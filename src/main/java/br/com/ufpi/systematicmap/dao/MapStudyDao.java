@@ -40,11 +40,21 @@ public class MapStudyDao extends Dao<MapStudy> {
 	}
 	
 	public List<MapStudy> mapStudys(User user) {
-		List<MapStudy> maps = entityManager
-				.createQuery("select m from MapStudy m left join m.usersMapStudys ums where ums.user = :user", MapStudy.class)
-					.setParameter("user", user)
-					.getResultList();
+		List<MapStudy> maps = entityManager.createQuery("select m from MapStudy m left join m.usersMapStudys ums where ums.user = :user and m.removed = false and ums.removed = false", MapStudy.class).setParameter("user", user).getResultList();
 		return maps;
+	}
+	
+	@Override
+	public MapStudy find(Long id) {
+		MapStudy mapStudy = null;
+		
+		try {
+			mapStudy = entityManager.createQuery("select m from MapStudy m where m.id =:id and m.removed = false", MapStudy.class).setParameter("id", id).getSingleResult();
+		} catch (Exception e) {
+			
+		}
+		
+		return mapStudy;
 	}
 	
 	
