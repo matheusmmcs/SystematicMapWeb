@@ -15,12 +15,97 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class ExcelBubblePlots {
 	
-	@SuppressWarnings("serial")
-	public static void main(String[] args) throws Exception {
+	private enum ClassificationEnum {
+		//Abordagem de Automação
+		Approach("Automation Approach (Q1)", new int[]{10,11,12,13}),
+		//Método
+		Method("Method (Q2)", new int[]{14,15,16,17,18}),
+		//Esforço Necessário
+		Effort("Required Effort (Q3)", new int[]{19,20,21,22}),
+		//Grau de Intrusão
+		Intrusion("Intrusion Degree (Q4)", new int[]{38,39,40,41}),
+		//Avaliação Remota
+		Remote("Remote Evaluation (Q5)", new int[]{42,43}),
+		//Contexto de Aplicações Web
+		Context("Web Application Context (Q6)", new int[]{44,45,46}),
+		//Validação Empírica
+		Validation("Empirical Validation (Q7)", new int[]{47,48,49,50}),
+		//Tipo de Pesquisa
+		ResearchType("Research Type (Q8)", new int[]{51,52,53,54,55,56});
+		
+		private String description;
+		private int[] columns;
+		
+		ClassificationEnum(String description, int[] columns){
+			this.description = description;
+			this.columns = columns;
+		}
 
-		FileInputStream file = new FileInputStream(new File("/Users/Matheus/Dropbox/Easii/Teste de Usabilidade/Artigos e Outros Arquivos/Mapeamento Sistematico/Extracao/Extensão_do_Mapeamento2.xlsx"));
+		@SuppressWarnings("unused")
+		public String getDescription() {
+			return description;
+		}
+
+		public int[] getColumns() {
+			return columns;
+		}
+	}
+	
+	public static void main(String[] args) throws IOException {
+		String inputFilePath = "/Users/Matheus/Dropbox/Easii/Teste de Usabilidade/Artigos e Outros Arquivos/Mapeamento Sistematico/Extracao/Extensão_do_Mapeamento2.xlsx",
+				outputDirectoryPath = "/Users/Matheus/Dropbox/Easii/Teste de Usabilidade/Artigos e Outros Arquivos/Mapeamento Sistematico/Extracao/Graphs/Journal/";
+		
+		int rowTitles = 1;
+		
+		ClassificationEnum eixoX, eixoY; 
+		
+		
+		//GRAPH A
+//		eixoY = ClassificationEnum.Approach;
+//		eixoX = ClassificationEnum.Method;
+//		generateExcel(rowTitles, inputFilePath, outputDirectoryPath, eixoX, eixoY, false);
+//		
+//		eixoX = ClassificationEnum.Intrusion;
+//		generateExcel(rowTitles, inputFilePath, outputDirectoryPath, eixoX, eixoY, false);
+		
+		//GRAPH B
+//		eixoY = ClassificationEnum.Context;
+//		eixoX = ClassificationEnum.Method;
+//		generateExcel(rowTitles, inputFilePath, outputDirectoryPath, eixoX, eixoY, false);
+//		
+//		eixoX = ClassificationEnum.Approach;
+//		generateExcel(rowTitles, inputFilePath, outputDirectoryPath, eixoX, eixoY, false);
+//		
+//		eixoY = ClassificationEnum.Effort;
+//		eixoX = ClassificationEnum.Method;
+//		generateExcel(rowTitles, inputFilePath, outputDirectoryPath, eixoX, eixoY, false);
+//		
+//		eixoX = ClassificationEnum.Approach;
+//		generateExcel(rowTitles, inputFilePath, outputDirectoryPath, eixoX, eixoY, false);
+		
+		
+		//GRAPH C
+		eixoY = ClassificationEnum.Validation;
+		eixoX = ClassificationEnum.Method;
+		generateExcel(rowTitles, inputFilePath, outputDirectoryPath, eixoX, eixoY, false);
+		
+		eixoX = ClassificationEnum.Approach;
+		generateExcel(rowTitles, inputFilePath, outputDirectoryPath, eixoX, eixoY, false);
+		
+		eixoY = ClassificationEnum.ResearchType;
+		eixoX = ClassificationEnum.Method;
+		generateExcel(rowTitles, inputFilePath, outputDirectoryPath, eixoX, eixoY, false);
+		
+		eixoX = ClassificationEnum.Approach;
+		generateExcel(rowTitles, inputFilePath, outputDirectoryPath, eixoX, eixoY, false);
+	}
+	
+	@SuppressWarnings("serial")
+	private static void generateExcel(int rowTitles, String inputFilePath, String outputDirectoryPath, ClassificationEnum eixoX, ClassificationEnum eixoY, boolean showTitle) throws IOException{
+		FileInputStream file = new FileInputStream(new File(inputFilePath));
+		
 		XSSFWorkbook myWorkBook = new XSSFWorkbook (file);
-		int rowTitles = 1, initArticles = 2, endArticles = 64;
+		int initArticles = 3, endArticles = 66;
 		List<Integer> rowsignorearr = new ArrayList<Integer>() {{
 		    add(26);
 		    add(27);
@@ -33,60 +118,23 @@ public class ExcelBubblePlots {
 		    add(63);
 		    add(65);
 		}};
-		String path = "/Users/Matheus/Dropbox/Easii/Teste de Usabilidade/Artigos e Outros Arquivos/Mapeamento Sistematico/Extracao/Graphs/",
-				file1 = path + "method-context.csv";
 		
-		matrix(file1, myWorkBook, rowTitles, new int[]{13,14,15,16,17}, new int[]{42,43,44}, initArticles, endArticles, rowsignorearr);
+		String file1 = outputDirectoryPath + eixoX.name() + "-" + eixoY.name() + ".csv";
+		
+		matrix(file1, myWorkBook, rowTitles, eixoX.getColumns(), eixoY.getColumns(), initArticles, endArticles, rowsignorearr, showTitle);
 		
 		myWorkBook.close();
 		file.close();
 	}
 	
-//	@SuppressWarnings("serial")
-//	public static void main(String[] args) throws Exception {
-//
-//		FileInputStream file = new FileInputStream(new File("/Users/Matheus/Dropbox/Easii/Teste de Usabilidade/Artigos e Outros Arquivos/Mapeamento Sistematico/Extracao/Extensão_do_Mapeamento2.xlsx"));
-//		XSSFWorkbook myWorkBook = new XSSFWorkbook (file);
-//		int rowTitles = 1, initArticles = 2, endArticles = 64;
-//		List<Integer> rowsignorearr = new ArrayList<Integer>() {{
-//		    add(26);
-//		    add(27);
-//		    add(35);
-//		    add(45);
-//		    add(47);
-//		    add(50);
-//		    add(59);
-//		    add(60);
-//		    add(63);
-//		    add(65);
-//		}}; 
-//		//int[] titles1 = new int[]{9,10,11,12};
-//		//int[] titles2 = new int[]{13,14,15,16,17};
-//		String path = "/Users/Matheus/Dropbox/Easii/Teste de Usabilidade/Artigos e Outros Arquivos/Mapeamento Sistematico/Extracao/Graphs/",
-//				file1 = path + "method-aut.csv",
-//				file2 = path + "method-effort.csv",
-//				file3 = path + "method-intru.csv",
-//				file4 = path + "method-valid.csv",
-//				file5 = path + "method-tec.csv";
-//		
-//		matrix(file1, myWorkBook, rowTitles, new int[]{13,14,15,16,17}, new int[]{9,10,11,12}, initArticles, endArticles, rowsignorearr);
-//		matrix(file2, myWorkBook, rowTitles, new int[]{13,14,15,16,17}, new int[]{18,19,20,21}, initArticles, endArticles, rowsignorearr);
-//		matrix(file5, myWorkBook, rowTitles, new int[]{13,14,15,16,17}, new int[]{22,23,24,25,26,27,28,29,30,31,32,33}, initArticles, endArticles, rowsignorearr);
-//		matrix(file3, myWorkBook, rowTitles, new int[]{13,14,15,16,17}, new int[]{36,37,38,39}, initArticles, endArticles, rowsignorearr);
-//		matrix(file4, myWorkBook, rowTitles, new int[]{13,14,15,16,17}, new int[]{45,46,47,48}, initArticles, endArticles, rowsignorearr);
-//		
-//		myWorkBook.close();
-//		file.close();
-//	}
-	
-	
-	private static void matrix(String file, XSSFWorkbook myWorkBook, int rowTitles, int[] titles1, int[] titles2, int initArticles, int endArticles, List<Integer> rowsignorearr) throws IOException{
+	private static void matrix(String file, XSSFWorkbook myWorkBook, int rowTitles, int[] titles1, int[] titles2, int initArticles, int endArticles, List<Integer> rowsignorearr, boolean showTitle) throws IOException{
 		XSSFSheet mySheet = myWorkBook.getSheetAt(0);
 		XSSFRow rowTitle = mySheet.getRow(rowTitles);
 		
 		System.out.print("\t");
 		for(int j = 0; j < titles2.length; j++){
 			String cellTitle = rowTitle.getCell(titles2[j]).getStringCellValue();
+			cellTitle = showTitle ? cellTitle : new String(cellTitle.charAt(0) + new Integer(j).toString());
 			System.out.print("|"+compactString(cellTitle) + "\t");
 		}
 		System.out.println();
@@ -95,6 +143,7 @@ public class ExcelBubblePlots {
 		writer.append("title1;title2;count\n");
 		for(int i = 0; i < titles1.length; i++){
 			String title1 = rowTitle.getCell(titles1[i]).getStringCellValue();
+			title1 = showTitle ? title1 : new String(title1.charAt(0) + new Integer(i).toString());
 			System.out.print(compactString(title1) + "\t");
 			for(int j = 0; j < titles2.length; j++){
 				String title2 = rowTitle.getCell(titles2[j]).getStringCellValue();
