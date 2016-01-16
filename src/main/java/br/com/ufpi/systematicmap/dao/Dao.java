@@ -10,7 +10,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import org.hibernate.Session;
-//TODO
+
 @Dependent
 public abstract class Dao <T> {
 	
@@ -65,7 +65,6 @@ public abstract class Dao <T> {
 	        this.entityManager.persist(t);
 	    }
 	 
-	    // TODO CriteriaBuilder
 	    @SuppressWarnings("unchecked")
 		@TransactionAttribute(TransactionAttributeType.SUPPORTS)
 	    public List<T> findAll() {

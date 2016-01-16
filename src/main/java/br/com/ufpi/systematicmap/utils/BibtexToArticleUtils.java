@@ -5,10 +5,7 @@ import java.util.Map;
 
 import org.jbibtex.BibTeXDatabase;
 import org.jbibtex.BibTeXEntry;
-import org.jbibtex.BibTeXInclude;
 import org.jbibtex.Key;
-import org.jbibtex.StringValue;
-import org.jbibtex.StringValue.Style;
 import org.jbibtex.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +22,7 @@ public class BibtexToArticleUtils {
 		Map<Key, Value> fields = entry.getFields();
 		
 		article.setSource(sourceEnum.toString());
+//		article.setNumber(number);
 		
 		article.setAuthor(getAttr(fields, BibTeXEntry.KEY_AUTHOR));
 		article.setTitle(getAttr(fields, BibTeXEntry.KEY_TITLE));
@@ -62,7 +60,7 @@ public class BibtexToArticleUtils {
 		bib.addObject(new BibTeXEntry(new Key("keywords"), new Key(article.getKeywords())));
 		bib.addObject(new BibTeXEntry(new Key("language"), new Key(article.getLanguage())));
 		
-		BibTeXInclude teste = new BibTeXInclude(new StringValue("teste", Style.QUOTED), bib);
+//		BibTeXInclude teste = new BibTeXInclude(new StringValue("teste", Style.QUOTED), bib);
 		
 		return bib;
 	}

@@ -29,7 +29,7 @@ public class AuthorizationInterceptor {
 
 	@Inject
 	private Result result;
-
+	
 	@Accepts
 	public boolean accepts(ControllerMethod method) {
 		return !method.containsAnnotation(Public.class);
@@ -55,7 +55,7 @@ public class AuthorizationInterceptor {
 		if (current == null) {
 			// remember added parameters will survive one more request, when there is a redirect
 			result.include("errors", asList(new SimpleMessage("user", "user is not logged in")));
-			result.redirectTo(HomeController.class).login();
+			result.redirectTo(HomeController.class).home();
 			return;
 		}
 		stack.next();

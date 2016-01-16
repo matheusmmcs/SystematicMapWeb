@@ -15,6 +15,7 @@ import br.com.caelum.vraptor.validator.Validator;
 import br.com.ufpi.systematicmap.dao.UserDao;
 import br.com.ufpi.systematicmap.interceptor.Public;
 import br.com.ufpi.systematicmap.model.User;
+import br.com.ufpi.systematicmap.utils.Linker;
 import br.com.ufpi.systematicmap.utils.MailUtils;
 import br.com.ufpi.systematicmap.utils.GenerateHashPasswordUtil;
 
@@ -29,17 +30,19 @@ public class EmailController {
 	private final Result result;
 	private final Validator validator;
 	private final MailUtils mailUtils;
+	private final Linker linker;
 
 	protected EmailController() {
-		this(null, null, null, null);
+		this(null, null, null, null, null);
 	}
 
 	@Inject
-	public EmailController(UserDao userDao, Result result,Validator validator, MailUtils mailUtils) {
+	public EmailController(UserDao userDao, Result result,Validator validator, MailUtils mailUtils, Linker linker) {
 		this.userDao = userDao;
 		this.result = result;
 		this.validator = validator;
 		this.mailUtils = mailUtils;
+		this.linker = linker;
 	}
 	
 	
@@ -64,15 +67,17 @@ public class EmailController {
 		user.setRecoveryCode(code);
 		userDao.update(user);
 		
-		String linkRecovery = "http://localhost:8080/SystematicMap/recovery/";
-		linkRecovery = linkRecovery.concat(code);
+//		String linkRecovery = "http://localhost:8080/SystematicMap/recovery/";
+//		linkRecovery = linkRecovery.concat(code);
+//		
+		linker.buildLinkTo(this).validateCode(code);
+		String url = "<a href=\""+linker.getURL()+"\" target=\"_blank\">Clique aqui</a> para criar uma nova senha";		
 		
-		String url = "<a href=\""+linkRecovery+"\" target=\"_blank\">Clique aqui</a> para criar uma nova senha";		
-		
+		System.out.println("LINK OBTIDO: " + linker.getURL());
 		String message = "<p>Ol&aacute; " + user.getName()+ ",</p>"
 				+ "<p>Seu pedido de altera&ccedil;&atilde;o de senha foi atendido com sucesso pelo sistema.</p>"
 				+ "<p>Clique no link a seguir para realizar a altera&ccedil;&atilde;o de sua senha.</p>"
-				+ "<p>"+ url +"</p>";
+				+ "<p>"+ url+"</p>";
 		
 		//Send mail
 		try {

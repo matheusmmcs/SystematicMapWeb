@@ -21,6 +21,6 @@ public class LoginAvailableValidator
 
     @Override
     public boolean isValid(User user, ConstraintValidatorContext context) {
-        return !userDao.containsUserWithLogin(user.getLogin());
+    	return !userDao.containsUserWithLogin(user.getLogin());
     }
 }

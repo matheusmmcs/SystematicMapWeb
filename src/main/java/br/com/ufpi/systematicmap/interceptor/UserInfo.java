@@ -26,4 +26,5 @@ public class UserInfo implements Serializable {
     public void logout() {
         this.user = null;
     }
+    
 }

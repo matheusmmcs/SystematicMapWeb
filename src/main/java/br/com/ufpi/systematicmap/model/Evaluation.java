@@ -12,10 +12,13 @@ import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
+import br.com.caelum.vraptor.serialization.SkipSerialization;
 import br.com.ufpi.systematicmap.model.enums.EvaluationStatusEnum;
 
 @Entity
+@Table(name = "evaluation")
 public class Evaluation implements Serializable {
 
 	private static final long serialVersionUID = 1;
@@ -29,24 +32,27 @@ public class Evaluation implements Serializable {
 	
 	@ManyToOne
 	@JoinColumn(name = "user_id")
+	@SkipSerialization
 	private User user;
 	
 	@ManyToOne
 	@JoinColumn(name = "mapStudy_id")
+	@SkipSerialization
 	private MapStudy mapStudy;
 	
 	@ManyToOne
 	@JoinColumn(name = "article_id")
+	@SkipSerialization
 	private Article article;
-	
+//	@SkipSerialization
 	@ManyToMany
 	@JoinTable(name="evaluations_inclusions", joinColumns={@JoinColumn(name="evaluation_id")}, inverseJoinColumns={@JoinColumn(name="inclusion_id")})
 	private Set<InclusionCriteria> inclusionCriterias = new HashSet<>();
-	
+//	@SkipSerialization
 	@ManyToMany
 	@JoinTable(name="evaluations_exclusions", joinColumns={@JoinColumn(name="evaluation_id")}, inverseJoinColumns={@JoinColumn(name="exclusion_id")})
 	private Set<ExclusionCriteria> exclusionCriterias = new HashSet<>();
-
+	
 	public Long getId() {
 		return id;
 	}

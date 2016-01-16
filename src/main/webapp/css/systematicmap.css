@@ -1,3 +1,19 @@
+body {
+    background-color: White;
+}
+
+footer {
+    padding: 25px 0;
+    background-color: #f8f8f8;
+    border-top: 1px solid #e7e7e7;
+}
+
+footer p {
+    margin: 0;
+}
+
+.myHome{
+}
 
 .color-primary{
 	color: #337ab7;

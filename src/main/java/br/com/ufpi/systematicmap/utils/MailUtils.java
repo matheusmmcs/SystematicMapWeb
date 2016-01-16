@@ -79,7 +79,7 @@ public class MailUtils {
 				try {
 					Transport.send(mimeMessage);
 				} catch (MessagingException e) {
-					e.printStackTrace();
+//					e.printStackTrace();
 				}
 			}
 		}).start();
@@ -100,7 +100,7 @@ public class MailUtils {
 				try {
 					Transport.send(mimeMessage);
 				} catch (MessagingException e) {
-					e.printStackTrace();
+//					e.printStackTrace();
 				}
 			}
 		}).start();

@@ -46,7 +46,7 @@
 				<td>
 				<a class="btn btn-primary" href="${linkTo[MapStudyController].show(map.id)}"><i class="glyphicon glyphicon-log-in"></i> <fmt:message key="open"/> </a>
 				<c:if test="${map.isCreator(userInfo.user)}">
-				<a class="btn btn-danger confirmation-modal" data-conf-modal-body="<fmt:message key="mapstudy.excluir.message" />" href="${linkTo[MapStudyController].remove(map.id)}" ><i class="glyphicon glyphicon-remove"></i> <fmt:message key="remove"/> </a>
+					<a class="btn btn-danger confirmation-modal" data-conf-modal-body="<fmt:message key="mapstudy.excluir.message" />" href="${linkTo[MapStudyController].remove(map.id)}" ><i class="glyphicon glyphicon-remove"></i> <fmt:message key="remove"/> </a>
 				</c:if>
 				</td>
 			</tr>

@@ -14,13 +14,16 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import br.com.caelum.vraptor.serialization.SkipSerialization;
 import br.com.ufpi.systematicmap.model.enums.ClassificationEnum;
 import br.com.ufpi.systematicmap.model.enums.EvaluationStatusEnum;
 
 @Entity
+@Table(name = "article")
 public class Article implements Serializable {
 
 	private static final long serialVersionUID = 1;
@@ -31,8 +34,13 @@ public class Article implements Serializable {
 	@GeneratedValue
 	private Long id;
 	
+//	@GeneratedValue(strategy = GenerationType.AUTO)
+	@SkipSerialization
+	private Long number;
+	
 	@ManyToOne
 	@JoinColumn(name = "mapStudy_id")
+	@SkipSerialization
 	private MapStudy mapStudy;
 	
 	@OneToMany(mappedBy="article")
@@ -47,28 +55,29 @@ public class Article implements Serializable {
 	@NotNull
 	@Size(max=1000)
 	private String title;
-	
+	@SkipSerialization
 	private String journal;
-	
+	@SkipSerialization
 	private Integer year;
-	
+	@SkipSerialization
 	private Integer volume;
-	
+	@SkipSerialization
 	@Size(max=500)
 	private String pages;
-	
+	@SkipSerialization
 	private String doi;
-	
+	@SkipSerialization
 	private String note;
-	
+	@SkipSerialization
 	private String url;
-	
+	@SkipSerialization
 	private String docType;//
-	
+	@SkipSerialization
 	private String source;
-	
+	@SkipSerialization
 	private String language;//
 	
+	//Erro correto abstract
 	@Lob
 	private String abstrct;//
 	
@@ -76,18 +85,29 @@ public class Article implements Serializable {
 	private String keywords;
 	
 	//POINTS
+	@SkipSerialization
 	@Enumerated(EnumType.STRING)
 	private ClassificationEnum classification;
+	@SkipSerialization
 	private String comments; 
-	
+	@SkipSerialization
 	private Integer regexTitle = 0;
+	@SkipSerialization
 	private Integer regexAbs = 0;
+	@SkipSerialization
 	private Integer regexKeys = 0;
 	
 	@OneToOne
     @JoinColumn(name="same_article_id")
+	@SkipSerialization
 	private Article paperMinLevenshteinDistance;
+	@SkipSerialization
 	private Integer minLevenshteinDistance;
+	
+//	@OneToOne
+//	@SkipSerialization
+//	private DataExtractionForm dataExtractionForm;
+	
 	
 	public ClassificationEnum getClassification() {
 		return classification;
@@ -310,5 +330,35 @@ public class Article implements Serializable {
 	public EvaluationStatusEnum showFinalEvaluation(){
 		return finalEvaluation != null ? finalEvaluation : EvaluationStatusEnum.NOT_EVALUATED;
 	}
+
+	/**
+	 * @return the number
+	 */
+	public Long getNumber() {
+		return number;
+	}
+
+	/**
+	 * @param number the number to set
+	 */
+	public void setNumber(Long number) {
+		this.number = number;
+	}
+
+//	/**
+//	 * @return the dataExtractionForm
+//	 */
+//	public DataExtractionForm getDataExtractionForm() {
+//		return dataExtractionForm;
+//	}
+//
+//	/**
+//	 * @param dataExtractionForm the dataExtractionForm to set
+//	 */
+//	public void setDataExtractionForm(DataExtractionForm dataExtractionForm) {
+//		this.dataExtractionForm = dataExtractionForm;
+//	}
+	
+	
 	
 }

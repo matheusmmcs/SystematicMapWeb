@@ -126,7 +126,7 @@
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
+                    <span class="icon-bar">Teste 1</span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
@@ -140,7 +140,7 @@
                 		${userInfo.user.name}
                 	</span>
             	</li>
-                <li class="dropdown">
+                <li class= "dropdown">
                     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                         <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
                     </a>
@@ -192,18 +192,21 @@
 	        <div id="page-wrapper">
 	
 				<c:if test="${not empty errors}">
-					<div class="alert alert-danger">
-						<button type="button" class="close" data-dismiss="alert">&times;</button>
+					<div class="alert alert-danger alert-dismissible" role="alert">
+						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+  						<span class="sr-only">Error:</span>
+  						<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+<!-- 						<button type="button" class="close" data-dismiss="alert">&times;</button> -->
 						<c:forEach items="${errors}" var="error">
-							<b><fmt:message key="${error.category}" /></b> - <fmt:message
-								key="${error.message}" />
+							<b><fmt:message key="${error.category}" /></b> - <fmt:message key="${error.message}" />
 							<br />
 						</c:forEach>
 					</div>
 				</c:if>
 				<c:if test="${not empty notice}">
-					<div class="alert alert-info">
-						<button type="button" class="close" data-dismiss="alert">&times;</button>
+					<div class="alert alert-info alert-dismissible" role="alert">
+<!-- 						<button type="button" class="close" data-dismiss="alert">&times;</button> -->
+							<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 						<%-- <c:forEach items="${notices}" var="notice"> --%>
 						<b><fmt:message key="${notice.category}" /></b> - <fmt:message
 							key="${notice.message}" />

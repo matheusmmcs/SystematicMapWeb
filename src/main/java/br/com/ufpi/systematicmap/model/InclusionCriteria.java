@@ -10,9 +10,13 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import br.com.caelum.vraptor.serialization.SkipSerialization;
+
 @Entity
+@Table(name = "inclusioncriteria")
 public class InclusionCriteria implements Serializable {
 
 	private static final long serialVersionUID = 1;
@@ -22,14 +26,14 @@ public class InclusionCriteria implements Serializable {
 	@Id
 	@GeneratedValue
 	private Long id;
-	
+	@SkipSerialization
 	@NotNull
 	private String description;
-	
+	@SkipSerialization
 	@ManyToOne
 	@JoinColumn(name = "mapStudy_id")
 	private MapStudy mapStudy;
-	
+	@SkipSerialization
 	@ManyToMany(mappedBy = "inclusionCriterias")
 	private Set<Evaluation> evaluations = new HashSet<>();
 

@@ -34,6 +34,7 @@ import br.com.ufpi.systematicmap.dao.UserDao;
 import br.com.ufpi.systematicmap.interceptor.Public;
 import br.com.ufpi.systematicmap.model.User;
 import br.com.ufpi.systematicmap.utils.GenerateHashPasswordUtil;
+import br.com.ufpi.systematicmap.utils.Linker;
 import br.com.ufpi.systematicmap.utils.MailUtils;
 import br.com.ufpi.systematicmap.validation.EmailAvailable;
 import br.com.ufpi.systematicmap.validation.LoginAvailable;
@@ -49,20 +50,22 @@ public class UsersController {
 	private final Result result;
 	private final UserDao userDao;
 	private final MailUtils mailUtils;
+	private final Linker linker;
 
 	/**
 	 * @deprecated CDI eyes only
 	 */
 	protected UsersController() {
-		this(null, null, null, null);
+		this(null, null, null, null, null);
 	}
 
 	@Inject
-	public UsersController(UserDao dao, Result result, Validator validator, MailUtils mailUtils) {
+	public UsersController(UserDao dao, Result result, Validator validator, MailUtils mailUtils, Linker linker) {
 		this.userDao = dao;
 		this.result = result;
 		this.validator = validator;
 		this.mailUtils = mailUtils;
+		this.linker = linker;
 	}
 
 	@Get("/users")
@@ -84,9 +87,9 @@ public class UsersController {
         
 		userDao.insert(user);
 		
-		String linkRecovery = "http://localhost:8080/SystematicMap/";
+		linker.buildLinkTo(HomeController.class).home();
 		
-		String url = "<a href=\""+linkRecovery+"\" target=\"_blank\">Clique aqui</a> para acessar o site.";		
+		String url = "<a href=\""+linker.getURL()+"\" target=\"_blank\">Clique aqui</a> para acessar o site.";		
 		
 		String message = "<p>Ol&aacute; " + user.getName()+ ",</p>"
 				+ "<p>Sua conta foi criado com sucesso.</p>"

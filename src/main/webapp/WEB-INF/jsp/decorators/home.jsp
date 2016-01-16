@@ -98,9 +98,9 @@
 	</script>
 </head>
 <body>
-	<div id="wrapper">
+<!-- 	<div> -->
 <!--         Navigation -->
-        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+        <div class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
             <div class="navbar-header">
             </div>
             <ul class="nav navbar-top-links navbar-right">
@@ -118,7 +118,7 @@
             	</li>
             	
             </ul>	
-        </nav>
+<!--         </nav> -->
     </div>    
 
 	<div class="container">
@@ -149,11 +149,23 @@
 					</div>
 				</c:if>
 				
-				<decorator:body/>			
+<%-- 				<decorator:body/>			 --%>
 				
 			</div>
 		</div>
-    </div>	
+    </div>
+
+<!-- 	<div class="container"> -->
+	<decorator:body/>	
+<!-- 	</div>		 -->
+	
+	<!-- Footer -->
+    <footer>
+        <div class="container text-center">
+<!--             <p>Copyright &copy; Your Website 2014</p> -->
+            <span>© 2015-2016. Todos os direitos reservados.</span>
+        </div>
+    </footer>
 
     <!-- Metis Menu Plugin JavaScript -->
     <script src="<c:url value="/vendor/metisMenu/metisMenu.min.js" />"></script>

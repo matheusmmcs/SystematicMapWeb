@@ -1,6 +1,12 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
+<script type="text/javascript">
+$(document).ready(function(){
+	var percent = $('.progress-bar').attr("style");
+	$('.progress-bar').attr('style', percent.replace(",", "."));	
+}); 
+</script>
 
 <h3 class="color-primary">
 	<fmt:message key="mapstudy" />
@@ -26,16 +32,31 @@
 				<p>
 				<p>
 					<strong> <fmt:message key="mapstudy.evaluation.rate" />:
-					</strong> ${percentEvaluated}% <a class="btn btn-primary pull-right" href="${linkTo[MapStudyController].evaluate(map.id)}"><fmt:message key="mapstudy.evaluate" /></a>
+<!-- 					<div class="progress"> -->
+<%--   						<div class="progress-bar" role="progressbar" aria-valuenow="${percentEvaluated}" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: ${percentEvaluated}%"> --%>
+<%--   						${percentEvaluated}% --%>
+<!--   						</div> -->
+<!-- 					</div> -->
+
+					<div class="progress">
+  						<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="${percentEvaluated}" aria-valuemin="0" aria-valuemax="100" style="width: ${percentEvaluated}%">
+    						${percentEvaluated}%
+  						</div>
+					</div>
+<%-- 					</strong> ${percentEvaluated}%  --%>
+<%-- 				<a class="btn btn-primary pull-right" href="${linkTo[MapStudyController].evaluate(map.id)}"><fmt:message key="mapstudy.evaluate" /></a> --%>
 				<div class="clear-both"></div>
 				<p>
 				<p>
-					<strong> <fmt:message key="mapstudy.evaluations.results" />:
-					</strong> <a class="btn btn-default pull-right"
-						href="${linkTo[MapStudyController].showEvaluates(map.id)}"><fmt:message
-							key="view" /></a>
+<%-- 					<strong> <fmt:message key="mapstudy.evaluations.results" />: --%>
+<!-- 					</strong>  -->
+<%-- 					<a class="btn btn-default pull-right" href="${linkTo[MapStudyController].showEvaluates(map.id)}"><fmt:message key="view" /></a> --%>
 				<div class="clear-both"></div>
 				<p>
+				
+				<a class="btn btn-primary" href="${linkTo[MapStudyController].evaluate(map.id)}"><fmt:message key="mapstudy.evaluate" /></a>
+				<a class="btn btn-default" href="${linkTo[MapStudyController].showEvaluates(map.id)}"><fmt:message key="view" /></a>
+								
 			</div>
 		</div>
 		<div class="panel panel-default">
@@ -218,19 +239,15 @@
 				<h4>
 					<fmt:message key="mapstudy.article.add" />
 				</h4>
-				<form action="${linkTo[MapStudyController].addarticles}"
-					enctype="multipart/form-data" method="post">
+				<form action="${linkTo[MapStudyController].addarticles}" enctype="multipart/form-data" method="post">
 					<input type="hidden" name="id" value="${map.id}" />
 					<div class="form-group">
 						<div class="row">
 							<div class="fileupload fileupload-new" data-provides="fileupload">
 								<div class="col-lg-7">
-									<span class="btn btn-file btn-default"> <span
-										class="fileupload-new"><fmt:message
-												key="mapstudy.article.add.choose" /></span> <span
-										class="fileupload-exists">Change</span> <input type="file"
-										name="upFile" />
-									</span> <span class="fileupload-preview"></span> <a href="#"
+									<span class="btn btn-file btn-default"> <span class="fileupload-new"><fmt:message key="mapstudy.article.add.choose" /></span> 
+									<span class="fileupload-exists">Change</span> <input type="file" name="upFile" /></span> 
+									<span class="fileupload-preview"></span> <a href="#"
 										class="close fileupload-exists" data-dismiss="fileupload"
 										style="float: none">&times;</a>
 								</div>

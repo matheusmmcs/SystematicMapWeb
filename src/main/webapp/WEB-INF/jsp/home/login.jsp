@@ -16,7 +16,7 @@
 			<fieldset>
 				<div class="form-group">
 					<label class="sr-only" for="login"><fmt:message	key="user.login" /></label> 
-					<input type="text" class="form-control"	id="login" name="login"	placeholder="<fmt:message key="user.login"/>" />
+					<input type="text" class="form-control"	id="login" name="login"	placeholder="<fmt:message key="user.loginoremail"/>" />
 				</div>
 				<div class="form-group">
 					<label class="sr-only" for="password"><fmt:message key="user.password" /></label> 

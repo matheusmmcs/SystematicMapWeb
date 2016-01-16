@@ -3,6 +3,7 @@
  */
 package br.com.ufpi.systematicmap.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -10,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import br.com.ufpi.systematicmap.model.enums.Roles;
 
@@ -17,7 +19,8 @@ import br.com.ufpi.systematicmap.model.enums.Roles;
  * @author Gleison
  *
  */
-@Entity(name = "users_mapStudys")
+@Entity
+@Table(name = "users_mapStudys")
 public class UsersMapStudys {
 	
 	@Id
@@ -31,11 +34,11 @@ public class UsersMapStudys {
 	@JoinColumn(name = "user_id")
 	private User user;
 	
-	@ManyToOne
+	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
 	@JoinColumn(name = "mapStudy_id")
 	private MapStudy mapStudy;
 	
-	private boolean removed;
+	private boolean removed = false;
 
 	/**
 	 * @return the id
@@ -107,5 +110,28 @@ public class UsersMapStudys {
 	public void setRemoved(boolean removed) {
 		this.removed = removed;
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "UsersMapStudys [id=" + id + ", role=" + role + ", user=" + user
+				+ ", mapStudy=" + mapStudy + ", removed=" + removed + "]";
+	}
+	
+	
+	
+//	/**
+//	 * Verifica se já não existe essa relação.
+//	 * @param usersMapStudys
+//	 * @return 
+//	 */
+//	public boolean equals(UsersMapStudys usersMapStudys) {
+//		if (usersMapStudys.getUser().equals(user) && usersMapStudys.getMapStudy().equals(mapStudy) && usersMapStudys.getRole().equals(role)){
+//			return true;
+//		}
+//		return false;
+//	}
 
 }

@@ -4,7 +4,7 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
 	version="3.0">
 
-	<display-name>SystemaicMap</display-name>
+	<display-name>SystematicMap</display-name>
 	
 <!-- 	<context-param>   -->
 <!--     <param-name>br.com.caelum.vraptor.environment</param-name>   -->

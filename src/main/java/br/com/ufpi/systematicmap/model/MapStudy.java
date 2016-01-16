@@ -10,9 +10,11 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -21,6 +23,7 @@ import br.com.ufpi.systematicmap.model.enums.Roles;
 
 
 @Entity 
+@Table(name = "mapstudy")
 public class MapStudy implements Serializable{
 
 	private static final long serialVersionUID = 1;
@@ -39,7 +42,7 @@ public class MapStudy implements Serializable{
     
     private boolean removed;
         
-    @OneToMany(mappedBy = "mapStudy", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "mapStudy", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.EAGER)  
 	private Set<UsersMapStudys> usersMapStudys = new HashSet<>();
     
     @OneToMany(mappedBy="mapStudy")
@@ -53,6 +56,9 @@ public class MapStudy implements Serializable{
     
     @OneToMany(mappedBy="mapStudy")
 	private Set<Evaluation> evaluations= new HashSet<>();
+    
+//    @OneToMany(mappedBy="mapStudy")
+//	private Set<DataExtractionForm> dataExtractionForm = new HashSet<>();
 
 	public Long getId() {
 		return id;
@@ -266,8 +272,26 @@ public class MapStudy implements Serializable{
 	public List<User> members(){
 		List<User> members = new ArrayList<>();
 		for (UsersMapStudys u : usersMapStudys) {
-			members.add(u.getUser());
+			if (!u.isRemoved()){
+				members.add(u.getUser());
+			}			
 		}
 		return members;
 	}
+
+//	/**
+//	 * @return the dataExtractionForm
+//	 */
+//	public Set<DataExtractionForm> getDataExtractionForm() {
+//		return dataExtractionForm;
+//	}
+//
+//	/**
+//	 * @param dataExtractionForm the dataExtractionForm to set
+//	 */
+//	public void setDataExtractionForm(Set<DataExtractionForm> dataExtractionForm) {
+//		this.dataExtractionForm = dataExtractionForm;
+//	}
+	
+	
 }

@@ -1,5 +1,7 @@
 package br.com.ufpi.systematicmap.controller;
 
+import static br.com.caelum.vraptor.view.Results.json;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -55,6 +57,7 @@ import br.com.ufpi.systematicmap.model.vo.ArticleCompareVO;
 import br.com.ufpi.systematicmap.utils.BibtexToArticleUtils;
 import br.com.ufpi.systematicmap.utils.BibtexUtils;
 import br.com.ufpi.systematicmap.utils.FleissKappa;
+import br.com.ufpi.systematicmap.utils.Linker;
 import br.com.ufpi.systematicmap.utils.MailUtils;
 
 @Controller
@@ -64,6 +67,7 @@ public class MapStudyController {
 	private final Validator validator;
 	private final UserInfo userInfo;
 	private final FilesUtils files;
+	private final Linker linker;
 	
 	private final MapStudyDao mapStudyDao;
 	private final UserDao userDao;
@@ -77,7 +81,7 @@ public class MapStudyController {
 	 * @deprecated CDI eyes only
 	 */
 	protected MapStudyController() {
-		this(null, null, null, null, null, null, null, null, null, null, null);
+		this(null, null, null, null, null, null, null, null, null, null, null, null);
 	}
 
 
@@ -87,7 +91,7 @@ public class MapStudyController {
 				UserDao userDao, ArticleDao articleDao, 
 				InclusionCriteriaDao inclusionDao,
 				ExclusionCriteriaDao exclusionDao,
-				EvaluationDao evaluationDao, MailUtils mailUtils) {
+				EvaluationDao evaluationDao, MailUtils mailUtils, Linker linker) {
 		this.mapStudyDao = musicDao;
 		this.result = result;
         this.validator = validator;
@@ -99,6 +103,7 @@ public class MapStudyController {
 		this.exclusionDao = exclusionDao;
 		this.evaluationDao = evaluationDao;
 		this.mailUtils = mailUtils;
+		this.linker = linker;
 	}
 	
 	
@@ -113,11 +118,10 @@ public class MapStudyController {
 		
 		User user = userInfo.getUser();
 		userDao.refresh(user);
+		
 		//set member creator map 
 		mapstudy.addCreator(user);
-		
 		mapStudyDao.add(mapstudy);
-		userDao.update(user);
 		
 		result.include("notice", new SimpleMessage("mapstudy", "mapstudy.add.sucess"));
 		result.redirectTo(this).list();
@@ -145,14 +149,15 @@ public class MapStudyController {
 	
 	@Get("/maps/{id}")
 	public void show(Long id) {
+		System.out.println("SHOW");
 		MapStudy mapStudy = mapStudyDao.find(id);
 		User user = userInfo.getUser();
 		
 		validator.check(mapStudy != null, new SimpleMessage("mapstudy", "mapstudy.is.not.exist"));
 		validator.onErrorRedirectTo(this).list();
-		
+
 		validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.is.not.mapstudy"));
-		validator.onErrorRedirectTo(this).list();		
+		validator.onErrorRedirectTo(this).list();	
 		
 		List<User> mapStudyUsersList = userDao.mapStudyUsers(mapStudy);
 		List<User> mapStudyArentUsers = userDao.mapStudyArentUsers(mapStudy);
@@ -172,7 +177,7 @@ public class MapStudyController {
 	    result.include("mapStudyArentUsers", mapStudyArentUsers);
 	}
 
-	//TODO Não está completo
+	//TODO Verificar que ação deve ser tomada ao remover um membro
 	@Get("/maps/{id}/removemember/{userId}")
 	public void removemember(Long id, Long userId){
 		validator.onErrorForwardTo(this).show(id);
@@ -215,9 +220,8 @@ public class MapStudyController {
 		userDao.update(user);
 		
 		if (notify){
-			String linkRecovery = "http://localhost:8080/SystematicMap/";
-			
-			String url = "<a href=\""+linkRecovery+"\" target=\"_blank\">Clique aqui</a> para acessar o site.";		
+			linker.buildLinkTo(HomeController.class).home();
+			String url = "<a href=\""+linker.getURL()+"\" target=\"_blank\">Clique aqui</a> para acessar o site.";		
 			
 			String message = "<p>Ol&aacute; " + user.getName()+ ",</p>"
 					+ "<p>Voc&ecirc; foi adicionado a um mapeamento sistemático.</p>"
@@ -243,17 +247,17 @@ public class MapStudyController {
 		validator.onErrorForwardTo(this).show(id);
 		
 		MapStudy mapStudy = mapStudyDao.find(id);
-		
 		validator.check(mapStudy.isCreator(userInfo.getUser()), new SimpleMessage("user", "user.is.not.creator"));
 		validator.onErrorRedirectTo(this).show(id);
 		
-		files.save(upFile, mapStudy);
-		
 		BibTeXDatabase database = null;
-		try {
-			database = BibtexUtils.parseBibTeX(files.getFile(mapStudy));
-		} catch (IOException | ParseException e) {
-//			e.printStackTrace();
+		
+		if (upFile != null){
+			files.save(upFile, mapStudy);			
+			try {
+				database = BibtexUtils.parseBibTeX(files.getFile(mapStudy));
+			} catch (IOException | ParseException e) {
+			}
 		}
 		
 		validator.check(database!=null, new SimpleMessage("path", "no.select.path"));
@@ -261,10 +265,9 @@ public class MapStudyController {
 		
 	    Map<Key, BibTeXEntry> entryMap = database.getEntries();
 	    Collection<BibTeXEntry> entries = entryMap.values();
-//	    Long number = 1l;
 	    
 		for(BibTeXEntry entry : entries){
-			Article a = BibtexToArticleUtils.bibtexToArticle(entry, source);//, number++);
+			Article a = BibtexToArticleUtils.bibtexToArticle(entry, source);
 			mapStudy.addArticle(a);
 			articleDao.insert(a);
 		}
@@ -274,6 +277,7 @@ public class MapStudyController {
 		result.include("notice", new SimpleMessage("mapstudy.articles", "articles.add.sucess"));
 	    result.redirectTo(this).show(id);
 	}
+	
 	//TODO teste de inserir trabalhos manualmente @Get e @Post
 	@Get("/maps/{mapId}/addmanuallyarticles")
 	public void addmanuallyarticles(Long mapId){
@@ -308,6 +312,7 @@ public class MapStudyController {
 	    result.redirectTo(this).show(mapStudy.getId());
 	}
 	
+	// A parte de visão não está completa, adicionar um botão selecionar todos, e melhorar aparência
 	@Get("/maps/{mapId}/removearticles")
 	public void removearticles(Long mapId){
 		validator.onErrorForwardTo(this).show(mapId);
@@ -320,7 +325,6 @@ public class MapStudyController {
 		validator.check(mapStudy.isCreator(userInfo.getUser()), new SimpleMessage("user", "user.is.not.creator"));
 		validator.onErrorRedirectTo(this).show(mapId);
 		
-		
 		result.include("articles", articleDao.getArticles(mapStudy));
 		result.include("map", mapStudy);
 	}
@@ -328,8 +332,6 @@ public class MapStudyController {
 	@Post("/maps/removearticles")
 	public void removearticlesform(Long mapId, final List<Integer> articlesIds){
 		validator.onErrorForwardTo(this).show(mapId);
-		
-//		MapStudy mapStudy = mapStudyDao.find(mapId);
 		
 		validator.check(articlesIds != null, new SimpleMessage("mapstudy.articles", "article.is.not.select"));
 		validator.onErrorRedirectTo(this).show(mapId);
@@ -341,9 +343,6 @@ public class MapStudyController {
 		result.include("notice", new SimpleMessage("mapstudy.articles", "article.remove.sucess"));
 		result.redirectTo(this).show(mapId);		
 	}
-	
-	
-	
 	
 	@Post("/maps/addinclusion")
 	public void addinclusion(Long id, InclusionCriteria criteria) {
@@ -380,13 +379,11 @@ public class MapStudyController {
 	}
 	
 	@Post("/maps/refinearticles")
-	public void refinearticles(Long id, Integer levenshtein, String regex, 
-			Integer limiartitulo, Integer limiarabstract, Integer limiarkeywords, Integer limiartotal){
-		
+	public void refinearticles(Long id, Integer levenshtein, String regex, Integer limiartitulo, Integer limiarabstract, Integer limiarkeywords, Integer limiartotal){
 		MapStudy mapStudy = mapStudyDao.find(id);
 		FilterArticles filter = new FilterArticles(mapStudy.getArticles(), levenshtein, regex.trim(), limiartitulo, limiarabstract, limiarkeywords, limiartotal);
 		filter.filter();
-		
+		//TODO está faltando algo aqui ?
 		validator.onErrorForwardTo(this).show(id);
 		result.include("notice", new SimpleMessage("mapstudy", "refine.articles.sucess"));
 		result.redirectTo(this).show(id);
@@ -402,19 +399,24 @@ public class MapStudyController {
 		
 		validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.is.not.mapstudy"));
 		validator.onErrorRedirectTo(this).list();
-		//TODO verificar se tem uma forma mais elegante de determinar primeiro id de avaliação
+		
+		validator.check((mapStudy.getExclusionCriterias().size() > 0 && mapStudy.getInclusionCriterias().size() > 0), new SimpleMessage("mapstudy", "mapstudy.is.not.criterias"));
+		validator.onErrorRedirectTo(this).show(mapid);
+		
 		result.redirectTo(this).evaluateArticle(mapid, 0l);
 	}
 	
 	@Get("/maps/evaluate/{mapid}/article/{articleid}")
 	public void evaluateArticle(Long mapid, Long articleid) {
+		System.out.println("Carregou evaluate !");
 		MapStudy mapStudy = mapStudyDao.find(mapid);
 		
 		validator.check(mapStudy != null, new SimpleMessage("mapstudy", "mapstudy.is.not.exist"));
 		validator.onErrorRedirectTo(this).list();
-		
-		validator.check((mapStudy.getArticles().size() > 0), new SimpleMessage("mapstudy", "mapstudy.evaluate.articles.none"));
-		validator.onErrorRedirectTo(this).show(mapid);
+
+//		validator.check(mapStudy.getArticles().size() > 0, new SimpleMessage("mapstudy", "mapstudy.evaluate.articles.none"));
+//		validator.onErrorRedirectTo(this).show(mapid);
+//		validator.onErrorUsePageOf(this).show(mapid);
 		
 		List<Article> articlesToEvaluate = articleDao.getArticlesToEvaluate(userInfo.getUser(), mapStudy);
 		List<Evaluation> evaluations = evaluationDao.getEvaluations(userInfo.getUser(), mapStudy);
@@ -465,9 +467,9 @@ public class MapStudyController {
 		
 		result.include("article", article);
 		result.include("nextArticleId", nextArticleId);
-		result.include("articlesToEvaluate", articlesToEvaluate);
+		result.include("articlesToEvaluate", articlesToEvaluate); // artigos a serem avaliados
 		result.include("percentEvaluated", mapStudy.percentEvaluated(percentEvaluatedDouble));
-		result.include("evaluations", evaluations);
+		result.include("evaluations", evaluations); // artigos já avaliados
 		result.include("evaluationDone", evaluationDone);
 	}
 	
@@ -486,6 +488,7 @@ public class MapStudyController {
 		}
 	}
 	
+	@Deprecated
 	@Post("/maps/includearticle")
 	public void includearticle(Long mapid, Long articleid, Long nextArticleId, List<Long> inclusions, String comment){
 		doEvaluate(mapid, articleid, inclusions, comment, true);
@@ -493,11 +496,50 @@ public class MapStudyController {
 		result.redirectTo(this).evaluateArticle(mapid, nextArticleId);
 	}
 	
+	@Deprecated
 	@Post("/maps/excludearticle")
 	public void excludearticle(Long mapid, Long articleid, Long nextArticleId, List<Long> exclusions, String comment){
 		doEvaluate(mapid, articleid, exclusions, comment, false);
 		nextArticleId = nextArticleId != null ? nextArticleId : 0l;
 		result.redirectTo(this).evaluateArticle(mapid, nextArticleId);
+	}
+	
+	// TODO EM desenvolvimento
+	@Post("/maps/evaluate")
+	public void evaluateAjax(Long mapid, Long articleid, List<Long> criterias, String comment, boolean isInclusion, Long nextArticleId){
+		System.out.println("Dados: " + mapid + " " + articleid + " " + criterias + " " + comment + " " + isInclusion + " " + nextArticleId);
+		doEvaluate(mapid, articleid, criterias, comment, isInclusion);
+
+		MapStudy mapStudy = mapStudyDao.find(mapid);
+		Double percentEvaluatedDouble = mapStudy.percentEvaluatedDouble(articleDao, userInfo.getUser());
+		
+		HashMap<String, Object> returns = new HashMap<>();
+		Article article = null;
+		
+		if (nextArticleId != null){
+			article = articleDao.find(nextArticleId);
+		}else{
+			article = new Article();
+			article.setId(-1l);
+		}		
+		
+		returns.put("article", article);
+		returns.put("percent", mapStudy.percentEvaluated(percentEvaluatedDouble));
+		
+		result.use(Results.json()).indented().withoutRoot().from(returns).recursive().serialize();
+	}
+	
+	@Get
+	@Path("/maps/article/{articleid}/load")
+	public void loadArticle(Long mapid, Long articleid){
+		System.out.println("Carregou: " + articleid);
+		Article article = articleDao.find(articleid);
+		
+		// se o artigo não existir
+		validator.check(article != null, new SimpleMessage("mapstudy", "mapstudy.evaluate.articles.none"));
+		validator.onErrorRedirectTo(this).show(mapid);	
+		
+		result.use(Results.json()).indented().from(article).recursive().serialize();
 	}
 	
 	private void doEvaluate(Long mapid, Long articleid, List<Long> ids, String comment, boolean include){
@@ -535,7 +577,6 @@ public class MapStudyController {
 	}
 	
 	/* Remove Criteria */
-	//TODO Estudar
 	@Get("/maps/{studyMapId}/removeexclusioncriteria/{criteriaId}")
 	public void removeexclusioncriteriapage(Long studyMapId, Long criteriaId) {
 		validator.onErrorForwardTo(this).show(studyMapId);
@@ -585,13 +626,13 @@ public class MapStudyController {
 		}
 		
 		exclusionDao.delete(criteriaId);
-		result.include("notice", new SimpleMessage("mapstudy", "exclusion.criteria.remove.sucess"));
 		
+		result.include("notice", new SimpleMessage("mapstudy", "exclusion.criteria.remove.sucess"));		
 		result.redirectTo(this).show(studyMapId);
 	}
 	
 	/* Remove Criteria Inclusion*/
-	//TODO Estudar
+	//TODO Matheus Revisar isso
 	@Get("/maps/{studyMapId}/removeinclusioncriteria/{criteriaId}")
 	public void removeinclusioncriteriapage(Long studyMapId, Long criteriaId) {
 		validator.onErrorForwardTo(this).show(studyMapId);
@@ -641,12 +682,11 @@ public class MapStudyController {
 		}
 		
 		inclusionDao.delete(criteriaId);
-		result.include("notice", new SimpleMessage("mapstudy", "inclusion.criteria.remove.sucess"));
 		
+		result.include("notice", new SimpleMessage("mapstudy", "inclusion.criteria.remove.sucess"));		
 		result.redirectTo(this).show(studyMapId);
 	}
 	
-	/*  */
 	@Get("/maps/{studyMapId}/evaluates/")
 	public void showEvaluates(Long studyMapId) {
 		MapStudy mapStudy = mapStudyDao.find(studyMapId);
@@ -656,13 +696,16 @@ public class MapStudyController {
 		validator.onErrorRedirectTo(this).list();
 		
 		validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.is.not.mapstudy"));
-		validator.onErrorRedirectTo(this).list();
-		
-		validator.check((mapStudy != null), new SimpleMessage("mapstudy", "mapstudy.evaluate.criterias.none"));
-		validator.onErrorRedirectTo(this).list();
+		validator.onErrorRedirectTo(this).list();		
 		
 		List<Evaluation> evaluations = evaluationDao.getEvaluations(user, mapStudy);
 		List<Article> articles = articleDao.getArticles(mapStudy);
+		
+		validator.check(articles.size() > 0, new SimpleMessage("mapstudy.articles", "mapstudy.articles.none"));
+		validator.onErrorRedirectTo(this).show(studyMapId);
+		
+		validator.check(evaluations.size() > 0, new SimpleMessage("mapstudy.evaluations", "mapstudy.articles.not.evaluations"));
+		validator.onErrorRedirectTo(this).show(studyMapId);
 		
 		HashMap<InclusionCriteria, Integer> inclusionCriterias = new HashMap<InclusionCriteria, Integer>();
 		HashMap<ExclusionCriteria, Integer> exclusionCriterias = new HashMap<ExclusionCriteria, Integer>();
@@ -741,6 +784,13 @@ public class MapStudyController {
 		MapStudy mapStudy = mapStudyDao.find(mapStudyId);
 		List<Evaluation> evaluations = evaluationDao.getEvaluations(userInfo.getUser(), mapStudy);
 		List<Article> articles = new ArrayList<Article>();
+		
+		validator.check(articles.size() > 0, new SimpleMessage("mapstudy.articles", "mapstudy.articles.none"));
+		validator.onErrorRedirectTo(this).show(mapStudyId);
+		
+		validator.check(evaluations.size() > 0, new SimpleMessage("mapstudy.evaluations", "mapstudy.articles.not.evaluations"));
+		validator.onErrorRedirectTo(this).show(mapStudyId);
+		
 		for(Evaluation e : evaluations){
 			if(e.getEvaluationStatus().equals(EvaluationStatusEnum.ACCEPTED)){
 				articles.add(e.getArticle());
@@ -754,10 +804,14 @@ public class MapStudyController {
 	public Download downloadAll(Long mapStudyId) throws IOException {
 		MapStudy mapStudy = mapStudyDao.find(mapStudyId);
 		List<Article> articles = articleDao.getArticlesFinalAccepted(mapStudy);
+		
+		validator.check(articles.size() > 0, new SimpleMessage("mapstudy.articles", "mapstudy.articles.none"));
+		validator.onErrorRedirectTo(this).show(mapStudyId);
+		
 		return generateFile(mapStudy, articles);
 	}
 	
-	//TODO precisa ser refatorado
+	//TODO Depois adicionar a visão uma lista dos possiveis campos para o arquivo
 	private Download generateFile(MapStudy mapStudy, List<Article> articles) throws IOException {
 		//create file
 		String filename = mapStudy.getTitle().replaceAll(" ", "_")+ ".csv";
@@ -810,8 +864,8 @@ public class MapStudyController {
 		MapStudy mapStudy = mapStudyDao.find(mapStudyId);
 		User user = userInfo.getUser();
 		
-		validator.check((mapStudy != null), new SimpleMessage("mapstudy", "mapstudy.evaluate.criterias.none"));
-		validator.onErrorRedirectTo(this).show(mapStudyId);
+		validator.check(mapStudy != null, new SimpleMessage("mapstudy", "mapstudy.is.not.exist"));
+		validator.onErrorRedirectTo(this).list();
 		
 		validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.is.not.mapstudy"));
 		validator.onErrorRedirectTo(this).list();
@@ -889,6 +943,7 @@ public class MapStudyController {
 			ArticleCompareVO acvo = new ArticleCompareVO(a, users, evaluations);
 			articlesCompare.add(acvo);
 		}
+		
 		retorno = FleissKappa.combineKappasMap(articlesCompare, users);
 		
 		result.use(Results.json()).from(retorno).serialize();
@@ -935,68 +990,12 @@ public class MapStudyController {
 		result.use(Results.json()).from(retorno).serialize();
 	}
 	
-	
-	/*
-	 * , UploadedFile file
-	validator.onErrorForwardTo(UsersController.class).home();
-
-	mapStudyDao.add(map);
-	
-	User currentUser = userInfo.getUser();
-	userDao.refresh(currentUser);
-	
-	currentUser.add(map);
-	
-	// is there a file?
-	if (file != null) {
-	    // Let's save the file
-		musics.save(file, map);
-		logger.info("Uploaded file: {}", file.getFileName());
-	}
-
-	// you can add objects to result even in redirects. Added objects will
-	// survive one more request when redirecting.
-	result.include("notice", map.getTitle() + " music added");
-
-	result.redirectTo(UsersController.class).home();
-	*/
-	
-	
-	/*
-	 
-	@Path("/maps/download/{id}")
 	@Get
-	public Download download(Long id) throws FileNotFoundException {
-		MapStudy music = mapStudyDao.find(id);
-		File file = musics.getFile(music);
-		String contentType = "audio/mpeg";
-		String filename = music.getTitle() + ".mp3";
-
-		return new FileDownload(file, contentType, filename);
+	@Path("/maps/{id}/articles/json")
+	public void articlesJson(Long id){
+		MapStudy mapStudy = mapStudyDao.find(id);
+		List<Article> articles = articleDao.getArticles(mapStudy);
+		result.use(json()).indented().from(articles, "articles").serialize();
 	}
-	
-	 * Show all list of registered musics in json format
-	@Public @Path("/maps/list/json")
-	public void showAllMusicsAsJSON() {
-		result.use(json()).from(mapStudyDao.findAll()).serialize();
-	}
-	@Public @Path("/maps/list/xml")
-	public void showAllMusicsAsXML() {
-		result.use(xml()).from(mapStudyDao.findAll()).serialize();
-	}
-	@Public @Path("/maps/list/http")
-	public void showAllMusicsAsHTTP() {
-		result.use(http()).body("<p class=\"content\">"+
-			mapStudyDao.findAll().toString()+"</p>");
-	}
-
-	@Public @Path("/maps/list/form")
-	public void listForm() {}
-	
-	@Public @Path("maps/listAs")
-	public void listAs() {
-		result.use(representation())
-			.from(mapStudyDao.findAll()).serialize();
-	}
-	*/
+		
 }

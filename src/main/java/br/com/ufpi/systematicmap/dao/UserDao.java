@@ -32,7 +32,7 @@ public class UserDao extends Dao<User> {
 //		GenerateHashPasswordUtil generateHashPasswordUtil = new GenerateHashPasswordUtil();
 		try {
 			User user = entityManager
-				.createQuery("select u from User u where u.login = :login and u.password = :password", User.class)
+				.createQuery("select u from User u where :login in (u.login, u.email) and u.password = :password", User.class)
 					.setParameter("login", login)
 					.setParameter("password", password)
 					.getSingleResult();

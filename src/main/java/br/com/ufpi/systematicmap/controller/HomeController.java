@@ -40,11 +40,12 @@ public class HomeController {
 	@Public
 	@Get("/")
 	public void home() {
-		if(userInfo == null){
-			result.redirectTo(this).login();
-		}else{
+		if(userInfo != null && userInfo.getUser() != null){
 			result.redirectTo(MapStudyController.class).list();
 		}
+//		else{
+//			result.redirectTo(this).login();
+//		}
 	}
 
 	@Post
@@ -57,14 +58,13 @@ public class HomeController {
 
 		userInfo.login(currentUser);
 		
-		result.include("notice", new SimpleMessage("user.login", "mapstudy.login.success"));
-		
+		result.include("notice", new SimpleMessage("user.login", "mapstudy.login.success"));		
 		result.redirectTo(MapStudyController.class).list();
 	}
 
 	public void logout() {
 	    userInfo.logout();
-	    result.redirectTo(this).login();
+	    result.redirectTo(this).home();
 	}
 
 	@Public
@@ -80,6 +80,11 @@ public class HomeController {
 	@Public
 	@Get
 	public void recovery() {
+	}
+	
+	@Public
+	@Get
+	public void contact() {
 	}
 
 }
