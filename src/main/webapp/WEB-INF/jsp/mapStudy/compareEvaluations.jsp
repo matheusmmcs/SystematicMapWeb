@@ -41,10 +41,9 @@
 							  </label>
 							</div>
 						</c:forEach>
-						<a class="btn btn-default" id="kappa-submit" href="#"><fmt:message key="mapstudy.evaluations.fleisskappa.calculate"/></a>
+						<a class="btn btn-default pull-left" id="kappa-submit" href="#"><fmt:message key="mapstudy.evaluations.fleisskappa.calculate"/></a>
 					</form>
-					
-					
+					<a class="btn btn-default pull-right" href="${linkTo[MapStudyController].showEvaluates(mapStudy.id)}"><fmt:message key="button.back" /></a>
 					<div class="clear-both"></div>
 				<p>
 				 
@@ -190,6 +189,11 @@
 			       console.log($(this).val());
 			       ids += $(this).val() + ";";
 			    });
+
+			    if (ids == null || ids === ""){
+					alert('Nenhum usuario foi slecionado !');
+					return;
+				}
 			    
 			    var formData = {
 					usersIds : ids,

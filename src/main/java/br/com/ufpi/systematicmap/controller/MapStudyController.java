@@ -651,6 +651,7 @@ public class MapStudyController {
 		
 		List<Evaluation> evaluationsImpacted = new ArrayList<Evaluation>();
 		List<Evaluation> evaluationsRemoved = new ArrayList<Evaluation>();
+		
 		for(Evaluation e : evaluations){
 			if(e.getInclusionCriterias().size() == 1 &&
 				e.getInclusionCriterias().contains(criteria)){
@@ -785,9 +786,6 @@ public class MapStudyController {
 		List<Evaluation> evaluations = evaluationDao.getEvaluations(userInfo.getUser(), mapStudy);
 		List<Article> articles = new ArrayList<Article>();
 		
-		validator.check(articles.size() > 0, new SimpleMessage("mapstudy.articles", "mapstudy.articles.none"));
-		validator.onErrorRedirectTo(this).show(mapStudyId);
-		
 		validator.check(evaluations.size() > 0, new SimpleMessage("mapstudy.evaluations", "mapstudy.articles.not.evaluations"));
 		validator.onErrorRedirectTo(this).show(mapStudyId);
 		
@@ -796,6 +794,10 @@ public class MapStudyController {
 				articles.add(e.getArticle());
 			}
 		}
+		
+		validator.check(articles.size() > 0, new SimpleMessage("mapstudy.articles", "mapstudy.articles.none"));
+		validator.onErrorRedirectTo(this).show(mapStudyId);
+		
 		return generateFile(mapStudy, articles);
 	}
 	
@@ -805,7 +807,7 @@ public class MapStudyController {
 		MapStudy mapStudy = mapStudyDao.find(mapStudyId);
 		List<Article> articles = articleDao.getArticlesFinalAccepted(mapStudy);
 		
-		validator.check(articles.size() > 0, new SimpleMessage("mapstudy.articles", "mapstudy.articles.none"));
+		validator.check(articles.size() > 0, new SimpleMessage("mapstudy.articles", "mapstudy.articles.accepted.all.none"));
 		validator.onErrorRedirectTo(this).show(mapStudyId);
 		
 		return generateFile(mapStudy, articles);
@@ -818,9 +820,17 @@ public class MapStudyController {
 		File file = new File(filename);
 		FileWriter writer = new FileWriter(file, false);
 		
+		Collections.sort(articles, new Comparator<Article>() {
+			@Override
+			public int compare(Article a1, Article a2){
+				return a1.getId().compareTo(a2.getId());
+			}
+		});
+		
 		String delimiter = ";";
 		
 		//create header
+		writer.append("ID"+delimiter);
 		writer.append("Author"+delimiter);
 		writer.append("Title"+delimiter);
 	    writer.append("Journal"+delimiter);
@@ -836,6 +846,7 @@ public class MapStudyController {
 	    writer.append('\n');
 		
 		for(Article a : articles){
+			writer.append(a.getId()+delimiter);
 			writer.append(a.getAuthor()+delimiter);
 			writer.append(a.getTitle()+delimiter);
 		    writer.append(a.getJournal()+delimiter);
@@ -887,6 +898,7 @@ public class MapStudyController {
 		
 		List<ArticleCompareVO> articlesCompare = new ArrayList<ArticleCompareVO>();
 		List<ArticleCompareVO> articlesAcceptedCompare = new ArrayList<ArticleCompareVO>();
+		
 		for(Article a : articles){
 			HashMap<User, Evaluation> evaluations = new HashMap<User, Evaluation>();
 			boolean hasAccepted = false;
@@ -897,8 +909,10 @@ public class MapStudyController {
 					hasAccepted = true;
 				}
 			}
+			
 			ArticleCompareVO acvo = new ArticleCompareVO(a, members, evaluations);
 			articlesCompare.add(acvo);
+			
 			if(hasAccepted){
 				articlesAcceptedCompare.add(acvo);
 			}
@@ -909,7 +923,11 @@ public class MapStudyController {
 		result.include("articles", articlesCompare);
 		result.include("articlesAccepted", articlesAcceptedCompare);
 		result.include("evaluationStatus", EvaluationStatusEnum.values());
-		result.include("kappa", FleissKappa.combineKappas(articlesCompare, members));
+		if (members.size() > 1){
+			result.include("kappa", FleissKappa.combineKappas(articlesCompare, members));
+		}else{
+			result.include("kappa", 100.0f);
+		}		
 	}
 	
 	@Path("/maps/finalEvaluate")
@@ -929,20 +947,29 @@ public class MapStudyController {
 		List<User> users = new ArrayList<User>();
 		HashMap<String, Object> retorno = new HashMap<String, Object>();
 		
-		for(String s : usersIds.split(";")){
-			users.add(userDao.find(Long.parseLong(s)));
-		}
+		if (usersIds != null){
+			for(String s : usersIds.split(";")){
+				users.add(userDao.find(Long.parseLong(s)));
+			}			
+		}		
+		
+		System.out.println("USERS ID: "+ usersIds +" SIZE: " + users.size());
 		
 		List<ArticleCompareVO> articlesCompare = new ArrayList<ArticleCompareVO>();
+		
 		for(Article a : articles){
 			HashMap<User, Evaluation> evaluations = new HashMap<User, Evaluation>();
+			
 			for(User u : users){
 				Evaluation evaluation = a.getEvaluation(u);
 				evaluations.put(u, evaluation);
 			}
+			
 			ArticleCompareVO acvo = new ArticleCompareVO(a, users, evaluations);
 			articlesCompare.add(acvo);
 		}
+		
+		System.out.println("articlesCompare size: " + articlesCompare.size());
 		
 		retorno = FleissKappa.combineKappasMap(articlesCompare, users);
 		

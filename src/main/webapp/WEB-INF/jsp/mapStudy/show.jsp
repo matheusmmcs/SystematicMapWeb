@@ -32,26 +32,13 @@ $(document).ready(function(){
 				<p>
 				<p>
 					<strong> <fmt:message key="mapstudy.evaluation.rate" />:
-<!-- 					<div class="progress"> -->
-<%--   						<div class="progress-bar" role="progressbar" aria-valuenow="${percentEvaluated}" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: ${percentEvaluated}%"> --%>
-<%--   						${percentEvaluated}% --%>
-<!--   						</div> -->
-<!-- 					</div> -->
-
 					<div class="progress">
-  						<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="${percentEvaluated}" aria-valuemin="0" aria-valuemax="100" style="width: ${percentEvaluated}%">
+  						<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="${percentEvaluated}" aria-valuemin="0" aria-valuemax="100" style="min-width: 3em; width: ${percentEvaluated}%">
     						${percentEvaluated}%
   						</div>
 					</div>
-<%-- 					</strong> ${percentEvaluated}%  --%>
-<%-- 				<a class="btn btn-primary pull-right" href="${linkTo[MapStudyController].evaluate(map.id)}"><fmt:message key="mapstudy.evaluate" /></a> --%>
 				<div class="clear-both"></div>
 				<p>
-				<p>
-<%-- 					<strong> <fmt:message key="mapstudy.evaluations.results" />: --%>
-<!-- 					</strong>  -->
-<%-- 					<a class="btn btn-default pull-right" href="${linkTo[MapStudyController].showEvaluates(map.id)}"><fmt:message key="view" /></a> --%>
-				<div class="clear-both"></div>
 				<p>
 				
 				<a class="btn btn-primary" href="${linkTo[MapStudyController].evaluate(map.id)}"><fmt:message key="mapstudy.evaluate" /></a>
