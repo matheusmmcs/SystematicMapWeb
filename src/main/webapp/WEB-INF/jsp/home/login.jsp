@@ -30,10 +30,10 @@
 		</form>
 
 	</div>
-	<a class="btn btn-lg btn-link" href="<c:url value="/home/create"/>" style="text-align: left;"><fmt:message key="signup" /></a>
-	<a class="btn btn-lg btn-link" href="<c:url value="/home/recovery"/>" style="text-align: right;"><fmt:message key="recovery.password" /></a>
+	<a class="btn btn-lg btn-link pull-lefth" href="<c:url value="/home/create"/>" style="text-align: left;"><fmt:message key="signup" /></a>
+	<a class="btn btn-lg btn-link pull-right" href="<c:url value="/home/recovery"/>" style="text-align: right;"><fmt:message key="recovery.password" /></a>
 </div>
-<div class="text-center">
-	<a class="btn btn-lg btn-social btn-google-plus" href="#"><i class="fa fa-google"></i> Google</a> 
-	<a class="btn btn-lg btn-social btn-facebook" href="#"><i class="fa fa-facebook"></i> Facebook</a>	
-</div>
+<!-- <div class="text-center"> -->
+<!-- 	<a class="btn btn-lg btn-social btn-google-plus" href="#"><i class="fa fa-google"></i> Google</a>  -->
+<!-- 	<a class="btn btn-lg btn-social btn-facebook" href="#"><i class="fa fa-facebook"></i> Facebook</a>	 -->
+<!-- </div> -->

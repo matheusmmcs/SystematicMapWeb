@@ -2,6 +2,31 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <script type="text/javascript">
 $(document).ready(function(){
+	var percent = $('.progress-bar').attr("style");
+	$('.progress-bar').attr('style', percent.replace(",", "."));
+
+	var tableToEvaluate = $('.datatable-to-evaluate').DataTable({
+        "initComplete": function () {
+            var api = this.api();
+            var data = api.data().toArray();
+            api.clear();
+            for (var d in data) {
+                api.row.add(data[d]);
+            }
+            api.draw();
+            tableToEvaluate = api;
+        }
+    });
+	var tableEvaluated = $('.datatable-evaluated').DataTable();
+// 	{
+//     "scrollY":        "300px",
+//     "scrollCollapse": true,
+//     "paging":         false
+// }
+
+	
+
+	
 	var actualizeArticle = function(article){
 		//alterar a url para caso seja realizado F5
 		var url = window.location.href;
@@ -102,19 +127,32 @@ $(document).ready(function(){
 
 	var actualizeList = function (articleid, isInclusion){
 		var $article = $(".tBodyArticlesToEvaluate .readArticle[nextid=\""+articleid+"\"]");
-		var classEvenOdd = $('.tBodyArticlesEvaluate tr').length % 2 === 0 ? 'even' : 'odd';
 		var classification = isInclusion ? 'ACCEPTED' : 'REJECTED';
-		var htmlEvaluated = '<tr class="'+classEvenOdd+' gradeA"><td>'+articleid+'</td><td><a class="readArticle" actualid="'+articleid+'" href="#">'+$article.html()+'</a></td><td>'+classification+'</td></tr>';
-		$article.closest('tr').remove();
-		$('.tBodyArticlesEvaluate').append(htmlEvaluated);
-// 		console.log(htmlEvaluated);
+		var newhref = $article.attr('href');
+		var url = 'maps/article/';
+		var pos = newhref.indexOf(url); 
+		newhref = newhref.slice(0,pos) + url + articleid + '/load';
+		
+		///SystematicMap/maps/article/10/load 
+		tableToEvaluate.row($article.parents('tr')).remove().draw();
+		tableEvaluated.row.add([
+       		articleid, 
+       		'<a class="readArticle" actualid="'+articleid+'" href="' + newhref + '">'+$article.html()+'</a>',
+       		classification]).draw();
 	};
 
 	var actualizePercent = function (percent){
-		var per = $('#per').html();
-		percent = '(' + percent + '%)';
-		$('#per').html(percent);
+// 		var per = $('#per').html();
+// 		percent = '(' + percent + '%)';
+// 		$('#per').html(percent);
 // 		console.log('percent: ', percent,'per: ', per);
+		var p = percent.replace(",", ".");
+		
+		$('.progress-bar').attr('style', "min-width: 3em; width: "+p+"%");
+		$('.progress-bar').attr('aria-valuenow', p);
+		$('.progress-bar').html(percent + '%');
+
+		console.log(p);
 	};
 
 	// ajax para salvar avaliações dos artigos
@@ -156,7 +194,7 @@ $(document).ready(function(){
 				        var percent = data['percent'];
 // 						console.log('article: ', article);
 						if (article.id == -1){
-							alert('Sem mais artigos para avaiar!');
+							alert('Sem mais artigos para avaliar!');
 // 							window.location.reload();
 						}else {
 							actualizeArticle(article);
@@ -185,8 +223,25 @@ $(document).ready(function(){
 });
 </script>
 
+<ol class="breadcrumb u-margin-top">
+  <li><a href="<c:url value="/" />"><fmt:message key="home"/></a></li>
+  <li><a href="${linkTo[MapStudyController].show(map.id)}"><fmt:message key="mapstudy.details"/></a></li>
+  <li class="active"><fmt:message key="mapstudy.evaluation"/></li>
+</ol>
 
-<h3 class="color-primary"><fmt:message key="mapstudy.evaluation"/> - ${map.title} </h3><h3 class="color-primary" id="per">(${percentEvaluated}%)</h3>
+<h3 class="color-primary">
+	<fmt:message key="mapstudy.evaluation"/> - ${map.title}
+	<a id="return" class="btn btn-default pull-right" href="${linkTo[MapStudyController].show(map.id)}"><fmt:message key="button.back"/></a>
+</h3>
+<%-- <h3 class="color-primary" id="per">(${percentEvaluated}%)</h3> --%>
+
+<div class="progress">
+	<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="${percentEvaluated}" aria-valuemin="0" aria-valuemax="100" style="min-width: 3em; width: ${percentEvaluated}%">
+		${percentEvaluated}%
+	</div>
+</div>
+<div class="clear-both"></div>
+
 <div class="row">
   	<div class="col-lg-12">
   		
@@ -304,7 +359,7 @@ $(document).ready(function(){
 				</h4>
 				<div class="dataTable_wrapper">
 					<table
-						class="table table-striped table-bordered table-hover personalized-table">
+						class="table table-striped table-bordered table-hover datatable-to-evaluate">
 						<thead>
 							<tr>
 								<th class="text-center">ID</th>
@@ -329,7 +384,7 @@ $(document).ready(function(){
 				</h4>
 				<div class="dataTable_wrapper">
 					<table
-						class="table table-striped table-bordered table-hover personalized-table">
+						class="table table-striped table-bordered table-hover datatable-evaluated">
 						<thead>
 							<tr>
 								<th class="text-center">ID</th>

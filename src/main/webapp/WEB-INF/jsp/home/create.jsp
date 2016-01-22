@@ -99,6 +99,6 @@
 			</button>
              </fieldset>
          </form>
-         <a id="return" class="btn btn-lg btn-link btn-block" href="<c:url value="/"/>"><fmt:message key="button.back"/></a>
+         <a id="return" class="btn btn-lg btn-default btn-block" href="${linkTo[HomeController].login()}"><fmt:message key="button.back"/></a>
      </div>
  </div>

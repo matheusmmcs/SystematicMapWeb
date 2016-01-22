@@ -75,6 +75,7 @@ public class EmailController {
 		
 		System.out.println("LINK OBTIDO: " + linker.getURL());
 		String message = "<p>Ol&aacute; " + user.getName()+ ",</p>"
+				+ "Login: " +user.getLogin()
 				+ "<p>Seu pedido de altera&ccedil;&atilde;o de senha foi atendido com sucesso pelo sistema.</p>"
 				+ "<p>Clique no link a seguir para realizar a altera&ccedil;&atilde;o de sua senha.</p>"
 				+ "<p>"+ url+"</p>";

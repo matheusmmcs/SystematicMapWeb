@@ -1024,5 +1024,34 @@ public class MapStudyController {
 		List<Article> articles = articleDao.getArticles(mapStudy);
 		result.use(json()).indented().from(articles, "articles").serialize();
 	}
+	
+	@Get
+	@Path("/maps/{id}/planning")
+	public void planning(Long id){
+		MapStudy mapStudy = mapStudyDao.find(id);
+		User user = userInfo.getUser();
+		
+		validator.check(mapStudy != null, new SimpleMessage("mapstudy", "mapstudy.is.not.exist"));
+		validator.onErrorRedirectTo(this).list();
+
+		validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.is.not.mapstudy"));
+		validator.onErrorRedirectTo(this).list();	
+		result.include("map", mapStudy);
+	}
+	
+	@Get
+	@Path("/maps/{id}/identification")
+	public void identification(Long id){
+		MapStudy mapStudy = mapStudyDao.find(id);
+		User user = userInfo.getUser();
+
+		validator.check(mapStudy != null, new SimpleMessage("mapstudy",	"mapstudy.is.not.exist"));
+		validator.onErrorRedirectTo(this).list();
+
+		validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.is.not.mapstudy"));
+		validator.onErrorRedirectTo(this).list();
+		result.include("map", mapStudy);
+		result.include("sources", ArticleSourceEnum.values());
+	}
 		
 }

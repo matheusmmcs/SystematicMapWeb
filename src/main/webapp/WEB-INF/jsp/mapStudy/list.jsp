@@ -35,19 +35,19 @@
 <table class="table table-striped table-bordered table-hover personalized-table-simple">
 	<thead>
 		<tr>
-			<th width="80%" class="text-center"><fmt:message key="mapstudy.title"/></th>
-			<th width="20%" class="text-center"><fmt:message key="actions"/></th>
+			<th style="width: 70%" class="text-center"><fmt:message key="mapstudy.title"/></th>
+			<th style="width: 30%" class="text-center"><fmt:message key="actions"/></th>
 		</tr>
 	</thead>
 	<tbody>
 		<c:forEach var="map" items="${mapStudys}" varStatus="s">
 			<tr>
 				<td><a href="${linkTo[MapStudyController].show(map.id)}">${map.title}</a></td>
-				<td>
-				<a class="btn btn-primary" href="${linkTo[MapStudyController].show(map.id)}"><i class="glyphicon glyphicon-log-in"></i> <fmt:message key="open"/> </a>
-				<c:if test="${map.isCreator(userInfo.user)}">
-					<a class="btn btn-danger confirmation-modal" data-conf-modal-body="<fmt:message key="mapstudy.excluir.message" />" href="${linkTo[MapStudyController].remove(map.id)}" ><i class="glyphicon glyphicon-remove"></i> <fmt:message key="remove"/> </a>
-				</c:if>
+				<td class="text-center">
+					<a class="btn btn-primary" href="${linkTo[MapStudyController].show(map.id)}"><i class="glyphicon glyphicon-log-in"></i> <fmt:message key="open"/> </a>
+					<c:if test="${map.isCreator(userInfo.user)}">
+						<a class="btn btn-danger confirmation-modal" data-conf-modal-body="<fmt:message key="mapstudy.excluir.message" />" href="${linkTo[MapStudyController].remove(map.id)}" ><i class="glyphicon glyphicon-remove"></i> <fmt:message key="remove"/> </a>
+					</c:if>
 				</td>
 			</tr>
 		</c:forEach>

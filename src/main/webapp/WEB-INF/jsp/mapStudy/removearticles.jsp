@@ -1,9 +1,20 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+<ol class="breadcrumb u-margin-top">
+  <li><a href="<c:url value="/" />"><fmt:message key="home"/></a></li>
+  <li><a href="${linkTo[MapStudyController].show(map.id)}"><fmt:message key="mapstudy.details"/></a></li>
+  <li><a href="${linkTo[MapStudyController].identification(map.id)}"><fmt:message key="mapstudy.searching"/></a></li>
+  <li class="active"><fmt:message key="mapstudy.articles.list"/></li>
+</ol>
+
+<h3 class="color-primary">
+	<fmt:message key="mapstudy.articles.list"/>
+	<a id="return" class="btn btn-default pull-right" href="${linkTo[MapStudyController].identification(map.id)}"><fmt:message key="button.back"/></a>
+</h3>
 
 <c:if test="${not empty articles}">
-<h3 class="color-primary"><fmt:message key="mapstudy.articles.list"/></h3>
+
 <form action="${linkTo[MapStudyController].removearticlesform}" method="post" id="formRemoveArticles">
 <table class="table table-striped table-bordered table-hover personalized-table-simple">
 	<thead>

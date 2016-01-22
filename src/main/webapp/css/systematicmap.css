@@ -130,3 +130,12 @@ footer p {
 .form-horizontal .control-label.control-label-block{
 	text-align: left;
 }
+
+
+/* Utils */
+.u-margin-top{
+	margin-top: 10px;
+}
+.fileupload {
+    margin-bottom: 0;
+}
