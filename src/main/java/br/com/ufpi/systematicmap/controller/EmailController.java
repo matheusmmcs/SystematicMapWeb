@@ -56,13 +56,14 @@ public class EmailController {
 		boolean sucess = false;
 		GenerateHashPasswordUtil generateHashPasswordUtil = new GenerateHashPasswordUtil();
 		User user = userDao.findEmail(email);
+		
 		validator.check(user != null, new SimpleMessage("user.email", "user.email.invalid"));
 		validator.onErrorUsePageOf(HomeController.class).recovery();
 		
 		Random random = new Random();
 		
 		// Gerar code de recuperação
-		String code = generateHashPasswordUtil.generateCodeRecovery(user.getLogin() + random.nextLong());
+		String code = generateHashPasswordUtil.generateCodeRecovery(user.getLogin() + random.nextLong() + user.getEmail() + System.currentTimeMillis());
 		
 		user.setRecoveryCode(code);
 		userDao.update(user);

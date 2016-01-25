@@ -1,7 +1,17 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<h3 class="color-primary"><fmt:message key="mapstudy.inclusion.criteria.remove"/> - ${criteria.description}</h3>
+<ol class="breadcrumb u-margin-top">
+  <li><a href="<c:url value="/" />"><fmt:message key="home"/></a></li>
+  <li><a href="${linkTo[MapStudyController].show(criteria.mapStudy.id)}"><fmt:message key="mapstudy.details"/></a></li>
+  <li><a href="${linkTo[MapStudyController].planning(criteria.mapStudy.id)}"><fmt:message key="mapstudy.planning"/></a></li>
+  <li class="active"><fmt:message key="mapstudy.inclusion.criteria.remove"/></li>
+</ol>
+
+<h3 class="color-primary">
+	<fmt:message key="mapstudy.inclusion.criteria.remove"/> - ${criteria.description}
+	<a id="return" class="btn btn-default pull-right" href="${linkTo[MapStudyController].planning(criteria.mapStudy.id)}"><fmt:message key="button.back"/></a>	
+</h3>
 
 <div class="row">
 	<div class="col-lg-12">

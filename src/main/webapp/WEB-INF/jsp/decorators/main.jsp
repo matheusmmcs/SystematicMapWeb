@@ -218,7 +218,6 @@
 			<decorator:body/>
         </div>
         <!-- /#page-wrapper -->
-
     </div>
     <!-- /#wrapper -->
     
@@ -304,5 +303,6 @@
 			});
 		});
 	</script>
+	
 </body>
 </html>

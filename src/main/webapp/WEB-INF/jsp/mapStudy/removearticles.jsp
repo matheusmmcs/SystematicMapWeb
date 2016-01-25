@@ -13,6 +13,8 @@
 	<a id="return" class="btn btn-default pull-right" href="${linkTo[MapStudyController].identification(map.id)}"><fmt:message key="button.back"/></a>
 </h3>
 
+</br>
+
 <c:if test="${not empty articles}">
 
 <form action="${linkTo[MapStudyController].removearticlesform}" method="post" id="formRemoveArticles">
@@ -43,7 +45,9 @@
 	</tbody>
 </table>
 		<input type="hidden" name="mapId" id="mapId" value="${map.id}"/>	
-		<a style="text-align: left;" id="return" class="btn btn-lg btn-link" href="${linkTo[MapStudyController].show(map.id)}"><fmt:message key="button.back"/></a>
-		<button style="text-align: right;" type="submit" class="btn btn-lg btn-danger"><i class="glyphicon glyphicon-remove"></i> <fmt:message key="remove"/></button>
+		
+		</br>
+		
+		<button type="submit" class="btn btn-danger pull-rigth"><i class="glyphicon glyphicon-remove"></i> <fmt:message key="remove"/></button>
 	</form>
 </c:if>

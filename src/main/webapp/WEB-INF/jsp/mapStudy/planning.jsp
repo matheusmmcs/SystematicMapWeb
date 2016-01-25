@@ -8,8 +8,7 @@
 </ol>
 
 <h3 class="color-primary">
-	<fmt:message key="mapstudy" />
-	- ${map.title}
+	<fmt:message key="mapstudy" />	- ${map.title}
 	<a id="return" class="btn btn-default pull-right" href="${linkTo[MapStudyController].show(map.id)}"><fmt:message key="button.back"/></a>
 </h3>
 

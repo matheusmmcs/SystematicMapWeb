@@ -2,17 +2,19 @@ body {
     background-color: White;
 }
 
-footer {
-    padding: 25px 0;
-    background-color: #f8f8f8;
-    border-top: 1px solid #e7e7e7;
-}
-
 footer p {
     margin: 0;
+    color: #337AB7;
 }
 
-.myHome{
+footer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 55px;
+    background-color: #F8F8F8;
+    border-top: 1px solid #E7E7E7;
 }
 
 .color-primary{
