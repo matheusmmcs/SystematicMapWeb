@@ -61,12 +61,12 @@ public class ExcelBubblePlots {
 		
 		
 		//GRAPH A
-//		eixoY = ClassificationEnum.Approach;
-//		eixoX = ClassificationEnum.Method;
-//		generateExcel(rowTitles, inputFilePath, outputDirectoryPath, eixoX, eixoY, false);
-//		
-//		eixoX = ClassificationEnum.Intrusion;
-//		generateExcel(rowTitles, inputFilePath, outputDirectoryPath, eixoX, eixoY, false);
+		eixoY = ClassificationEnum.Approach;
+		eixoX = ClassificationEnum.Method;
+		generateExcel(rowTitles, inputFilePath, outputDirectoryPath, eixoX, eixoY, false);
+		
+		eixoX = ClassificationEnum.Intrusion;
+		generateExcel(rowTitles, inputFilePath, outputDirectoryPath, eixoX, eixoY, false);
 		
 		//GRAPH B
 //		eixoY = ClassificationEnum.Context;
@@ -85,38 +85,40 @@ public class ExcelBubblePlots {
 		
 		
 		//GRAPH C
-		eixoY = ClassificationEnum.Validation;
-		eixoX = ClassificationEnum.Method;
-		generateExcel(rowTitles, inputFilePath, outputDirectoryPath, eixoX, eixoY, false);
-		
-		eixoX = ClassificationEnum.Approach;
-		generateExcel(rowTitles, inputFilePath, outputDirectoryPath, eixoX, eixoY, false);
-		
-		eixoY = ClassificationEnum.ResearchType;
-		eixoX = ClassificationEnum.Method;
-		generateExcel(rowTitles, inputFilePath, outputDirectoryPath, eixoX, eixoY, false);
-		
-		eixoX = ClassificationEnum.Approach;
-		generateExcel(rowTitles, inputFilePath, outputDirectoryPath, eixoX, eixoY, false);
+//		eixoY = ClassificationEnum.Validation;
+//		eixoX = ClassificationEnum.Method;
+//		generateExcel(rowTitles, inputFilePath, outputDirectoryPath, eixoX, eixoY, false);
+//		
+//		eixoX = ClassificationEnum.Approach;
+//		generateExcel(rowTitles, inputFilePath, outputDirectoryPath, eixoX, eixoY, false);
+//		
+//		eixoY = ClassificationEnum.ResearchType;
+//		eixoX = ClassificationEnum.Method;
+//		generateExcel(rowTitles, inputFilePath, outputDirectoryPath, eixoX, eixoY, false);
+//		
+//		eixoX = ClassificationEnum.Approach;
+//		generateExcel(rowTitles, inputFilePath, outputDirectoryPath, eixoX, eixoY, false);
 	}
 	
 	@SuppressWarnings("serial")
 	private static void generateExcel(int rowTitles, String inputFilePath, String outputDirectoryPath, ClassificationEnum eixoX, ClassificationEnum eixoY, boolean showTitle) throws IOException{
 		FileInputStream file = new FileInputStream(new File(inputFilePath));
 		
+		//OBS: CASO ALTERAR INITARTICLES, DEVE SER ALTERADO O ROWSIGNORE E O ENDARTICLES
+		
 		XSSFWorkbook myWorkBook = new XSSFWorkbook (file);
-		int initArticles = 3, endArticles = 66;
+		int initArticles = 3, endArticles = 67;
 		List<Integer> rowsignorearr = new ArrayList<Integer>() {{
-		    add(26);
 		    add(27);
-		    add(35);
-		    add(45);
-		    add(47);
-		    add(50);
-		    add(59);
+		    add(28);
+		    add(36);
+		    add(46);
+		    add(48);
+		    add(51);
 		    add(60);
-		    add(63);
-		    add(65);
+		    add(61);
+		    add(64);
+		    add(66);
 		}};
 		
 		String file1 = outputDirectoryPath + eixoX.name() + "-" + eixoY.name() + ".csv";
