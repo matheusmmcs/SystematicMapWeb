@@ -220,8 +220,18 @@
         <!-- /#page-wrapper -->
     </div>
     <!-- /#wrapper -->
-    
-    <!-- Modal -->
+
+	<!-- Footer -->
+	<div class="footer">
+		<div class="container text-center">
+			<p>© 2015-2016. Todos os direitos reservados.</p>
+			<p>
+				<a href="http://easii.ufpi.br">EASII</a> - Laborat&oacute;rio de
+				Engenharia de Software e Inform&aacute;tica Industrial
+			</p>
+		</div>
+	</div>
+	<!-- Modal -->
     <div id="generic-modal" class="modal fade">
 	  <div class="modal-dialog">
 	    <div class="modal-content">

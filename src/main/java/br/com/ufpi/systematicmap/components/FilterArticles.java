@@ -53,8 +53,10 @@ public class FilterArticles {
 			System.out.println("Regex: "+regex);
 			String[] termos = regex.split(";");
 			for(String t : termos){
-				String[] strings = t.split(":");
-				regexList.put(strings[0], strings[1]);
+				if (t.length() > 1){
+					String[] strings = t.split(":");
+					regexList.put(strings[0], strings[1]);
+				}				
 			}
 			
 			System.out.println("Total de artigos: "+papers.size());
@@ -120,7 +122,8 @@ public class FilterArticles {
 						
 						if(dist <= limiar){
 							p2.setClassification(ClassificationEnum.REPEAT);
-							p2.setComments(p.getComments() + " " + ClassificationEnum.REPEAT.toString());
+							String comment = p.getComments() != null ? p.getComments() : "";
+							p2.setComments(comment + " " + ClassificationEnum.REPEAT.toString());
 							p2.setMinLevenshteinDistance(dist);
 							p2.setPaperMinLevenshteinDistance(p);
 							//

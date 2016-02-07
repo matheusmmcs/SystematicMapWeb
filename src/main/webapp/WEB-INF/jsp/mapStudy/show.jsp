@@ -35,7 +35,7 @@ $(document).ready(function(){
 				</strong> ${map.description}
 			<p>
 			<p>
-				<strong> <fmt:message key="mapstudy.evaluation.selection.rate" />:
+				<strong> <fmt:message key="mapstudy.evaluation.selection.rate" />:</strong>
 					<div class="progress">
 						<div class="progress-bar progress-bar-striped active"
 							role="progressbar" aria-valuenow="${percentEvaluated}"
@@ -101,8 +101,7 @@ $(document).ready(function(){
 						<tr>
 							<th>#</th>
 							<th><fmt:message key="mapstudy.members" /></th>
-							<th><fmt:message
-									key="mapstudy.evaluations.percentconclusion" /></th>
+							<th><fmt:message key="mapstudy.evaluations.percentconclusion" /></th>
 							<c:if test="${map.isCreator(userInfo.user)}">
 								<th><fmt:message key="remove" /></th>
 							</c:if>
@@ -118,9 +117,7 @@ $(document).ready(function(){
 								<c:if test="${map.isCreator(userInfo.user)}">
 									<c:choose>
 										<c:when test="${!map.isCreator(member.key)}">
-											<td class="text-center"><a
-												class="btn btn-danger confirmation-modal"
-												data-conf-modal-body="<fmt:message key="member.excluir.message" />"
+											<td class="text-center"><a class="btn btn-danger confirmation-modal" data-conf-modal-body="<fmt:message key="member.excluir.message" />"
 												href="${linkTo[MapStudyController].removemember(map.id, member.key.id)}"><i
 													class="glyphicon glyphicon-remove"></i></a></td>
 										</c:when>
