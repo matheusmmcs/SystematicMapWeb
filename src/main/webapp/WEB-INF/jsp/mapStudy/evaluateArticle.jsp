@@ -24,10 +24,8 @@ $(document).ready(function(){
 //     "paging":         false
 // }
 
-	
-
-	
-	var actualizeArticle = function(article){
+		
+	var actualizeArticle = function(article, evaluation){
 		//alterar a url para caso seja realizado F5
 		var url = window.location.href;
 		url = url.substr(0, url.lastIndexOf('/')) + '/' + article.id;
@@ -39,6 +37,7 @@ $(document).ready(function(){
 		$('#articleReadTitle').html(article.title);
 		$('#articleReadAbstract').html(article.abstrct);
 		$('#articleReadKeywords').html(article.keywords);
+		$('#articleReadSource').html(article.source);
 		$('#articleReadAuthor').html(article.author);
 
 
@@ -75,17 +74,38 @@ $(document).ready(function(){
 		changeFormsIds(true, article);
 		changeFormsIds(false, article);
 		resetCriterias();
+
+		var user = '${userInfo.user}';
+		console.log('user: ', user)
+		
+// 		var e = article.evaluation(user);
+// 		console.log('e: ', e);
 		
 		//caso haja avaliação, altera-la
-		if (article.evaluations.length > 0) {
-			var evaluate = article.evaluations[0];
-			if (evaluate.exclusionCriterias.length > 0) {
-				markCriterias(evaluate.exclusionCriterias, false);
-				$('#commentExclude').val(evaluate.comment);
+// 		if (article.evaluations.length > 0) {
+// 			var evaluate = article.evaluations[0];
+// 			console.log('evaluation: ', evaluate);
+// 			if (evaluate.exclusionCriterias.length > 0) {
+// 				markCriterias(evaluate.exclusionCriterias, false);
+// 				$('#commentExclude').val(evaluate.comment);
+// 				console.log('possui avaliações exclusion');
+// 			} else if (evaluate.inclusionCriterias.length > 0) {
+// 				markCriterias(evaluate.inclusionCriterias, true);
+// 				$('#commentInclude').val(evaluate.comment);
+// 				console.log('possui avaliações inclusion');
+// 			}
+// 		}
+
+		if (evaluation != null) {
+// 			var evaluate = article.evaluations[0];
+			console.log('evaluation: ', evaluation);
+			if (evaluation.exclusionCriterias.length > 0) {
+				markCriterias(evaluation.exclusionCriterias, false);
+				$('#commentExclude').val(evaluation.comment);
 				console.log('possui avaliações exclusion');
-			} else if (evaluate.inclusionCriterias.length > 0) {
-				markCriterias(evaluate.inclusionCriterias, true);
-				$('#commentInclude').val(evaluate.comment);
+			} else if (evaluation.inclusionCriterias.length > 0) {
+				markCriterias(evaluation.inclusionCriterias, true);
+				$('#commentInclude').val(evaluation.comment);
 				console.log('possui avaliações inclusion');
 			}
 		}
@@ -102,9 +122,11 @@ $(document).ready(function(){
 			url: url,
 			type: 'GET',
 			success: function(data){
-				var article = data.article;
-// 				console.log('article read: ', article);
-				actualizeArticle(article);
+				var article = data['article'];
+				var evaluation = data['evaluation'];
+				console.log('article read: ', article);
+				console.log('eval: ', evaluation);
+				actualizeArticle(article, evaluation);
 			},
 			error: function(e){
 				console.error(e);
@@ -125,10 +147,13 @@ $(document).ready(function(){
 		return result;
 	}
 
-	var actualizeList = function (articleid, isInclusion){
+	var actualizeList = function (articleid, isInclusion, source){
 		var $article = $(".tBodyArticlesToEvaluate .readArticle[nextid=\""+articleid+"\"]");
 		var classification = isInclusion ? 'ACCEPTED' : 'REJECTED';
 		var newhref = $article.attr('href');
+		if (newhref == undefined){
+			return;
+		}
 		var url = 'maps/article/';
 		var pos = newhref.indexOf(url); 
 		newhref = newhref.slice(0,pos) + url + articleid + '/load';
@@ -137,8 +162,7 @@ $(document).ready(function(){
 		tableToEvaluate.row($article.parents('tr')).remove().draw();
 		tableEvaluated.row.add([
        		articleid, 
-       		'<a class="readArticle" actualid="'+articleid+'" href="' + newhref + '">'+$article.html()+'</a>',
-       		classification]).draw();
+       		'<a class="readArticle" actualid="'+articleid+'" href="' + newhref + '">'+$article.html()+'</a>', source, classification]).draw();
 	};
 
 	var actualizePercent = function (percent){
@@ -162,6 +186,7 @@ $(document).ready(function(){
 		var articleid = $('#articleid').val();
 		var criterias = selectCriterias(isInclusion);
 		var comment = isInclusion ? $('#commentInclude').val() : $('#commentExclude').val();
+		var source = $('#articlesource').val();
 		var id = null;
 		
 		// assim ele vai pegar os readArticle "filhos" de tBodyArticlesToEvaluate
@@ -192,15 +217,20 @@ $(document).ready(function(){
 			        // atualiza listagens de artigos e carrega proximo artigo na tela
 				        var article = data['article'];
 				        var percent = data['percent'];
-// 						console.log('article: ', article);
+				        var evaluation = data['evaluation'];
+						//console.log('article: ', article);
+						console.log('eval: ', evaluation);
 						if (article.id == -1){
 							alert('Sem mais artigos para avaliar!');
 // 							window.location.reload();
 						}else {
-							actualizeArticle(article);
+							actualizeArticle(article, evaluation);
 						}
-						actualizePercent(percent);
-						actualizeList(articleid, isInclusion);
+// 						if (evaluation.length == 0){
+							actualizePercent(percent);
+							actualizeList(articleid, isInclusion, source);
+// 						}
+						
 		        },
 				error: function(e){
 					console.error(e);
@@ -208,7 +238,7 @@ $(document).ready(function(){
 			});
 			
 		} else {
-			//apresentar mensagem para o usuario -> ao menos um criterio deve serselecionado
+			//apresentar mensagem para o usuario -> ao menos um criterio deve ser selecionado
 			alert('Nenhum criterio foi selecionado !');
 		}		
 	};
@@ -271,11 +301,18 @@ $(document).ready(function(){
 			</strong> <span id="articleReadAuthor">${article.author}</span>
 		<p>
 		
+		<p> 
+			<strong>
+				<fmt:message key="mapstudy.article.source"/>:
+			</strong> <span id="articleReadSource">${article.source}</span>
+		<p>
+		
 		<hr/>
 		
 		<form id="formInclude" action="${linkTo[MapStudyController].includearticle}" method="post">
 			<input type="hidden" id="mapid" name="mapid" value="${map.id}" />
 			<input type="hidden" id="articleid" name="articleid" value="${article.id}" />
+			<input type="hidden" id="articlesource" name="articlesource" value="${article.source}" />
 			<p> 
 				<strong>
 					<fmt:message key="mapstudy.inclusion.criterias"/>:
@@ -311,6 +348,7 @@ $(document).ready(function(){
 		<form id="formExclude" action="${linkTo[MapStudyController].excludearticle}" method="post">
 			<input type="hidden" id="mapid" name="mapid" value="${map.id}" />
 			<input type="hidden" id="articleid" name="articleid" value="${article.id}" />
+			<input type="hidden" id="articlesource" name="articlesource" value="${article.source}" />
 			<p> 
 				<strong>
 					<fmt:message key="mapstudy.exclusion.criterias"/>:
@@ -364,6 +402,7 @@ $(document).ready(function(){
 							<tr>
 								<th class="text-center">ID</th>
 								<th class="text-center"><fmt:message key="mapstudy.article.title" /></th>
+								<th class="text-center"><fmt:message key="mapstudy.article.source" /></th>
 							</tr>
 						</thead>
 						<tbody class="tBodyArticlesToEvaluate">
@@ -371,6 +410,7 @@ $(document).ready(function(){
 								<tr class="${s.index % 2 == 0 ? 'even' : 'odd'} gradeA">
 									<td>${article.id}</td>
 									<td><a class="readArticle" actualid="${article.id}" nextid="${article.id }" href="${linkTo[MapStudyController].loadArticle(map.id, article.id)}">${article.title}</a></td>
+									<td>${article.source}</td>
 								</tr>
 							</c:forEach>
 						</tbody>
@@ -389,6 +429,7 @@ $(document).ready(function(){
 							<tr>
 								<th class="text-center">ID</th>
 								<th class="text-center"><fmt:message key="mapstudy.article.title" /></th>
+								<th class="text-center"><fmt:message key="mapstudy.article.source" /></th>
 								<th class="text-center"><fmt:message key="mapstudy.article.evaluation" /></th>
 							</tr>
 						</thead>
@@ -398,6 +439,7 @@ $(document).ready(function(){
 									<td>${eval.article.id}</td>
 <%-- 									<td><a class="btnEvaluate" href="${linkTo[MapStudyController].evaluateArticle(map.id, eval.article.id)}">${eval.article.title}</a></td> --%>
 									<td><a class="readArticle" actualid="${eval.article.id}" href="${linkTo[MapStudyController].loadArticle(map.id, eval.article.id)}">${eval.article.title}</a></td>
+									<td>${eval.article.source}</td>
 									<td>${eval.classification}</td>
 								</tr>
 							</c:forEach>

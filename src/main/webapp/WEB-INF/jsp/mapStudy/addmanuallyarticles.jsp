@@ -2,31 +2,52 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <script type="text/javascript">
-// 	(function($){
-// 		$(document).ready(function(){
-// 			$("#formAddArticle").validate({ 
-//                  rules: {
-//                 	 'mapstudy.title': { 
-//                     	 required : true,
-//                     	 minlength : 3
-//                      },
-//                      'mapstudy.description': {
-//                          required: true,
-//                          minlength : 3
-//                      }
-//                   }, messages: {
-//                 	  'mapstudy.title': {
-//                           required: '<fmt:message key="required" />',
-//                           minlength: '<fmt:message key="mapstudy.min.title" />'
-//                       },
-//                       'mapstudy.description': {
-//                           required: '<fmt:message key="required" />',
-//                           minlength: '<fmt:message key="mapstudy.min.description" />'
-//                       }
-//                   }
-// 			});
-// 		});
-// 	})(jQuery);
+	(function($){
+		$(document).ready(function(){
+			$("#formAddArticle").validate({ 
+                 rules: {
+                	 'article.author': { 
+                    	 required : true,
+                    	 maxlength: 2000
+                     },
+                     'article.title': { 
+                    	 required : true,
+                    	 maxlength: 2000
+                     },
+                     'article.keywords': { 
+                    	 required : true,
+                    	 maxlength: 2000
+                     },
+                     'article.journal': { 
+                    	 required : true
+                     },
+                     'article.abstrct': { 
+                    	 required : true
+                     },
+                     'article.year': { 
+                    	 required : true
+                     },
+                     'article.journal': { 
+                    	 required : true
+                     }
+                  }
+            , messages: {
+            	 'article.author': { 
+                	 required : '<fmt:message key="required"/>',
+                	 maxlength: '<fmt:message key="article.author.maxlength"/>'
+                 },
+                 'article.title': { 
+                	 required : '<fmt:message key="required"/>',
+                	 maxlength: '<fmt:message key="article.title.maxlength"/>'
+                 },
+                 'article.keywords': { 
+                	 required : '<fmt:message key="required"/>',
+                	 maxlength: '<fmt:message key="article.keywords.maxlength"/>'
+                 }
+                  }
+			});
+		});
+	})(jQuery);
 </script>
 
 <ol class="breadcrumb u-margin-top">

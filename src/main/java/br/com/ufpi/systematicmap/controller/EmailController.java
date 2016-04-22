@@ -68,13 +68,9 @@ public class EmailController {
 		user.setRecoveryCode(code);
 		userDao.update(user);
 		
-//		String linkRecovery = "http://localhost:8080/SystematicMap/recovery/";
-//		linkRecovery = linkRecovery.concat(code);
-//		
 		linker.buildLinkTo(this).validateCode(code);
 		String url = "<a href=\""+linker.getURL()+"\" target=\"_blank\">Clique aqui</a> para criar uma nova senha";		
 		
-		System.out.println("LINK OBTIDO: " + linker.getURL());
 		String message = "<p>Ol&aacute; " + user.getName()+ ",</p>"
 				+ "Login: " +user.getLogin()
 				+ "<p>Seu pedido de altera&ccedil;&atilde;o de senha foi atendido com sucesso pelo sistema.</p>"
@@ -123,6 +119,10 @@ public class EmailController {
 		validator.onErrorRedirectTo(this).validateCode(code);
 		
 		user.setRecoveryCode(null);
+		
+		GenerateHashPasswordUtil generateHashPasswordUtil = new GenerateHashPasswordUtil();
+        user.setPassword(generateHashPasswordUtil.generateHash(password));        
+		
 		userDao.update(user);		
 		
 		result.include("notice", new SimpleMessage("user.password", "password.changed.sucess"));

@@ -24,15 +24,36 @@ public class BibtexToArticleUtils {
 		article.setSource(sourceEnum.toString());
 //		article.setNumber(number);
 		
-		article.setAuthor(getAttr(fields, BibTeXEntry.KEY_AUTHOR));
-		article.setTitle(getAttr(fields, BibTeXEntry.KEY_TITLE));
+		String author = getAttr(fields, BibTeXEntry.KEY_AUTHOR);
+		if (author.length() > 2000){
+			author = author.substring(0, 1994) + "(...)";
+		}
+		article.setAuthor(author);
+		
+		String title = getAttr(fields, BibTeXEntry.KEY_TITLE);
+		
+		if (title.length() > 2000){
+			title = title.substring(0, 1994) + "(...)";
+		}
+		
+		article.setTitle(title);
+		
 		article.setJournal(getAttr(fields, BibTeXEntry.KEY_JOURNAL));
 		article.setVolume(getAttrInt(fields, BibTeXEntry.KEY_VOLUME));
 		article.setPages(getAttr(fields, BibTeXEntry.KEY_PAGES));
 		article.setDoi(getAttr(fields, BibTeXEntry.KEY_DOI));
 		
 		article.setAbstrct(getAttr(fields, new Key("abstract")));
-		article.setKeywords(getAttr(fields, new Key("keywords")));
+		
+		String keywords = getAttr(fields, new Key("keywords"));
+		//System.out.println("Key: " + keywords.length());
+		if (keywords.length() > 2000){
+			keywords = keywords.substring(0, 1994) + "(...)";
+			//System.out.println(keywords);
+		}
+		
+		article.setKeywords(keywords);
+		
 		article.setLanguage(getAttr(fields, new Key("language")));
 		
 		if(sourceEnum.equals(ArticleSourceEnum.SCOPUS)){

@@ -126,7 +126,7 @@
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                     <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar">Teste 1</span>
+                    <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
@@ -204,12 +204,11 @@
 					</div>
 				</c:if>
 				<c:if test="${not empty notice}">
-					<div class="alert alert-info alert-dismissible" role="alert">
+					<div class="alert alert-info alert-dismissible" role="alert" id="notices">
 <!-- 						<button type="button" class="close" data-dismiss="alert">&times;</button> -->
 							<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 						<%-- <c:forEach items="${notices}" var="notice"> --%>
-						<b><fmt:message key="${notice.category}" /></b> - <fmt:message
-							key="${notice.message}" />
+						<b><fmt:message key="${notice.category}" /></b> - <fmt:message key="${notice.message}" />
 						<br />
 						<%--</c:forEach> --%>
 					</div>
@@ -288,13 +287,15 @@
 		    	    '<span class="select2-name">' + state.text + '<i class="select2-email">' + $(state.element).data('email') + '</i></span>'
 		    	  );
 		    	  
-		    	  console.log(state);
+		    	  //console.log(state);
 		    	  return $state;
 		   	};
 		    $('.select2').select2({
 		    	 allowClear: true,
 		    	 templateResult: formatState
 			});
+
+		    $('.select2-alternative').select2();
 
 			//padrao de modal
 			$(document).on('click', '.confirmation-modal', function(e){

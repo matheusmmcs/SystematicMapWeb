@@ -12,6 +12,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import br.com.caelum.vraptor.serialization.SkipSerialization;
 
@@ -28,6 +29,7 @@ public class InclusionCriteria implements Serializable {
 	private Long id;
 	@SkipSerialization
 	@NotNull
+	@Size(max=1000)
 	private String description;
 	@SkipSerialization
 	@ManyToOne
@@ -73,5 +75,13 @@ public class InclusionCriteria implements Serializable {
 		getEvaluations().add(evaluation);
 		evaluation.addInclusion(this);
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "InclusionCriteria [id=" + id + ", description=" + description
+				+ ", mapStudy=" + mapStudy + "]";
+	}
 }

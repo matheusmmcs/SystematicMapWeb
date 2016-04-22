@@ -13,11 +13,15 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import br.com.caelum.vraptor.serialization.SkipSerialization;
 import br.com.ufpi.systematicmap.dao.ArticleDao;
 import br.com.ufpi.systematicmap.model.enums.Roles;
 
@@ -43,23 +47,44 @@ public class MapStudy implements Serializable{
     private boolean removed;
         
     @OneToMany(mappedBy = "mapStudy", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.EAGER)  
-	private Set<UsersMapStudys> usersMapStudys = new HashSet<>();
+    @SkipSerialization
+    private Set<UsersMapStudys> usersMapStudys = new HashSet<>();
     
     @OneToMany(mappedBy="mapStudy")
+    @SkipSerialization
 	private Set<Article> articles = new HashSet<>();
     
     @OneToMany(mappedBy="mapStudy")
+    @SkipSerialization
 	private Set<InclusionCriteria> inclusionCriterias = new HashSet<>();
     
     @OneToMany(mappedBy="mapStudy")
+    @SkipSerialization
 	private Set<ExclusionCriteria> exclusionCriterias = new HashSet<>();
     
     @OneToMany(mappedBy="mapStudy")
+    @SkipSerialization
 	private Set<Evaluation> evaluations= new HashSet<>();
     
 //    @OneToMany(mappedBy="mapStudy")
 //	private Set<DataExtractionForm> dataExtractionForm = new HashSet<>();
-
+    
+    @OneToMany(mappedBy="mapStudy")
+    @SkipSerialization
+   	private Set<ResearchQuestion> researchQuestions = new HashSet<>();
+    
+    @OneToMany(mappedBy="mapStudy")
+    @SkipSerialization
+   	private Set<SearchString> searchString = new HashSet<>();
+    
+    @Lob
+    @SkipSerialization
+    private String goals;   
+    
+    @OneToOne(cascade = {CascadeType.ALL})
+    @JoinColumn(name="form_id")
+    private Form form;
+    
 	public Long getId() {
 		return id;
 	}
@@ -138,6 +163,8 @@ public class MapStudy implements Serializable{
 	public Double percentEvaluatedDouble(ArticleDao articleDao, User user){
 		int total = articleDao.countArticleNotRefined(this).intValue(),
 		    toEvaluate = articleDao.countArticleToEvaluate(user, this).intValue();
+		
+		System.out.println("total: " + total + " toEvaluate: " + toEvaluate);
 		 
 		BigDecimal tot = new BigDecimal(total);
 		BigDecimal dontEval = new BigDecimal(toEvaluate);
@@ -154,6 +181,29 @@ public class MapStudy implements Serializable{
 		}
 		
 		return bigdecimal.doubleValue();
+	}
+	
+	public Double percentExtractedDouble(ArticleDao articleDao, User user) {
+		int total = articleDao.countArticlesFinalAccepted(this).intValue(),
+			    toExtrantion = articleDao.countArticleToEvaluateExtraction(user, this).intValue();
+		
+		System.out.println("total: " + total + " toExtrantion: " + toExtrantion);
+			 
+			BigDecimal tot = new BigDecimal(total);
+			BigDecimal dontEval = new BigDecimal(toExtrantion);
+			BigDecimal bigdecimal;
+			
+			if(tot.equals(BigDecimal.ZERO)){
+				bigdecimal = BigDecimal.ZERO;
+			}else{
+				if(dontEval.equals(BigDecimal.ZERO)){
+					bigdecimal = new BigDecimal(100);
+				}else{
+					bigdecimal = tot.subtract(dontEval).divide(tot, 100, RoundingMode.HALF_UP).multiply(new BigDecimal(100));
+				}
+			}
+			
+			return bigdecimal.doubleValue();
 	}
 
 	@Override
@@ -189,7 +239,7 @@ public class MapStudy implements Serializable{
 	@Override
 	public String toString() {
 		return "MapStudy [id=" + id + ", title=" + title + 
-			", description=" + description + "]";
+			", description=" + description + ", form="+ form +"]";
 	}
 	
 
@@ -221,8 +271,6 @@ public class MapStudy implements Serializable{
 		this.usersMapStudys = usersMapStudys;
 	}
 
-	//TODO Matheus analisar
-	
 	public void addParticipant(User user) {
 		for (UsersMapStudys u : usersMapStudys) {
 			if (u.getUser().equals(user) && u.isRemoved()){
@@ -279,6 +327,77 @@ public class MapStudy implements Serializable{
 		return members;
 	}
 
+	/**
+	 * @return the researchQuestions
+	 */
+	public Set<ResearchQuestion> getResearchQuestions() {
+		return researchQuestions;
+	}
+
+	/**
+	 * @param researchQuestions the researchQuestions to set
+	 */
+	public void setResearchQuestions(Set<ResearchQuestion> researchQuestions) {
+		this.researchQuestions = researchQuestions;
+	}
+
+	/**
+	 * @return the goals
+	 */
+	public String getGoals() {
+		return goals;
+	}
+
+	/**
+	 * @param goals the goals to set
+	 */
+	public void setGoals(String goals) {
+		this.goals = goals;
+	}
+
+	/**
+	 * @return the searchString
+	 */
+	public Set<SearchString> getSearchString() {
+		return searchString;
+	}
+
+	/**
+	 * @param searchString the searchString to set
+	 */
+	public void setSearchString(Set<SearchString> searchString) {
+		this.searchString = searchString;
+	}
+	
+	/**
+	 * @return the form
+	 */
+	public Form getForm() {
+		return form;
+	}
+
+	/**
+	 * @param form the form to set
+	 */
+	public void setForm(Form form) {
+		this.form = form;
+	}
+
+	public void addForm(Form form) {
+		if (this.form != null){
+			System.out.println("LQ: " + form.getQuestions() + "ID: " + this.form.getId());
+//			form.setId(this.form.getId());
+//			form.setMapStudy(this);
+			for (Question q : form.getQuestions()) {
+				this.form.addQuestion(q);
+			}
+			form = this.form;
+		}else{
+			this.form = form;
+			form.setMapStudy(this);
+		}
+	}
+
 //	/**
 //	 * @return the dataExtractionForm
 //	 */
@@ -292,6 +411,4 @@ public class MapStudy implements Serializable{
 //	public void setDataExtractionForm(Set<DataExtractionForm> dataExtractionForm) {
 //		this.dataExtractionForm = dataExtractionForm;
 //	}
-	
-	
 }

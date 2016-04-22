@@ -19,6 +19,8 @@ import javax.validation.constraints.Pattern;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.Length;
 
+import br.com.caelum.vraptor.serialization.SkipSerialization;
+
 @Entity
 @Table(name = "user")
 public class User implements Serializable {
@@ -36,8 +38,10 @@ public class User implements Serializable {
 
 	@NotNull(message = "required")
 	@Length(min = 6, message = "password_min")
+	@SkipSerialization
 	private String password;
 	
+	@SkipSerialization
 	private String recoveryCode;
 	
 	@NotNull(message = "required")
@@ -51,9 +55,11 @@ public class User implements Serializable {
 	private boolean removed;
 
 	@OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch = FetchType.EAGER)
+	@SkipSerialization
 	private Set<UsersMapStudys> usersMapStudys = new HashSet<>();
 	
 	@OneToMany(mappedBy="user")
+	@SkipSerialization
 	private Set<Evaluation> evaluations = new HashSet<>();
 
 	public String getLogin() {

@@ -12,6 +12,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import br.com.caelum.vraptor.serialization.SkipSerialization;
 
@@ -26,6 +27,7 @@ public class ExclusionCriteria  implements Serializable {
 	private Long id;
 	@SkipSerialization
 	@NotNull
+	@Size(max=1000)
 	private String description;
 	@SkipSerialization
 	@ManyToOne

@@ -1,9 +1,12 @@
 package br.com.ufpi.systematicmap.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -14,6 +17,7 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -44,16 +48,17 @@ public class Article implements Serializable {
 	private MapStudy mapStudy;
 	
 	@OneToMany(mappedBy="article")
+	@SkipSerialization
 	private Set<Evaluation> evaluations = new HashSet<>();
 	
 	@Enumerated(EnumType.STRING)
 	private EvaluationStatusEnum finalEvaluation;
 	
-	@Size(max=1000)
+	@Size(max=2000, message="article.author.maxlength")
 	private String author;
 	
-	@NotNull
-	@Size(max=1000)
+	@NotNull(message="article.title.required")
+	@Size(max=2000, message="article.title.maxlength")
 	private String title;
 	@SkipSerialization
 	private String journal;
@@ -72,16 +77,14 @@ public class Article implements Serializable {
 	private String url;
 	@SkipSerialization
 	private String docType;//
-	@SkipSerialization
 	private String source;
 	@SkipSerialization
 	private String language;//
 	
-	//Erro correto abstract
 	@Lob
 	private String abstrct;//
 	
-	@Size(max=1000)
+	@Size(max=2000, message="article.keywords.maxlength")
 	private String keywords;
 	
 	//POINTS
@@ -108,6 +111,32 @@ public class Article implements Serializable {
 //	@SkipSerialization
 //	private DataExtractionForm dataExtractionForm;
 	
+	@OneToMany(mappedBy="article", cascade=CascadeType.ALL)
+	@OrderBy("question")
+	@SkipSerialization
+	private Set<EvaluationExtraction> evaluationExtractions = new HashSet<>();
+	
+	//FIXME Add question a tabela mudar logica
+	public Alternative alternative(Question question){
+		for (EvaluationExtraction ev : evaluationExtractions) {
+			if (ev.getQuestion().equals(question)){
+				return ev.getAlternative();
+			}
+		}
+		
+		return null;
+	}
+	
+	public Alternative alternative(Question question, User user){
+		for (EvaluationExtraction ev : evaluationExtractions) {
+			if (ev.getQuestion().equals(question) && ev.getUser().equals(user)){
+				return ev.getAlternative();
+			}
+		}
+		
+		return null;
+	}
+		
 	
 	public ClassificationEnum getClassification() {
 		return classification;
@@ -345,20 +374,121 @@ public class Article implements Serializable {
 		this.number = number;
 	}
 
-//	/**
-//	 * @return the dataExtractionForm
-//	 */
-//	public DataExtractionForm getDataExtractionForm() {
-//		return dataExtractionForm;
+	/**
+	 * @return the evaluationExtractions
+	 */
+	public Set<EvaluationExtraction> getEvaluationExtractions() {
+		return evaluationExtractions;
+	}
+
+	/**
+	 * @param evaluationExtractions the evaluationExtractions to set
+	 */
+	public void setEvaluationExtractions(
+			Set<EvaluationExtraction> evaluationExtractions) {
+		this.evaluationExtractions = evaluationExtractions;
+	}
+
+	/**
+	 * @return the serialversionuid
+	 */
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+	
+	public List<EvaluationExtraction> getEvaluationExtraction(User user){
+		List<EvaluationExtraction> eval = new ArrayList<>();
+		for (EvaluationExtraction ev : evaluationExtractions) {
+			if (ev.getUser().equals(user)){
+				eval.add(ev);
+			}
+		}
+		return eval;		
+	}
+	
+//	public EvaluationExtraction getEvaluationExtraction(User user){
+//		for (EvaluationExtraction ev : evaluationExtractions) {
+//			if (ev.getUser().equals(user)){
+//				return ev;
+//			}
+//		}
+//		return null;		
 //	}
-//
-//	/**
-//	 * @param dataExtractionForm the dataExtractionForm to set
-//	 */
-//	public void setDataExtractionForm(DataExtractionForm dataExtractionForm) {
-//		this.dataExtractionForm = dataExtractionForm;
-//	}
+
+	public void addExtraction(Alternative[] alternatives, Article article, User user) {
+		for (Alternative alternative : alternatives) {
+			
+			EvaluationExtraction evaluationExtraction = new EvaluationExtraction();
+			evaluationExtraction.setAlternative(alternative);
+			evaluationExtraction.setArticle(article);
+			evaluationExtraction.setUser(user);
+			
+			this.getEvaluationExtractions().add(evaluationExtraction);
+		}
+		
+	}
+
+	public void addExtraction(Alternative alternative, Article article, User user) {
+			
+			EvaluationExtraction evaluationExtraction = new EvaluationExtraction();
+			evaluationExtraction.setAlternative(alternative);
+			evaluationExtraction.setArticle(article);
+			evaluationExtraction.setUser(user);
+			
+			this.getEvaluationExtractions().add(evaluationExtraction);
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Article other = (Article) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
+	}
+
+
+	public void AddEvaluationExtractions(EvaluationExtraction evaluationExtraction) {
+		System.out.println("Entrou");
+		EvaluationExtraction ev = findEvaluationExtraction(evaluationExtraction);
+		if (ev != null){
+			ev.setAlternative(evaluationExtraction.getAlternative());	
+			System.out.println(ev);
+		}else{
+			this.evaluationExtractions.add(evaluationExtraction);
+		}
+	}
 	
-	
-	
+	private EvaluationExtraction findEvaluationExtraction(EvaluationExtraction evaluationExtraction){
+		System.out.println("||" + evaluationExtraction);
+		for (EvaluationExtraction ev : evaluationExtractions) {
+			System.out.println("|" + ev);
+			if (ev.equals(evaluationExtraction)){
+				return ev;
+			}
+		}
+		return null;
+	}
 }

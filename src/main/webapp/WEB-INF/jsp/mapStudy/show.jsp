@@ -3,8 +3,10 @@
 
 <script type="text/javascript">
 $(document).ready(function(){
-	var percent = $('.progress-bar').attr("style");
-	$('.progress-bar').attr('style', percent.replace(",", "."));	
+	$('.progress-bar').each(function(idx){
+		var percent = $(this).attr("style");
+		$(this).attr('style', percent.replace(",", "."));
+	});
 }); 
 </script>
 
@@ -37,11 +39,16 @@ $(document).ready(function(){
 			<p>
 				<strong> <fmt:message key="mapstudy.evaluation.selection.rate" />:</strong>
 					<div class="progress">
-						<div class="progress-bar progress-bar-striped active"
-							role="progressbar" aria-valuenow="${percentEvaluated}"
-							aria-valuemin="0" aria-valuemax="100"
-							style="min-width: 3em; width: ${percentEvaluated}%">
-							${percentEvaluated}%</div>
+						<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="${percentEvaluated}" aria-valuemin="0" aria-valuemax="100"
+							style="min-width: 3em; width: ${percentEvaluated}%"> ${percentEvaluated}%
+						</div>
+					</div>
+					<div class="clear-both"></div>
+					<strong> <fmt:message key="mapstudy.extraction.rate" />:</strong>
+					<div class="progress">
+						<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="${percentExtracted}" aria-valuemin="0" aria-valuemax="100"
+							style="min-width: 3em; width: ${percentExtracted}%"> ${percentExtracted}%
+						</div>
 					</div>
 					<div class="clear-both"></div>
 
@@ -56,6 +63,12 @@ $(document).ready(function(){
 						</a>
 						<a class="btn btn-primary" href="${linkTo[MapStudyController].showEvaluates(map.id)}">
 							<fmt:message key="mapstudy.viewarticles" />
+						</a>
+						<a class="btn btn-primary" href="${linkTo[ExtractionController].extraction(map.id)}">
+							<fmt:message key="mapstudy.extraction" />
+						</a>
+						<a class="btn btn-primary" href="${linkTo[ExtractionController].showExtractionEvaluates(map.id)}">
+							<fmt:message key="mapstudy.viewextractions" />
 						</a>
 		</div>
 	</div>
@@ -73,9 +86,7 @@ $(document).ready(function(){
 
 				<div class="form-group">
 					<div class="col-lg-9 padding-left-none">
-						<select
-							data-placeholder="<fmt:message key="mapstudy.members.choose" />"
-							class="form-control select2" name="userId" tabindex="2">
+						<select data-placeholder="<fmt:message key="mapstudy.members.choose" />" class="form-control select2" name="userId" tabindex="2">
 							<c:forEach var="member" items="${mapStudyArentUsers}">
 								<option value="${member.id}" data-email="${member.email}">${member.name}</option>
 							</c:forEach>
@@ -102,6 +113,7 @@ $(document).ready(function(){
 							<th>#</th>
 							<th><fmt:message key="mapstudy.members" /></th>
 							<th><fmt:message key="mapstudy.evaluations.percentconclusion" /></th>
+							<th><fmt:message key="mapstudy.extraction.percentconclusion" /></th>
 							<c:if test="${map.isCreator(userInfo.user)}">
 								<th><fmt:message key="remove" /></th>
 							</c:if>
@@ -113,7 +125,8 @@ $(document).ready(function(){
 							<tr>
 								<td>${s.index + 1}</td>
 								<td>${member.key.name}</td>
-								<td>${member.value}</td>
+								<td>${member.value.selection}</td>
+								<td>${member.value.extraction}</td>
 								<c:if test="${map.isCreator(userInfo.user)}">
 									<c:choose>
 										<c:when test="${!map.isCreator(member.key)}">

@@ -121,7 +121,7 @@ $(document).ready(function(){
 					<div class="form-group">
 						<label for="levenshtein">Levenshtein (similaridade de títulos)</label>
 						<div class="col-lg-12">
-						<input type="text" class="form-control" id="levenshtein" name="levenshtein" placeholder="Levenshtein" 
+						<input type="text" value="0" class="form-control" id="levenshtein" name="levenshtein" placeholder="Levenshtein" 
 						data-toggle="popover" data-trigger="hover" data-placement="left" data‐container="body" data-content='<fmt:message key="mapstudy.article.refine.levenshtein" />' data-title='<fmt:message key="mapstudy.article.refine.information" />'/>
 						</div>
 					</div>
@@ -140,7 +140,7 @@ $(document).ready(function(){
 					<div class="form-group">
 						<label for="limiartitulo">Limiar T&iacute;tulo</label>
 						<div class="col-lg-12">
-							<input type="text" class="form-control" id="limiartitulo" name="limiartitulo" placeholder="Limiar T&iacute;tulo" 
+							<input type="text" value="0" class="form-control" id="limiartitulo" name="limiartitulo" placeholder="Limiar T&iacute;tulo" 
 							data-toggle="popover" data-trigger="hover" data-placement="left" data‐container="body" data-content='<fmt:message key="mapstudy.article.refine.limiartitulo" />' data-title='<fmt:message key="mapstudy.article.refine.information" />'/>
 						</div>
 					</div>
@@ -148,7 +148,7 @@ $(document).ready(function(){
 					<div class="form-group">
 						<label for="limiarabstract">Limiar Abstract</label>
 						<div class="col-lg-12">
-							<input type="text" class="form-control" id="limiarabstract" name="limiarabstract" placeholder="Limiar Abstract" 
+							<input type="text"  value="0" class="form-control" id="limiarabstract" name="limiarabstract" placeholder="Limiar Abstract" 
 							data-toggle="popover" data-trigger="hover" data-placement="left" data‐container="body" data-content='<fmt:message key="mapstudy.article.refine.limiarabstract" />' data-title='<fmt:message key="mapstudy.article.refine.information" />'/>
 						</div>
 					</div>
@@ -156,7 +156,7 @@ $(document).ready(function(){
 					<div class="form-group">
 						<label for="limiarkeywords">Limiar Keywords</label>
 						<div class="col-lg-12">
-							<input type="text" class="form-control" id="limiarkeywords" name="limiarkeywords" placeholder="Limiar Keywords" 
+							<input type="text"  value="0" class="form-control" id="limiarkeywords" name="limiarkeywords" placeholder="Limiar Keywords" 
 							data-toggle="popover" data-trigger="hover" data-placement="left" data‐container="body" data-content='<fmt:message key="mapstudy.article.refine.limiarkeywords" />' data-title='<fmt:message key="mapstudy.article.refine.information" />'/>
 						</div>
 					</div>
@@ -164,7 +164,7 @@ $(document).ready(function(){
 					<div class="form-group">
 						<label for="limiartotal">Limiar Total</label>
 						<div class="col-lg-12">
-							<input type="text" class="form-control" id="limiartotal" name="limiartotal" placeholder="Limiar Total" 
+							<input type="text"  value="0" class="form-control" id="limiartotal" name="limiartotal" placeholder="Limiar Total" 
 							data-toggle="popover" data-trigger="hover" data-placement="left" data‐container="body" data-content='<fmt:message key="mapstudy.article.refine.limiartotal" />' data-title='<fmt:message key="mapstudy.article.refine.information" />'/>
 						</div>
 					</div>
