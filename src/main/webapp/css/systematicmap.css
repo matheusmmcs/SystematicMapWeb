@@ -2,6 +2,23 @@ body {
 	background-color: White;
 }
 
+.background_home{
+	background-image: url('../images/header.jpg');
+	background-size: cover;
+	background-repeat: no-repeat;
+}
+
+.background_main{
+	background-image: url('../images/gray_jean.png');
+}
+
+.container_main{
+	background-color: #fff;
+    padding-top: 15px;
+    box-shadow: 0 0 4px rgba(0,0,0,.15);
+    border-radius: 0 0 5px 5px;
+}
+
 footer p {
 	margin: 0;
 	color: #337AB7;
