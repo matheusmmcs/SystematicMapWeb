@@ -63,42 +63,46 @@
 	})(jQuery);
 </script>
 
-<div class="login-panel panel panel-default">
-   <div class="panel-heading">
-       <h3 class="panel-title"><fmt:message key="signup"/></h3>
-   </div>
-   <div class="panel-body">
-       <form action="${linkTo[UsersController].add}" method="post" class="form-horizontal" autocomplete="off" id="formCreateUser">
-           <fieldset>
-               <div class="form-group">
-				<label class="sr-only" for="name"><fmt:message key="user.name"/></label>
-				<input type="text" class="form-control" id="newname" name="user.name" value="${user.name}" placeholder="<fmt:message key="user.name"/>"/>
-			</div>
-			<div class="form-group">
-				<label class="sr-only" for="login"><fmt:message key="user.login"/></label>
-				<input type="text" class="form-control" id="newlogin" name="user.login" value="${user.login}" placeholder="<fmt:message key="user.login"/>"/>
-			</div>
-			<div class="form-group">
-				<label class="sr-only" for="email"><fmt:message key="user.email"/></label>
-				<input type="text" class="form-control" id="newemail" name="user.email" value="${user.email}" placeholder="<fmt:message key="user.email"/>"/>
-			
-			</div>
-			<div class="form-group">
-				<label class="sr-only" for="password"><fmt:message key="user.password"/></label>
-				<input type="password" id="password" class="form-control" name="user.password" value="${user.password}" placeholder="<fmt:message key="user.password"/>"/>
-			</div>
-			
-			<div class="form-group">
-				<label class="sr-only" for="password"><fmt:message key="user.password"/></label>
-				<input type="password" id="repassword" class="form-control" name="repassword" value="" placeholder="<fmt:message key="recovery.repassword"/>"/>
-			</div>
-			
-               <!-- Change this to a button or input when using this as a form -->
-               <button type="submit" id="submit" class="btn btn-lg btn-primary btn-block">
-				<fmt:message key="create"/>
-			</button>
-             </fieldset>
-         </form>
-         <a id="return" class="btn btn-lg btn-default btn-block" href="${linkTo[HomeController].login()}"><fmt:message key="button.back"/></a>
-     </div>
- </div>
+<div class="row">
+	<div class="col-md-6 col-md-offset-3">
+		<div class="login-panel panel panel-default">
+		   <div class="panel-heading">
+		       <h3 class="panel-title"><fmt:message key="signup"/></h3>
+		   </div>
+		   <div class="panel-body">
+		       <form action="${linkTo[UsersController].add}" method="post" class="" autocomplete="off" id="formCreateUser">
+		           <fieldset>
+		               <div class="form-group">
+						<label class="sr-only" for="name"><fmt:message key="user.name"/></label>
+						<input type="text" class="form-control" id="newname" name="user.name" value="${user.name}" placeholder="<fmt:message key="user.name"/>"/>
+					</div>
+					<div class="form-group">
+						<label class="sr-only" for="login"><fmt:message key="user.login"/></label>
+						<input type="text" class="form-control" id="newlogin" name="user.login" value="${user.login}" placeholder="<fmt:message key="user.login"/>"/>
+					</div>
+					<div class="form-group">
+						<label class="sr-only" for="email"><fmt:message key="user.email"/></label>
+						<input type="text" class="form-control" id="newemail" name="user.email" value="${user.email}" placeholder="<fmt:message key="user.email"/>"/>
+					
+					</div>
+					<div class="form-group">
+						<label class="sr-only" for="password"><fmt:message key="user.password"/></label>
+						<input type="password" id="password" class="form-control" name="user.password" value="${user.password}" placeholder="<fmt:message key="user.password"/>"/>
+					</div>
+					
+					<div class="form-group">
+						<label class="sr-only" for="password"><fmt:message key="user.password"/></label>
+						<input type="password" id="repassword" class="form-control" name="repassword" value="" placeholder="<fmt:message key="recovery.repassword"/>"/>
+					</div>
+					
+		               <!-- Change this to a button or input when using this as a form -->
+		               <button type="submit" id="submit" class="btn btn-lg btn-primary btn-block" style="margin-bottom: 10px;">
+						<fmt:message key="create"/>
+					</button>
+		             </fieldset>
+		         </form>
+		         <a id="return" class="btn btn-lg btn-default btn-block" href="${linkTo[HomeController].login()}"><fmt:message key="button.back"/></a>
+		     </div>
+		 </div>
+	</div>
+</div>

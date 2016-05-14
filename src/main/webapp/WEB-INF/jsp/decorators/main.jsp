@@ -11,40 +11,37 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="author" content="EaSII Team">
+    <meta name="description" content="TheEnd">
 	
 	<title>Systematic Map</title>
+	<link rel="shortcut icon" href="images/books.png" type="image/png">
 	
 	<decorator:head/>
-	
 	
     <!-- Bootstrap Core CSS -->
     <link href="<c:url value="/vendor/bootstrap/css/bootstrap.min.css" />" rel="stylesheet">
     <!-- MetisMenu CSS -->
     <link href="<c:url value="/vendor/metisMenu/metisMenu.min.css" />" rel="stylesheet">
     <!-- Timeline CSS -->
-<%--     <link href="<c:url value="/css/timeline.css" />" rel="stylesheet"> --%>
+	<%-- <link href="<c:url value="/css/timeline.css" />" rel="stylesheet"> --%>
     <!-- Custom CSS -->
     <link href="<c:url value="/css/sb-admin-2.css" />" rel="stylesheet">
     <!-- Morris Charts CSS -->
-<%--     <link href="<c:url value="/vendor/morris/morris.css" />" rel="stylesheet"> --%>
+	<%-- <link href="<c:url value="/vendor/morris/morris.css" />" rel="stylesheet"> --%>
     <!-- Custom Fonts -->
     <link href="<c:url value="/vendor/font-awesome/css/font-awesome.min.css" />" rel="stylesheet" type="text/css">
     
     <!-- DataTables CSS -->
     <link href="<c:url value="/vendor/datatables/css/dataTables.bootstrap.css" />" rel="stylesheet">
-
     <!-- DataTables Responsive CSS -->
     <link href="<c:url value="/vendor/datatables/css/dataTables.responsive.css" />" rel="stylesheet">
     
     <!-- Autocomplete -->
     <link href="<c:url value="/vendor/chosen/chosen.min.css" />" rel="stylesheet">
     <link href="<c:url value="/css/select2.min.css" />" rel="stylesheet" />
-
 	<link href="<c:url value="/css/bootstrap-fileupload.min.css"/>" rel="stylesheet" type="text/css"/>
 	<link href="<c:url value="/css/systematicmap.css" />" rel="stylesheet">
-	
 	
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -52,7 +49,6 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-    
     
     <!-- jQuery -->
     <script src="<c:url value="/vendor/jquery/jquery.min.js" />"></script>
@@ -63,7 +59,6 @@
     <!-- Bootstrap Core JavaScript -->
     <script src="<c:url value="/vendor/bootstrap/js/bootstrap.min.js" />"></script>
     <script type="text/javascript" src="<c:url value="/js/bootstrap-fileupload.min.js"/>"></script>
-    
     <script src="<c:url value="/vendor/datatables/js/jquery.dataTables.min.js" />"></script>
     <script src="<c:url value="/vendor/datatables/js/dataTables.bootstrap.min.js" />"></script>
     
@@ -118,85 +113,55 @@
 	</script>
     
 </head>
-<body>
+<body class="background_main">
 	<div id="wrapper">
-
-        <!-- Navigation -->
         <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="${linkTo[HomeController].home}"><fmt:message key="mapstudy.web" /></a>
+            <div class="container">
+	            <div class="navbar-header">
+	                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+	                    <span class="sr-only">Toggle navigation</span>
+	                    <span class="icon-bar"></span>
+	                    <span class="icon-bar"></span>
+	                    <span class="icon-bar"></span>
+	                </button>
+	                <a class="navbar-brand" href="${linkTo[HomeController].home}"><fmt:message key="mapstudy.web" /></a>
+	            </div>
+	            <ul class="nav navbar-top-links navbar-right">
+	            	<li><span class="color-primary">${userInfo.user.name}</span></li>
+	                <li class= "dropdown">
+	                    <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i></a>
+	                    <ul class="dropdown-menu dropdown-user">
+	                    	<li><a href="${linkTo[UsersController].profile(userInfo.user.id)}"><i class="fa fa-user fa-fw"></i> <fmt:message key="user.profile" /></a></li>
+	                    	<li class="divider"></li>
+	                    	
+	                        <li><a href="${linkTo[MapStudyController].list}"><i class="glyphicon glyphicon-log-in"></i>  <fmt:message key="mapstudy.my.short" /></a></li>
+	                        <li class="divider"></li>
+	                        
+	                        <li><a href="${linkTo[HomeController].logout}"><i class="fa fa-sign-out fa-fw"></i> <fmt:message key="logout" /></a></li>
+	                    </ul>
+	                </li>
+	            </ul>
             </div>
-            <!-- /.navbar-header -->
-
-            <ul class="nav navbar-top-links navbar-right">
-            	<li>
-            		<span class="color-primary">
-                		${userInfo.user.name}
-                	</span>
-            	</li>
-                <li class= "dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                        <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
-                    </a>
-                    <ul class="dropdown-menu dropdown-user">
-                    	<li><a href="${linkTo[UsersController].profile(userInfo.user.id)}"><i class="fa fa-user fa-fw"></i> <fmt:message key="user.profile" /></a></li>
-                    	<li class="divider"></li>
-                        <li><a href="${linkTo[MapStudyController].list}"><i class="glyphicon glyphicon-log-in"></i>  <fmt:message key="mapstudy.my.short" /></a></li>
-                        <li class="divider"></li>
-                        <li><a href="${linkTo[HomeController].logout}"><i class="fa fa-sign-out fa-fw"></i> <fmt:message key="logout" /></a></li>
-                    </ul>
-                    <!-- /.dropdown-user -->
-                </li>
-                <!-- /.dropdown -->
-            </ul>
-            <!-- /.navbar-top-links -->
-
-            <div class="navbar-default sidebar" role="navigation">
-                <div class="sidebar-nav navbar-collapse">
-                    <ul class="nav" id="side-menu">
-                        <li class="sidebar-search">
-                            <div class="input-group custom-search-form">
-                                <input type="text" class="form-control" placeholder="Search...">
-                                <span class="input-group-btn">
-                                <button class="btn btn-default" type="button" style="padding: 9px;">
-                                    <i class="fa fa-search"></i>
-                                </button>
-                            </span>
-                            </div>
-                            <!-- /input-group -->
-                        </li>
-<%--                         <center> --%>
-<!--                         <li> -->
-<%-- 						<img src="<gravatar:image email="${userInfo.user.email}" size="192"/>" alt="Gravatar" title="${userInfo.user.name }" class="img-responsive"/> --%>
-<!--                         </li> -->
-<!--                         <li> </li> -->
-<!--                         <li class="divider"> </li> -->
-<%--                         </center> --%>
-                        <li>
-                            <a href="${linkTo[MapStudyController].list}"><i class="fa fa-dashboard fa-fw"></i> <fmt:message key="mapstudy.my.short" /></a>
-                        </li>
-                        
-                    </ul>
-                </div>
-                <!-- /.sidebar-collapse -->
-            </div>
-            <!-- /.navbar-static-side -->
         </nav>
-        
-	        <div id="page-wrapper">
-	
+	</div>
+    
+    <div class="container container_main">
+    	<div class="row">
+    		<div class="col-md-3">
+    			<p class="lead">Menu Principal</p>
+    			<div class="list-group">
+                    <a href="#" class="list-group-item active">Dashboard</a>
+                    <a href="#" class="list-group-item">Listar Mapeamentos</a>
+                    <a href="#" class="list-group-item">Novo Mapeamento</a>
+                </div>
+    		</div>
+    		<div class="col-md-9">
 				<c:if test="${not empty errors}">
 					<div class="alert alert-danger alert-dismissible" role="alert">
 						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-  						<span class="sr-only">Error:</span>
-  						<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-<!-- 						<button type="button" class="close" data-dismiss="alert">&times;</button> -->
+	 						<span class="sr-only">Error:</span>
+	 						<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<!-- <button type="button" class="close" data-dismiss="alert">&times;</button> -->
 						<c:forEach items="${errors}" var="error">
 							<b><fmt:message key="${error.category}" /></b> - <fmt:message key="${error.message}" />
 							<br />
@@ -205,65 +170,58 @@
 				</c:if>
 				<c:if test="${not empty notice}">
 					<div class="alert alert-info alert-dismissible" role="alert" id="notices">
-<!-- 						<button type="button" class="close" data-dismiss="alert">&times;</button> -->
-							<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<!-- <button type="button" class="close" data-dismiss="alert">&times;</button> -->
+						<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 						<%-- <c:forEach items="${notices}" var="notice"> --%>
 						<b><fmt:message key="${notice.category}" /></b> - <fmt:message key="${notice.message}" />
 						<br />
 						<%--</c:forEach> --%>
 					</div>
 				</c:if>
-
-			<decorator:body/>
-        </div>
-        <!-- /#page-wrapper -->
+				<decorator:body/>
+    		</div>
+    	</div>
     </div>
-    <!-- /#wrapper -->
 
 	<!-- Footer -->
-	<div class="footer">
-		<div class="container text-center">
-			<p>© 2015-2016. Todos os direitos reservados.</p>
-			<p>
-				<a href="http://easii.ufpi.br">EASII</a> - Laborat&oacute;rio de
-				Engenharia de Software e Inform&aacute;tica Industrial
-			</p>
-		</div>
-	</div>
+	<footer>
+        <div class="container text-center" style="margin-top: 8px;">
+            <p>© 2015-2016. Todos os direitos reservados.</p>
+            <p><a href="http://easii.ufpi.br">EaSII</a> - Laborat&oacute;rio de Engenharia de Software e Inform&aacute;tica Industrial</p>
+        </div>
+    </footer>
+	
 	<!-- Modal -->
     <div id="generic-modal" class="modal fade">
-	  <div class="modal-dialog">
-	    <div class="modal-content">
-	      <div class="modal-header">
-	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-	        <h4 class="modal-title"><fmt:message key="confirm.delete" /></h4>
-	      </div>
-	      <div class="modal-body">
-	        <p>One fine body&hellip;</p>
-	      </div>
-	      <div class="modal-footer">
-	        <button type="button" class="btn btn-default" data-dismiss="modal"><fmt:message key="close" /></button>
-	        <button type="button" class="btn btn-danger" id="generic-modal-confirmation"><fmt:message key="confirm.delete" /></button>
-	      </div>
-	    </div><!-- /.modal-content -->
-	  </div><!-- /.modal-dialog -->
+		<div class="modal-dialog">
+	    	<div class="modal-content">
+	      		<div class="modal-header">
+	        		<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        		<h4 class="modal-title"><fmt:message key="confirm.delete" /></h4>
+	      		</div>
+	      		<div class="modal-body">
+	        		<p>One fine body&hellip;</p>
+	      		</div>
+	      		<div class="modal-footer">
+	        		<button type="button" class="btn btn-default" data-dismiss="modal"><fmt:message key="close" /></button>
+	        		<button type="button" class="btn btn-danger" id="generic-modal-confirmation"><fmt:message key="confirm.delete" /></button>
+	      		</div>
+	    	</div>
+	  	</div>
 	</div>
-	<!-- /.modal -->
 
     <!-- Metis Menu Plugin JavaScript -->
     <script src="<c:url value="/vendor/metisMenu/metisMenu.min.js" />"></script>
     <script src="<c:url value="/vendor/chosen/chosen.jquery.min.js" />"></script>
-    
     <script src="<c:url value="/js/select2.min.js" />"></script>
 
     <!-- Morris Charts JavaScript -->
-<%--     <script src="<c:url value="/vendor/raphael/raphael-min.js" />"></script> --%>
-<%--     <script src="<c:url value="/vendor/morris/morris.min.js" />"></script> --%>
-<%--     <script src="<c:url value="/js/morris-data.js" />"></script> --%>
+	<%-- <script src="<c:url value="/vendor/raphael/raphael-min.js" />"></script> --%>
+	<%-- <script src="<c:url value="/vendor/morris/morris.min.js" />"></script> --%>
+	<%-- <script src="<c:url value="/js/morris-data.js" />"></script> --%>
 
     <!-- Custom Theme JavaScript -->
     <script src="<c:url value="/js/sb-admin-2.js" />"></script>
-    
     <script>
 		$(document).ready(function() {
 			//tabela personalizada
@@ -308,12 +266,11 @@
 				}
 				$modal.modal('show');
 				$modal.find('#generic-modal-confirmation').unbind('click').on('click', function(e){
-// 					console.log('hadouken', $this.attr('href'));
+					// console.log('hadouken', $this.attr('href'));
 					document.location.href = $this.attr('href');
 				});
 			});
 		});
 	</script>
-	
 </body>
 </html>

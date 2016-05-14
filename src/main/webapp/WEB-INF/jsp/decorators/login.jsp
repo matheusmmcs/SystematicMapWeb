@@ -10,10 +10,11 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+     <meta name="author" content="EaSII Team">
+    <meta name="description" content="TheEnd">
 	
 	<title>Systematic Map</title>
+	<link rel="shortcut icon" href="../images/books.png" type="image/png">
 	
 	<decorator:head/>
 	
@@ -97,75 +98,61 @@
 		})(jQuery);
 	</script>
 </head>
-<body>
-	<div id="wrapper">
-<!--         Navigation -->
+<body class="background_home">
+	<div id="wrapper" style="text-align: center;">
+		<!-- Navigation -->
         <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
-            <div class="navbar-header">
-            </div>
-            <ul class="nav navbar-top-links navbar-right">
-	            <li>
-	            	 <a class="page-scroll" href="${linkTo[HomeController].home}"><fmt:message key="home" /></a>
-	            </li>
-            	<li>
-            		 <a class="page-scroll" href="${linkTo[HomeController].login}"><fmt:message key="login" /></a>
-            	</li>
-            	<li>
-            		 <a class="page-scroll" href="${linkTo[HomeController].create}"><fmt:message key="signup" /></a>
-            	</li>
-            	<li>
-            		 <a class="page-scroll" href="#"><fmt:message key="contact" /></a>
-            	</li>
-            	
+            <div class="navbar-header"></div>
+            <ul class="nav navbar-top-links">
+	            <li><a class="page-scroll" href="${linkTo[HomeController].home}"><fmt:message key="home" /></a></li>
+            	<li><a class="page-scroll" href="${linkTo[HomeController].login}"><fmt:message key="login" /></a></li>
+            	<li><a class="page-scroll" href="${linkTo[HomeController].create}"><fmt:message key="signup" /></a></li>
+            	<li><a class="page-scroll" href="#"><fmt:message key="contact" /></a></li>
             </ul>	
         </nav>
     </div>    
-
+	
 	<div class="container">
 		<div class="row">
-		<c:if test="${not empty errors}">
-					<div class="alert alert-danger alert-dismissible" role="alert">
-						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-  						<span class="sr-only">Error:</span>
-  						<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-<!-- 						<button type="button" class="close" data-dismiss="alert">&times;</button> -->
-						<c:forEach items="${errors}" var="error">
-							<b><fmt:message key="${error.category}" /></b> - <fmt:message
-								key="${error.message}" />
-							<br />
-						</c:forEach>
-					</div>
-				</c:if>
-				<c:if test="${not empty notice}">
-					<div class="alert alert-info alert-dismissible" role="alert">
-<!-- 						<button type="button" class="close" data-dismiss="alert">&times;</button> -->
-							<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						<%-- <c:forEach items="${notices}" var="notice"> --%>
-						<b><fmt:message key="${notice.category}" /></b> - <fmt:message
-							key="${notice.message}" />
+			<c:if test="${not empty errors}">
+				<div class="alert alert-danger alert-dismissible" role="alert">
+					<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+ 						<span class="sr-only">Error:</span>
+ 						<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<!-- <button type="button" class="close" data-dismiss="alert">&times;</button> -->
+					<c:forEach items="${errors}" var="error">
+						<b><fmt:message key="${error.category}" /></b> - <fmt:message
+							key="${error.message}" />
 						<br />
-						<%--</c:forEach> --%>
-					</div>
-				</c:if>		
-			<div class="col-md-4 col-md-offset-4">				
+					</c:forEach>
+				</div>
+			</c:if>
+			<c:if test="${not empty notice}">
+				<div class="alert alert-info alert-dismissible" role="alert">
+					<!-- <button type="button" class="close" data-dismiss="alert">&times;</button> -->
+					<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<%-- <c:forEach items="${notices}" var="notice"> --%>
+					<b><fmt:message key="${notice.category}" /></b> - <fmt:message key="${notice.message}" />
+					<br />
+					<%--</c:forEach> --%>
+				</div>
+			</c:if>		
+			<div class="col-md-12">				
 				<decorator:body/>			
-				
 			</div>
 		</div>
     </div>	
-    
+	
     <!-- Footer -->
     <footer>
-        <div class="container text-center">
-<!--             <p>Copyright &copy; Your Website 2014</p> -->
+        <div class="container text-center" style="margin-top: 8px;">
             <p>© 2015-2016. Todos os direitos reservados.</p>
-            <p><a href="http://easii.ufpi.br">EASII</a> - Laborat&oacute;rio de Engenharia de Software e Inform&aacute;tica Industrial</p>
+            <p><a href="http://easii.ufpi.br">EaSII</a> - Laborat&oacute;rio de Engenharia de Software e Inform&aacute;tica Industrial</p>
         </div>
     </footer>
 
     <!-- Metis Menu Plugin JavaScript -->
     <script src="<c:url value="/vendor/metisMenu/metisMenu.min.js" />"></script>
-
     <!-- Custom Theme JavaScript -->
     <script src="<c:url value="/js/sb-admin-2.js" />"></script>
 </body>
