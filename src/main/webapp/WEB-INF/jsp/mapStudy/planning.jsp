@@ -5,348 +5,287 @@
 	(function($) {
 		$(document).ready(function() {
 			
-	var isLogado = function() {
-		if ('${userInfo.user}' == null) {
-			window.location.reload();
-		}
-	};
-							// activenav deve ser o id do nav
-							var newnavactive = function(activenav) {
-								console.log('activenav: ', activenav);
+		console.log('mydiv: ', $('#mydiv').val());	
+			
+		var isLogado = function() {
+			if ('${userInfo.user}' == null) {
+				window.location.reload();
+			}
+		};
+	
+		// activenav deve ser o id do nav
+		var newnavactive = function(activenavId) {
+			console.log('activenavId: ', activenavId);
+			// Tira status ativo do nav
+			var navactualId = $('.active').attr('id');
+			
+			if (navactualId == undefined) {
+				navactualId = '#' + $('#mydiv').val().substr(3);
+				console.log('nav atual não foi encontrada buscou por id = ', navactualId);
+			}
+	
+			$(navactualId).removeClass('active');
+	
+			// Esconde a div relacionada ao nav que estava ativo
+			var divatual = '#div' + navactualId.replace('#', '');
+			console.log('divatual: ', divatual);
+			$(divatual).addClass('hide');
+	
+			// Muda status do nav selecionado para ativo
+			$(activenavId).addClass('active'); // adiciona classe active no nav selecionado 
+	
+			// Exibe a div relacionada ao nav
+			console.log(activenavId.substr(1));
+			var divnovo = '#div' + activenavId.substr(1);
+			
+			
+			console.log('div novo ', divnovo);			
+			$('#mydiv').val(divnovo);
+			console.log('valor novo em mydiv: ', $('#mydiv').val());
+			$(divnovo).removeClass('hide');
+	
+			console.log('id do nav que estava ativo: ', navactualId);
+			console.log('id do nav que agora esta ativo: ', activenavId);
+			console.log('-----------------------------');
+		};
+				
+		var mydivid = '#' + $('#mydiv').val().substr(3);
+		console.log('carregou: ', mydivid);
+		newnavactive(mydivid);
+							
+		$(document).on('click', '.mynav', function(event) {
+			event.preventDefault();
+			event.stopPropagation();
 
-								// Tira status ativo do nav
-								var navatual = $('.active').attr('id');
+			isLogado();
 
-								if (navatual == undefined) {
-									navatual = "#goals";
-								}
+			var id = '#' + $(this).attr('id');			
+			console.log('id: ', id);			
+			newnavactive(id);
+		});
+							
 
-								$('.active').removeClass('active');
+		$("#formInclusion").validate({
+			rules : {
+				'criteria.description' : {
+					required : true
+				/*, minlength : 1*/
+				}
+			},
+			messages : {
+				'criteria.description' : {
+					required : '<fmt:message key="required" />'
+					/*,minlength: '<fmt:message key="mapstudy.min.title" />'*/
+				}
+			}
+		});
 
-								// Esconde a div relacionada ao nav
-								console.log('navatual: ', navatual);
-								var divatual = '#div'
-										+ navatual.replace('#', '');
-								console.log('divatual: ', divatual);
-								$(divatual).addClass('hide');
+		$("#formExclusion").validate({
+			rules : {
+				'criteria.description' : {
+					required : true
+				/*, minlength : 1*/
+				}
+			},
+			messages : {
+				'criteria.description' : {
+					required : '<fmt:message key="required" />'
+					/*,minlength: '<fmt:message key="mapstudy.min.title" />'*/
+				}
+			}
+		});
+		
+		// Parte do formulário de extração
+		//Remove um campo
+		var removeField = function(obj) {
+			$(obj).remove();
+		};
 
-								// Muda status do nav para ativo
-								$(activenav).addClass('active'); // adiciona classe active no nav selecionado 
+		// Adiciona questões
+		addQuestion = function(divObj) {
+			time = new Date().getTime();
+			fieldContent = '<div class="form-group group_question" id="group_question_'+time+'">'
+					+ '<div class="row">'
+					+ '<div class="col-md-6">'
+					+ '<label for="quest_'+time+'" class=""><fmt:message key="mapstudy.question.name" /></label> <input type="text"'
+					+ 'class="form-control group_question_name" id="quest_'
+					+ time
+					+ '" name="questions[]"'
+					+ 'placeholder="<fmt:message key="mapstudy.question.name"/>" />'
+					+ '</div>'
+					+ '<div class="col-md-3">'
+					+ '<label for="type_'+time+'" class=""><fmt:message key="mapstudy.question.type" /></label>'
+					+ '<select class="form-control selectiontype group_question_type" name="types[]" id="type_'+time+'">'
+					+ '<c:forEach var="type" items="${questionTypes}">'
+					+ '<option value="${type}">${type}</option>'
+					+ '</c:forEach>'
+					+ '</select>'
+					+ '</div>'
+					+ '<div class="col-md-3">'
+					+ '<label class="" for="btnquestionremove_'+time+'">&nbsp;&nbsp;&nbsp;</label>'
+					+ '<a href="#" class="btn btn-danger buttonquestionremove form-control" id="btnquestionremove_'+time+'" idquest="group_question_'+time+'">'
+					+ '<i class="glyphicon glyphicon-remove"></i> <fmt:message key="mapstudy.question.remove" />'
+					+ '</a>'
+					+ '</div>'
+					+ '</div>'
+					+ '<hr />' + '</div>';
+			divObj.append(fieldContent);
+		};
 
-								// Exibe a div relacionada ao nav
-								var divnovo = '#div' + activenav.substr(1);
-								console.log('divnova: ', divnovo);
-								$(divnovo).removeClass('hide');
+		var addAlternative = function(divObj, isFirst, questassociation) {
+			time = new Date().getTime();
+			var content = '<div class="form_group group_alternative" id="group_alternative_'+time+'">'
+					+ '<div class="col-md-6">'
+					+ '<label for="alternative_'+time+'" class="">'
+					+ '<fmt:message key="mapstudy.alternative.value" /></label> '
+					+ '<input type="text" class="form-control group_alternative_value" id="alternative_'
+					+ time
+					+ '" name="alternatives[].value"'
+					+ 'placeholder="<fmt:message key="mapstudy.alternative.value"/>" questassociation="'
+					+ questassociation + '"/>' + '</div>';
 
-								console.log('atual: ', navatual);
-								console.log('selecionado: ', activenav);
-								console.log('-----------------------------');
-							};
+			if (isFirst == true) {
+				content += '<div class="col-md-3">'
+						+ '<label class="" for="buttonalternativeadd_'+time+'">&nbsp;&nbsp;&nbsp;</label>'
+						+ '<a href="#" class="btn btn-success buttonalternativeadd form-control" id="buttonalternativeadd_'+time+'" questassociation="'+questassociation+'">'
+						+ '<i class="glyphicon glyphicon-plus"></i> <fmt:message key="mapstudy.alternative.add" />'
+						+ '</a>' + '</div>' + '</div>';
+			} else {
+				content += '<div class="col-md-1">'
+						+ '<label class="" for="buttonalternativeremove_'+time+'">&nbsp;&nbsp;&nbsp;</label>'
+						+ '<a href="#" alternativeid="group_alternative_'+time+'" class="btn btn-danger buttonalternativeremove form-control" id="buttonalternativeremove_'+time+'">'
+						+ '<i class="glyphicon glyphicon-remove"></i>'
+						+
+						//	 				<fmt:message key="mapstudy.alternative.remove" />
+						'</a>' + '</div>' + '</div>';
+			}
 
-							var mydiv = '#' + $('#mydiv').val().substr(3);
-							newnavactive(mydiv);
+			$(divObj).append(content);
+		};
 
-							$(document).on('click', '.mynav', function(event) {
-								event.preventDefault();
-								event.stopPropagation();
+		// Adiciona questão
+		$(document).on('click', '.buttonquestionadd', function(event) {
+			event.preventDefault();
+			isLogado();
 
-								isLogado();
+			divObj = $('#' + 'allquestions');
+			addQuestion(divObj);
+		});
 
-								var id = '#' + $(this).attr('id');
-								newnavactive(id);
-							});
+		// Remove questão
+		$(document).on('click', '.buttonquestionremove', function(event) {
+			event.preventDefault();
+			isLogado();
+			
+			var id = $(this).attr('idquest');
+			removeField($('#' + id));
+		});
 
-							$("#formInclusion")
-									.validate(
-											{
-												rules : {
-													'criteria.description' : {
-														required : true
-													/*,
-													                    	 minlength : 1*/
-													}
-												},
-												messages : {
-													'criteria.description' : {
-														required : '<fmt:message key="required" />'/*,
-																										                          minlength: '<fmt:message key="mapstudy.min.title" />'*/
-													}
-												}
-											});
+		// Adiciona ALternativa
+		$(document).on('click', '.buttonalternativeadd', function(event) {
+			event.preventDefault();
+			isLogado();
 
-							$("#formExclusion")
-									.validate(
-											{
-												rules : {
-													'criteria.description' : {
-														required : true
-													/*,
-													                   	 minlength : 1*/
-													}
-												},
-												messages : {
-													'criteria.description' : {
-														required : '<fmt:message key="required" />'/*,
-																										                         minlength: '<fmt:message key="mapstudy.min.title" />'*/
-													}
-												}
-											});
+			var myid = $(this).attr('questassociation');
+			addAlternative($('#group_question_'	+ myid), false, myid);
+		});
 
-							// Parte do formulário de extração
+		// Remove ALternativa
+		$(document).on('click', '.buttonalternativeremove',	function(event) {
+			event.preventDefault();
+			isLogado();	
 
-							//Remove um campo
-							var removeField = function(obj) {
-								console.log('remove');
-								$(obj).remove();
-							};
+			var id = $(this).attr('alternativeid');
+			removeField($('#' + id));
+		});
 
-							// Adiciona questões
-							addQuestion = function(divObj) {
-								time = new Date().getTime();
-								fieldContent = '<div class="form-group group_question" id="group_question_'+time+'">'
-										+ '<div class="row">'
-										+ '<div class="col-md-6">'
-										+ '<label for="quest_'+time+'" class=""><fmt:message key="mapstudy.question.name" /></label> <input type="text"'
-										+ 'class="form-control group_question_name" id="quest_'
-										+ time
-										+ '" name="questions[]"'
-										+ 'placeholder="<fmt:message key="mapstudy.question.name"/>" />'
-										+ '</div>'
-										+ '<div class="col-md-3">'
-										+ '<label for="type_'+time+'" class=""><fmt:message key="mapstudy.question.type" /></label>'
-										+ '<select class="form-control selectiontype group_question_type" name="types[]" id="type_'+time+'">'
-										+ '<c:forEach var="type" items="${questionTypes}">'
-										+ '<option value="${type}">${type}</option>'
-										+ '</c:forEach>'
-										+ '</select>'
-										+ '</div>'
-										+ '<div class="col-md-3">'
-										+ '<label class="" for="btnquestionremove_'+time+'">&nbsp;&nbsp;&nbsp;</label>'
-										+ '<a href="#" class="btn btn-danger buttonquestionremove form-control" id="btnquestionremove_'+time+'" idquest="group_question_'+time+'">'
-										+ '<i class="glyphicon glyphicon-remove"></i> <fmt:message key="mapstudy.question.remove" />'
-										+ '</a>'
-										+ '</div>'
-										+ '</div>'
-										+ '<hr />' + '</div>';
-								divObj.append(fieldContent);
-							};
+		// Captura seleção de tipo
+		$(document).on('change', '.selectiontype', function() {
+			isLogado();
+			console.log('type: ', $(this).val());
+			if ($(this).val() == 'SIMPLE') {
+				// se existir alternatives remover todas
+				var myid = $(this).attr('id');
+				myid = myid.substring(myid.lastIndexOf('_') + 1, myid.length);
+				var objId = "#group_question_" + myid;
+				
+				// assim ele vai pegar os group_alternative "filhos" de objId
+				$(objId	+ " .group_alternative").each(function(index) {
+					$(this).remove();
+				});
 
-							var addAlternative = function(divObj, isFirst,
-									questassociation) {
-								//var objId = "#group_question_" + myid;
-								//console.log(divObj);
-								//console.log(isFirst);
-								//console.log(questassociation);
-								time = new Date().getTime();
-								var content = '<div class="form_group group_alternative" id="group_alternative_'+time+'">'
-										+ '<div class="col-md-6">'
-										+ '<label for="alternative_'+time+'" class="">'
-										+ '<fmt:message key="mapstudy.alternative.value" /></label> '
-										+ '<input type="text" class="form-control group_alternative_value" id="alternative_'
-										+ time
-										+ '" name="alternatives[].value"'
-										+ 'placeholder="<fmt:message key="mapstudy.alternative.value"/>" questassociation="'
-										+ questassociation + '"/>' + '</div>';
+			} else {
+			// inserir alternative
+				var myid = $(this).attr('id');
+				myid = myid.substring(myid.lastIndexOf('_') + 1, myid.length);
+				var objId = "#group_question_" + myid;
 
-								if (isFirst == true) {
-									content += '<div class="col-md-3">'
-											+ '<label class="" for="buttonalternativeadd_'+time+'">&nbsp;&nbsp;&nbsp;</label>'
-											+ '<a href="#" class="btn btn-success buttonalternativeadd form-control" id="buttonalternativeadd_'+time+'" questassociation="'+questassociation+'">'
-											+ '<i class="glyphicon glyphicon-plus"></i> <fmt:message key="mapstudy.alternative.add" />'
-											+ '</a>' + '</div>' + '</div>';
-								} else {
-									content += '<div class="col-md-1">'
-											+ '<label class="" for="buttonalternativeremove_'+time+'">&nbsp;&nbsp;&nbsp;</label>'
-											+ '<a href="#" alternativeid="group_alternative_'+time+'" class="btn btn-danger buttonalternativeremove form-control" id="buttonalternativeremove_'+time+'">'
-											+ '<i class="glyphicon glyphicon-remove"></i>'
-											+
-											//	 				<fmt:message key="mapstudy.alternative.remove" />
-											'</a>' + '</div>' + '</div>';
-								}
+				if ($(objId).children('.group_alternative').length == 0) {
+					addAlternative($(objId), true, myid);
+				} else {
+					console.log('ja existe alternative');
+				}
+			}
+		});
 
-								$(divObj).append(content);
-							};
+		//Salvar Formulário
+		$(document)	.on('click', '.buttonextraction', function(event) {
+			event.preventDefault();
+			var questions = [];
+			
+			$('.group_question').each(function(idx,	elem) {
+				var $elem = $(elem);
+				var question = {};
+				question.id = null;
+				question.name = $elem.find('.group_question_name').val();
+				question.type = $elem.find('.group_question_type').val();
+				question.alternatives = [];
+				
+				$elem.find('.group_alternative').each(function(idx_a, elem_a) {
+					var alternative = {};
+					alternative.id = null;
+					alternative.value = $(elem_a).find('.group_alternative_value').val();
+					
+					if (alternative.value != null && alternative.value != "") {
+						question.alternatives.push(alternative);
+					}
+				});
 
-							// Adiciona questão
-							$(document).on('click', '.buttonquestionadd', function(event) {
-										event.preventDefault();
-										isLogado();
-										console.log('addquestion');
+				if (question.name != null && question.name != "") {
+					questions.push(question);
+				}
+				
+			});
 
-										divObj = $('#' + 'allquestions');
-										addQuestion(divObj);
-									});
+			var address = "${linkTo[ExtractionController].formAjax}";
+			var mapid = $('#mapid').val();
 
-							// Remove questão
-							$(document).on('click', '.buttonquestionremove', function(event) {
-										event.preventDefault();
-										isLogado();
-										var id = $(this).attr('idquest');
-										console.log('idquest: ', id);
-										removeField($('#' + id));
-									});
+			var questionVO = {
+				"mapid" : mapid,
+				"questions" : questions
+			};
 
-							// Adiciona ALternativa
-							$(document).on('click', '.buttonalternativeadd', function(event) {
-								event.preventDefault();
-								isLogado();
-								console.log('addalternative');
-								var myid = $(this).attr('questassociation');
-								//myid = myid.substring(myid.lastIndexOf('_') + 1);//, myid.length);
-								addAlternative($('#group_question_'	+ myid), false, myid);
-							});
+			param = {
+				"questionVO" : questionVO
+			};
 
-							// Remove ALternativa
-							$(document).on('click', '.buttonalternativeremove',	function(event) {
-								event.preventDefault();
-								isLogado();	
-								console.log('addalternative');
-								var id = $(this).attr('alternativeid');
-								console.log('alternativeid: ', id);
-								removeField($('#' + id));
-							});
-
-							// Captura seleção de tipo
-							$(document).on('change', '.selectiontype', function() {
-								isLogado();
-								console.log('type: ', $(this).val());
-								if ($(this).val() == 'SIMPLE') {
-								// se existir alternatives remover todas
-								var myid = $(this).attr('id');
-								myid = myid.substring(myid.lastIndexOf('_') + 1, myid.length);
-								var objId = "#group_question_" + myid;
-								// assim ele vai pegar os group_alternative "filhos" de objId
-								$(objId	+ " .group_alternative").each(function(index) {
-									$(this).remove();
-								});
-
-								} else {
-								// inserir alternative
-									var myid = $(this).attr('id');
-									myid = myid.substring(myid.lastIndexOf('_') + 1, myid.length);
-									var objId = "#group_question_" + myid;
-
-									if ($(objId).children('.group_alternative').length == 0) {
-										addAlternative($(objId), true, myid);
-									} else {
-										console.log('ja existe alternative');
-									}
-
-								}
-							});
-
-							//Salvar Formulário
-							$(document)
-									.on(
-											'click',
-											'.buttonextraction',
-											function(event) {
-												event.preventDefault();
-												console.log('buttonextraction');
-
-												var questions = [];
-												$('.group_question')
-														.each(
-																function(idx,
-																		elem) {
-																	var $elem = $(elem);
-																	var question = {};
-																	question.id = null;
-																	question.name = $elem
-																			.find(
-																					'.group_question_name')
-																			.val();
-																	question.type = $elem
-																			.find(
-																					'.group_question_type')
-																			.val();
-																	question.alternatives = [];
-
-																	console
-																			.log(question);
-
-																	$elem
-																			.find(
-																					'.group_alternative')
-																			.each(
-																					function(
-																							idx_a,
-																							elem_a) {
-																						var alternative = {};
-																						alternative.id = null;
-																						alternative.value = $(
-																								elem_a)
-																								.find(
-																										'.group_alternative_value')
-																								.val();
-																						if (alternative.value != null
-																								&& alternative.value != "") {
-																							question.alternatives
-																									.push(alternative);
-																							console
-																									.log(alternative);
-																						}
-																					});
-
-																	if (question.name != null
-																			&& question.name != "") {
-																		questions
-																				.push(question);
-																	}
-
-																	console
-																			.log('tam: '
-																					+ questions.length);
-																});
-
-												var address = "${linkTo[ExtractionController].formAjax}";
-												var mapid = $('#mapid').val();
-												//	 			var param = {};
-
-												//	 			param.mapid = mapid;
-												//	 			param.questions = questions;
-
-												var questionVO = {
-													"mapid" : mapid,
-													"questions" : questions
-												};
-
-												param = {
-													"questionVO" : questionVO
-												};
-
-												console.log('param: ', param);
-												console.log('JSON: ', JSON
-														.stringify(param));
-												console
-														.log('JQ'
-																+ jQuery
-																		.parseJSON(JSON
-																				.stringify(param)));
-
-												$
-														.ajax({
-															url : address,
-															dataType : 'json',
-															contentType : 'application/json; charset=utf-8',
-															type : 'POST',
-															traditional : true,
-															data : JSON
-																	.stringify(param),
-															success : function(
-																	data) {
-																console
-																		.log(data);
-															},
-															error : function(e) {
-																console
-																		.error(e);
-															}
-														});
-
-											});
-						});
-	})(jQuery);
+			$.ajax({
+				url : address,
+				dataType : 'json',
+				contentType : 'application/json; charset=utf-8',
+				type : 'POST',
+				traditional : true,
+				data : JSON.stringify(param),
+				success : function(data) {
+					console.log(data);
+				},
+				error : function(e) {
+					console.error(e);
+				}
+			});
+		});
+	});
+})(jQuery);
 </script>
 
 <ol class="breadcrumb u-margin-top">

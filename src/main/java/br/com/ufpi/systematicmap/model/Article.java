@@ -116,6 +116,23 @@ public class Article implements Serializable {
 	@SkipSerialization
 	private Set<EvaluationExtraction> evaluationExtractions = new HashSet<>();
 	
+	@OneToMany(mappedBy="article", cascade=CascadeType.ALL)
+	@OrderBy("question")
+	@SkipSerialization
+	private Set<EvaluationExtractionFinal> evaluationExtractionsFinal = new HashSet<>();
+	
+	public void addExtractionFinal(EvaluationExtraction evaluationExtraction){
+		EvaluationExtractionFinal evaluationExtractionFinal = new EvaluationExtractionFinal();
+		evaluationExtractionFinal.setMapStudy(mapStudy);
+		evaluationExtractionFinal.setAlternative(evaluationExtraction.getAlternative());
+		evaluationExtractionFinal.setArticle(evaluationExtraction.getArticle());
+		evaluationExtractionFinal.setQuestion(evaluationExtraction.getQuestion());
+		
+		this.evaluationExtractionsFinal.add(evaluationExtractionFinal);		
+	}
+	
+	
+	
 	//FIXME Add question a tabela mudar logica
 	public Alternative alternative(Question question){
 		for (EvaluationExtraction ev : evaluationExtractions) {

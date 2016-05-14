@@ -3,6 +3,8 @@
  */
 package br.com.ufpi.systematicmap.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -16,7 +18,12 @@ import javax.validation.constraints.NotNull;
  *
  */
 @Entity
-public class ResearchQuestion {
+public class ResearchQuestion implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue
 	private Long id;

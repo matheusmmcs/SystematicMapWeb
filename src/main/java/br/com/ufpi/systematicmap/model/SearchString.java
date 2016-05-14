@@ -3,6 +3,8 @@
  */
 package br.com.ufpi.systematicmap.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -20,7 +22,12 @@ import br.com.ufpi.systematicmap.model.enums.ArticleSourceEnum;
  *
  */
 @Entity
-public class SearchString {
+public class SearchString implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue
 	private Long id;

@@ -3,6 +3,7 @@
  */
 package br.com.ufpi.systematicmap.model;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,7 +25,12 @@ import br.com.ufpi.systematicmap.model.vo.QuestionVO;
  *
  */
 @Entity
-public class Form {
+public class Form implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue
 	private Long id;

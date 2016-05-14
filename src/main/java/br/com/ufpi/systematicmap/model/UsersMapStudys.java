@@ -3,6 +3,8 @@
  */
 package br.com.ufpi.systematicmap.model;
 
+import java.io.Serializable;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -21,8 +23,13 @@ import br.com.ufpi.systematicmap.model.enums.Roles;
  */
 @Entity
 @Table(name = "users_mapStudys")
-public class UsersMapStudys {
+public class UsersMapStudys implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue
 	private Long id;

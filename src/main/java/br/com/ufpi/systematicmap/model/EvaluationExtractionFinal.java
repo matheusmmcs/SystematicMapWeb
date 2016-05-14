@@ -13,15 +13,14 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import br.com.caelum.vraptor.serialization.SkipSerialization;
-import br.com.ufpi.systematicmap.model.enums.QuestionType;
 
 /**
  * @author Gleison Andrade
  *
  */
 @Entity
-@Table(name="evaluation_extraction")
-public class EvaluationExtraction implements Serializable{
+@Table(name="evaluation_extraction_final")
+public class EvaluationExtractionFinal implements Serializable{
 	/**
 	 * 
 	 */
@@ -32,9 +31,8 @@ public class EvaluationExtraction implements Serializable{
 	private Long id;
 	
 	@ManyToOne
-	@JoinColumn(name = "user_id")
-	@SkipSerialization
-	private User user;
+	@JoinColumn(name = "mapStudy_id")
+	private MapStudy mapStudy;
 	
 	@ManyToOne
 	@JoinColumn(name = "article_id")
@@ -64,17 +62,17 @@ public class EvaluationExtraction implements Serializable{
 	}
 
 	/**
-	 * @return the user
+	 * @return the mapStudy
 	 */
-	public User getUser() {
-		return user;
+	public MapStudy getMapStudy() {
+		return mapStudy;
 	}
 
 	/**
-	 * @param user the user to set
+	 * @param mapStudy the mapStudy to set
 	 */
-	public void setUser(User user) {
-		this.user = user;
+	public void setMapStudy(MapStudy mapStudy) {
+		this.mapStudy = mapStudy;
 	}
 
 	/**
@@ -130,8 +128,9 @@ public class EvaluationExtraction implements Serializable{
 				+ ((alternative == null) ? 0 : alternative.hashCode());
 		result = prime * result + ((article == null) ? 0 : article.hashCode());
 		result = prime * result
+				+ ((mapStudy == null) ? 0 : mapStudy.hashCode());
+		result = prime * result
 				+ ((question == null) ? 0 : question.hashCode());
-		result = prime * result + ((user == null) ? 0 : user.hashCode());
 		return result;
 	}
 
@@ -146,47 +145,28 @@ public class EvaluationExtraction implements Serializable{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		EvaluationExtraction other = (EvaluationExtraction) obj;
-		if (article == null) {
-			if (other.article != null)
-				return false;
-		} else if (!article.equals(other.article))
-			return false;
-		if (user == null) {
-			if (other.user != null)
-				return false;
-		} else if (!user.equals(other.user))
-			return false;
-		
-		if (question == null) {
-			if (other.question != null)
-				return false;
-		}else if(!question.getType().equals(QuestionType.MULT)){
-			if (question.equals(other.question)){
-				return true;
-			}else{
-				return false;
-			}
-		} //else if (!question.equals(other.question))
-//			return false;	
+		EvaluationExtractionFinal other = (EvaluationExtractionFinal) obj;
 		if (alternative == null) {
 			if (other.alternative != null)
 				return false;
 		} else if (!alternative.equals(other.alternative))
 			return false;
+		if (article == null) {
+			if (other.article != null)
+				return false;
+		} else if (!article.equals(other.article))
+			return false;
+		if (mapStudy == null) {
+			if (other.mapStudy != null)
+				return false;
+		} else if (!mapStudy.equals(other.mapStudy))
+			return false;
+		if (question == null) {
+			if (other.question != null)
+				return false;
+		} else if (!question.equals(other.question))
+			return false;
 		return true;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return "EvaluationExtraction [id=" + id + ", user=" + user.getId()
-				+ ", article=" + article.getId() + ", alternative=" + alternative.getId()
-				+ ", question=" + question.getId() + "]";
-	}
-	
-	
-	
 }
