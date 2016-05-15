@@ -4,16 +4,15 @@
 package br.com.ufpi.systematicmap.controller;
 
 import static br.com.caelum.vraptor.view.Results.json;
+import static java.util.Arrays.asList;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
 
-import static java.util.Arrays.asList;
 import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Result;
@@ -102,7 +101,7 @@ public class GraphicsController {
 		
 		for (ArticleSourceEnum articleSourceEnum : listSources) {
 			Data d = new Data();
-			d.setName(articleSourceEnum.toString());
+			d.setName(articleSourceEnum.getDescription());
 			d.setY(sources.get(articleSourceEnum.toString()));
 			Double percent = (d.getY() / total) * 100;
 			d.setPercent(percent);

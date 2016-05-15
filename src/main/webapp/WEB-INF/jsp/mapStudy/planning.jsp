@@ -5,8 +5,6 @@
 	(function($) {
 		$(document).ready(function() {
 			
-		console.log('mydiv: ', $('#mydiv').val());	
-			
 		var isLogado = function() {
 			if ('${userInfo.user}' == null) {
 				window.location.reload();
@@ -17,53 +15,45 @@
 		var newnavactive = function(activenavId) {
 			console.log('activenavId: ', activenavId);
 			// Tira status ativo do nav
-			var navactualId = $('.active').attr('id');
+			var navactualId = $('.mynav.active').attr('id');
+			console.log('navactualId: ', navactualId);
 			
 			if (navactualId == undefined) {
-				navactualId = '#' + $('#mydiv').val().substr(3);
-				console.log('nav atual não foi encontrada buscou por id = ', navactualId);
+				navactualId = $('#mydiv').val().substr(3);
+				console.log('ficou indefinido: ', navactualId);
 			}
 	
-			$(navactualId).removeClass('active');
+			$('#' + navactualId).removeClass('active');
 	
 			// Esconde a div relacionada ao nav que estava ativo
 			var divatual = '#div' + navactualId.replace('#', '');
-			console.log('divatual: ', divatual);
 			$(divatual).addClass('hide');
+			
+			console.log('divatual: ', divatual);
 	
 			// Muda status do nav selecionado para ativo
 			$(activenavId).addClass('active'); // adiciona classe active no nav selecionado 
 	
 			// Exibe a div relacionada ao nav
-			console.log(activenavId.substr(1));
-			var divnovo = '#div' + activenavId.substr(1);
+			var divnovo = 'div' + activenavId.substr(1);
 			
-			
-			console.log('div novo ', divnovo);			
 			$('#mydiv').val(divnovo);
-			console.log('valor novo em mydiv: ', $('#mydiv').val());
-			$(divnovo).removeClass('hide');
-	
-			console.log('id do nav que estava ativo: ', navactualId);
-			console.log('id do nav que agora esta ativo: ', activenavId);
-			console.log('-----------------------------');
+			$('#' + divnovo).removeClass('hide');
+			
+			console.log('divnovo: ', divnovo);
 		};
 				
 		var mydivid = '#' + $('#mydiv').val().substr(3);
-		console.log('carregou: ', mydivid);
 		newnavactive(mydivid);
 							
 		$(document).on('click', '.mynav', function(event) {
 			event.preventDefault();
-			event.stopPropagation();
+			//event.stopPropagation();
 
 			isLogado();
-
 			var id = '#' + $(this).attr('id');			
-			console.log('id: ', id);			
 			newnavactive(id);
 		});
-							
 
 		$("#formInclusion").validate({
 			rules : {
@@ -117,7 +107,7 @@
 					+ '<label for="type_'+time+'" class=""><fmt:message key="mapstudy.question.type" /></label>'
 					+ '<select class="form-control selectiontype group_question_type" name="types[]" id="type_'+time+'">'
 					+ '<c:forEach var="type" items="${questionTypes}">'
-					+ '<option value="${type}">${type}</option>'
+					+ '<option value="${type}">${type.description}</option>'
 					+ '</c:forEach>'
 					+ '</select>'
 					+ '</div>'
@@ -303,7 +293,7 @@
 
 <ul class="nav nav-tabs" style="background-color: #f8f8f8;">
 <!-- border: 1px solid #E7E7E7;"> -->
-  <li role="presentation" class="mynav active" id="goals"><a href="#"><fmt:message key="mapstudy.goals" /></a></li>
+  <li role="presentation" class="mynav" id="goals"><a href="#"><fmt:message key="mapstudy.goals" /> <!--  <span class="glyphicon glyphicon-ok"></span>--></a></li>
   <li role="presentation" class="mynav" id="question"><a href="#" ><fmt:message key="mapstudy.research.question" /></a></li>
   <li role="presentation" class="mynav" id="string"><a href="#" ><fmt:message key="mapstudy.search.string" /></a></li>
   <li role="presentation" class="mynav" id="extraction"><a href="#" ><fmt:message key="mapstudy.form" /></a></li>
@@ -445,7 +435,7 @@
 						<div class="col-lg-4">
 								<select class="form-control" name="source">
 									<c:forEach var="source" items="${sources}">
-										<option value="${source}">${source}</option>
+										<option value="${source}">${source.description}</option>
 									</c:forEach>
 								</select>
 						</div>						
@@ -464,7 +454,7 @@
 				
 					<c:forEach var="search" items="${map.searchString}" varStatus="s">
 						<p> 
-							<strong><fmt:message key="mapstudy.search.string.source"/> :</strong> <span>${search.source}</span>
+							<strong><fmt:message key="mapstudy.search.string.source"/> :</strong> <span>${search.source.description}</span>
 						<p>
 						<p> 
 							<strong><fmt:message key="mapstudy.search.string"/> :</strong>
@@ -531,7 +521,7 @@
 					<label for="type_inicial" class=""><fmt:message key="mapstudy.question.type" /></label> 
 					<select class="form-control selectiontype group_question_type" name="types[]" id="type_inicial">
 						<c:forEach var="type" items="${questionTypes}">
-							<option value="${type}">${type}</option>
+							<option value="${type}">${type.description}</option>
 						</c:forEach>
 					</select>
 				</div>
@@ -553,9 +543,9 @@
 				<div class="col-md-3">
 					<label for="type_${q.index}" class=""><fmt:message key="mapstudy.question.type" /></label> 
 					<select class="form-control selectiontype group_question_type" name="types[]" id="type_${q.index}">
-					<option name="types[]" data-email="" selected="selected" value="${question.type}">${question.type}</option>	
+					<option name="types[]" data-email="" selected="selected" value="${question.type}">${question.type.description}</option>	
 						<c:forEach var="type" items="${questionTypes}">
-							<option value="${type}">${type}</option>
+							<option value="${type}">${type.description}</option>
 						</c:forEach>
 					</select>
 				</div>

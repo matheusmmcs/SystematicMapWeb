@@ -2,6 +2,7 @@ package br.com.ufpi.systematicmap.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,6 +24,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import br.com.caelum.vraptor.serialization.SkipSerialization;
+import br.com.ufpi.systematicmap.model.enums.ArticleSourceEnum;
 import br.com.ufpi.systematicmap.model.enums.ClassificationEnum;
 import br.com.ufpi.systematicmap.model.enums.EvaluationStatusEnum;
 
@@ -38,7 +40,9 @@ public class Article implements Serializable {
 	@GeneratedValue
 	private Long id;
 	
-//	@GeneratedValue(strategy = GenerationType.AUTO)
+	private int score;
+
+	//	@GeneratedValue(strategy = GenerationType.AUTO)
 	@SkipSerialization
 	private Long number;
 	
@@ -131,7 +135,13 @@ public class Article implements Serializable {
 		this.evaluationExtractionsFinal.add(evaluationExtractionFinal);		
 	}
 	
-	
+	public Set<EvaluationExtractionFinal> getEvaluationExtractionsFinal() {
+        return this.evaluationExtractionsFinal;
+    }
+
+    public void setEvaluationExtractionsFinal(Set<EvaluationExtractionFinal> evaluationExtractionsFinal) {
+        this.evaluationExtractionsFinal = evaluationExtractionsFinal;
+    }	
 	
 	//FIXME Add question a tabela mudar logica
 	public Alternative alternative(Question question){
@@ -361,7 +371,7 @@ public class Article implements Serializable {
 				return e.getClassification();
 			}
 		}
-		return EvaluationStatusEnum.NOT_EVALUATED.toString();
+		return EvaluationStatusEnum.NOT_EVALUATED.getDescription();
 	}
 	
 	public Evaluation getEvaluation(User user){
@@ -375,6 +385,10 @@ public class Article implements Serializable {
 	
 	public EvaluationStatusEnum showFinalEvaluation(){
 		return finalEvaluation != null ? finalEvaluation : EvaluationStatusEnum.NOT_EVALUATED;
+	}
+	
+	public String sourceView(String source){
+		return ArticleSourceEnum.valueOf(source).getDescription();
 	}
 
 	/**
@@ -488,24 +502,56 @@ public class Article implements Serializable {
 
 
 	public void AddEvaluationExtractions(EvaluationExtraction evaluationExtraction) {
-		System.out.println("Entrou");
 		EvaluationExtraction ev = findEvaluationExtraction(evaluationExtraction);
 		if (ev != null){
 			ev.setAlternative(evaluationExtraction.getAlternative());	
-			System.out.println(ev);
 		}else{
 			this.evaluationExtractions.add(evaluationExtraction);
 		}
 	}
 	
 	private EvaluationExtraction findEvaluationExtraction(EvaluationExtraction evaluationExtraction){
-		System.out.println("||" + evaluationExtraction);
 		for (EvaluationExtraction ev : evaluationExtractions) {
-			System.out.println("|" + ev);
 			if (ev.equals(evaluationExtraction)){
 				return ev;
 			}
 		}
 		return null;
+	}
+	
+	public HashMap<String, String> getEvaluateFinalExtractionAlternative(){
+		HashMap<String, String> questionsAndAlternative = new HashMap<String, String>();
+		
+		for (EvaluationExtractionFinal ee : getEvaluationExtractionsFinal()) {
+			questionsAndAlternative.put(ee.getQuestion().getName(), ee.getAlternative().getValue());
+		}
+		
+		return questionsAndAlternative;
+	}
+
+	public HashMap<String, String> getEvaluateFinalExtractionAlternative(User user) {
+		HashMap<String, String> questionsAndAlternative = new HashMap<String, String>();
+		
+		for (EvaluationExtraction ee : getEvaluationExtractions()) {
+			if (ee.getUser().equals(user)){
+				questionsAndAlternative.put(ee.getQuestion().getName(), ee.getAlternative().getValue());
+			}
+		}
+		
+		return questionsAndAlternative;
+	}
+	
+	/**
+	 * @return the score
+	 */
+	public int getScore() {
+		return score;
+	}
+
+	/**
+	 * @param score the score to set
+	 */
+	public void setScore(int score) {
+		this.score = score;
 	}
 }

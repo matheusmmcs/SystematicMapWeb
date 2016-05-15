@@ -172,4 +172,29 @@ public class ArticleDao extends Dao<Article> {
 					.getResultList();
 			return extractions;
 	}
+	
+	public List<Article> getExtractions(MapStudy mapStudy) {
+		List<Article> extractions = entityManager
+				.createQuery("select distinct(e.article) from EvaluationExtraction e where e.article.mapStudy = :mapStudy order by e.article.id asc", Article.class)
+					.setParameter("mapStudy", mapStudy)
+					.getResultList();
+			return extractions;
+	}
+	
+	public List<Article> getArticlesToFinalExtraction(MapStudy mapStudy) {
+		List<Article> finalToExtractions = entityManager
+				.createQuery("select a from Article a where a.classification = null and a.finalEvaluation = :finalEvaluation and a.mapStudy = :mapStudy and a not in (select e.article from EvaluationExtractionFinal e where e.mapStudy = :mapStudy) order by a.id asc", Article.class)
+					.setParameter("mapStudy", mapStudy)
+					.setParameter("finalEvaluation", EvaluationStatusEnum.ACCEPTED)
+					.getResultList();
+			return finalToExtractions;
+	}
+	
+	public List<Article> getArticlesFinalExtraction(MapStudy mapStudy) {
+		List<Article> finalExtractions = entityManager
+				.createQuery("select distinct(e.article) from EvaluationExtractionFinal e where e.mapStudy = :mapStudy order by e.article.id asc", Article.class)
+					.setParameter("mapStudy", mapStudy)
+					.getResultList();
+			return finalExtractions;
+	}
 }

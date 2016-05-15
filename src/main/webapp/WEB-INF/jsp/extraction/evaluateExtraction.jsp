@@ -5,26 +5,6 @@ $(document).ready(function(){
 	var percent = $('.progress-bar').attr("style");
 	$('.progress-bar').attr('style', percent.replace(",", "."));
 
-// 	var resetAlterative = function (){
-// 		console.log('entrou reset alternative');
-// 		$('.group_question').each(function(idx, elem){
-// 			var $elem = $(elem);
-// 			$elem.find('.group_alternative').each(function(idx_a, elem_a) {
-// 				console.log('reset: ' + idx_a);
-// 				$(elem_a).find('.group_alternative_id').val('');
-// 				var obj = $('#alternative_id_' + idx + 'option:selected');
-// 				console.log(obj);
-// 				obj.remove();
-// 				var test = $('#select2-alternative_id_' + idx + '-container');
-// 				test.attr('title', 'Meu titulo');
-// 				test.html('meu html');
-// 				console.log(obj);
-// 				$(elem_a).find('.group_alternative_value').val('');
-// 			});
-
-// 		});
-// 	};
-
 	var selectAlternative = function(){
 		console.log('entrou no select alternative');
 // 		var entrou = false;
@@ -40,25 +20,17 @@ $(document).ready(function(){
 			console.log('aid ', aid);
 			console.log('value ', value);
 
-// 			var obj = $('#alternative_id_' + qid + 'option:selected');
-// 			console.log('removendo select: ' , obj);
-// 			obj.remove();
-			
 			$("#alternative_id_" + qid).val(aid);	
 			var test = $('#select2-alternative_id_' + qid + '-container');
 			test.attr('title', value);
 			test.html(value);
-// 			entrou = true;
 		});
 
-// 		if (entrou == false){
-// 			resetAlterative();
-// 		}
 	};
 
-	console.log('OP SLECTION: ' + $('#alternative_id_0 option:selected').text() + ' | ' + $('#alternative_id_0 option:selected').val());
+// 	console.log('OP SLECTION: ' + $('#alternative_id_0 option:selected').text() + ' | ' + $('#alternative_id_0 option:selected').val());
 	selectAlternative();
-	console.log('OP SLECTION: ' + $('#alternative_id_0 option:selected').text() + ' | ' + $('#alternative_id_0 option:selected').val());
+// 	console.log('OP SLECTION: ' + $('#alternative_id_0 option:selected').text() + ' | ' + $('#alternative_id_0 option:selected').val());
 
 	var tableToEvaluate = $('.datatable-to-evaluate').DataTable({
         "initComplete": function () {
@@ -97,6 +69,8 @@ $(document).ready(function(){
 		$('#articleReadKeywords').html(article.keywords);
 		$('#articleReadSource').html(article.source);
 		$('#articleReadAuthor').html(article.author);
+		$('#articleReadDoctype').html(article.docType);
+		$('#articleReadYear').html(article.year);
 
 
 		//funcoes auxiliares para evitar repeticao de codigo
@@ -109,52 +83,22 @@ $(document).ready(function(){
 
 		var setQuestions = function (extraction){
 			if (extraction.length > 0){
-// 			$('.group_question').each(function(idx, elem){
-// 				var $elem = $(elem);
-// // 				$elem.find('.group_question_id').val(extraction[idx].question.id);
-// // 				$elem.find('.group_question_name').val(extraction[idx].question.name);
-
-// 				// Aqui é um select pesquisar como setar valor
-// // 				$elem.find('.group_question_type').val(questions[idx].type);
-				
-				
-// 					$elem.find('.group_alternative').each(function(idx_a, elem_a) {
-// 						if (extraction[idx].question.type == 'LIST'){
-// 						 $select = $(elem_a).find('.group_alternative_id');
-// // 						 console.log(select);
-// 						 console.log($select);
-// // 						 var id = $select.attr('id');
-// // 						 console.log('id: ', id);
-// // 						 $("#"+ id + " option:selected").remove();
-// // 						 $("#" + id).append('<option data-email="" value="'+extraction[idx].alternative.id+'">'+extraction[idx].alternative.value +'</option>');
-// 						}else{
-// 							$(elem_a).find('.group_alternative_value').val(extraction[idx].alternative.value);
-// 						}
-// 					});
-				
-
-// 			});
 				$.each(extraction, function( index, elemento ) {
-					console.log('set');
-					  console.log(elemento.question.id + " | " + elemento.question.type + " | " + elemento.question.name);
+// 					console.log('set');
+// 					console.log(elemento.question.id + " | " + elemento.question.type + " | " + elemento.question.name);
 
 					  if (elemento.question.type == 'LIST'){
-// 						  var alternative_selected = elemento.alternative;
-// 						  '<option selected="selected" value="15">2</option>'
 						  $.each(elemento.question.alternatives, function( index2, elemento2 ) {
 							  if (elemento2.value == elemento.alternative.value){
 								  console.log('alternativa selecionada: ' + elemento.alternative.value);
-// 								  $("#alternative_id_" + index).attr('selectedIndex', index2);
 								$("#alternative_id_" + index).val(elemento.alternative.id);	
 								var test = $('#select2-alternative_id_' + index + '-container');
 								test.attr('title', elemento.alternative.value);
 								test.html(elemento.alternative.value);
-// 								$('select#alternative_id_' + index +' option').eq(index).css('backgroundColor', 'blue');
 							  }
 							  console.log(elemento2.id + " | " + elemento2.value);
 						  });
 					  }else{
-// 						  $(elem_a).find('.group_alternative_value').val(elemento.alternative.value);
 							$('#alternative_value_' + index).val(elemento.alternative.value);
 					  }
 // 					  console.log('alternativa selecionada: ' + elemento.alternative.value);
@@ -167,12 +111,6 @@ $(document).ready(function(){
 			console.log('entrou reset');
 			$('.group_question').each(function(idx, elem){
 				var $elem = $(elem);
-// 				$elem.find('.group_question_id').val('');
-// 				$elem.find('.group_question_name').val('');
-
-				// Aqui é um select pesquisar como setar valor
-// 				$elem.find('.group_question_type').val('');
-				
 				$elem.find('.group_alternative').each(function(idx_a, elem_a) {
 					console.log('reset: ' + idx_a);
 					$(elem_a).find('.group_alternative_id').val('');
@@ -220,9 +158,10 @@ $(document).ready(function(){
 			success: function(data){
 				var article = data['article'];
 				var extraction = data['extraction'];
-				console.log('article read: ', article);
-				console.log('extraction: ', extraction);
+// 				console.log('article read: ', article);
+// 				console.log('extraction: ', extraction);
 				actualizeArticle(article, extraction);
+				messages('info', 'Article '+article.id, 'Carregado com sucesso');
 			},
 			error: function(e){
 				console.error(e);
@@ -244,7 +183,7 @@ $(document).ready(function(){
 // 			question.type = $elem.find('.group_question_type').val();
 			question.alternatives = [];
 			
-			console.log(question);
+// 			console.log(question);
 			
 			$elem.find('.group_alternative').each(function(idx_a, elem_a) {
 				var alternative = {};
@@ -255,7 +194,7 @@ $(document).ready(function(){
 				
 				if ((alternative.value != null && alternative.value != "") || (alternative.id != null && alternative.id != "")){
 					question.alternatives.push(alternative);
-					console.log(alternative);
+// 					console.log(alternative);
 				}					
 			});
 
@@ -263,32 +202,35 @@ $(document).ready(function(){
 				questions.push(question);
 			}			
 
-			console.log('tam: ' + questions.length);	
+// 			console.log('tam: ' + questions.length);	
 		});
 
 		return questions;
 	}
 
-	var actualizeList = function (articleid, source){
-		console.log('atualiza list entrou');
+	var actualizeList = function (articleid, source, score){
+		console.log('atualiza list entrou: ' +score);
 		var $article = $(".tBodyArticlesToEvaluate .readArticle[nextid=\""+articleid+"\"]");
 		var newhref = $article.attr('href');
 		if (newhref == undefined){
 			console.log('' + newhref);
 			return;
 		}
+		
+		//http://localhost:8080/SystematicMap/maps/extraction/5/article/53
+		
 		var url = 'extraction/article/';
 		var pos = newhref.indexOf(url);
 		newhref = newhref.slice(0,pos) + url + articleid + '/load';
 
-		console.log('newhref', newhref);
+// 		console.log('newhref', newhref);
 		
 		///SystematicMap/extraction/article/{articleid}/load
 		tableToEvaluate.row($article.parents('tr')).remove().draw();
 		tableEvaluated.row.add([
-       		articleid, 
+       		articleid, score,
        		'<a class="readArticle" actualid="'+articleid+'" href="' + newhref + '">'+$article.html()+'</a>', source]).draw();
-			console.log('atualiza list success');
+// 			console.log('atualiza list success');
 		};
 
 	var actualizePercent = function (percent){
@@ -298,7 +240,7 @@ $(document).ready(function(){
 		$('.progress-bar').attr('aria-valuenow', p);
 		$('.progress-bar').html(percent + '%');
 
-		console.log(p);
+// 		console.log(p);
 	};
 
 	// ajax para salvar avaliações dos artigos
@@ -308,6 +250,7 @@ $(document).ready(function(){
 		var articleid = $('#articleid').val();
 		var questions = obtainQuestions();
 		var source = $('#articlesource').val();
+		var score = $('#articlescore').val();
 		var id = null;
 		
 		// assim ele vai pegar os readArticle "filhos" de tBodyArticlesToEvaluate
@@ -334,56 +277,74 @@ $(document).ready(function(){
 					  "nextArticle" : id
 					};
 
-							param = {
-								"questionVO" : questionVO
-							};
+	param = {"questionVO" : questionVO};
 
-							console.log('JSON: ', JSON.stringify(param));
-							console.log('JQ'
-									+ jQuery.parseJSON(JSON.stringify(param)));
+	console.log('JSON: ', JSON.stringify(param));
+	console.log('JQ' + jQuery.parseJSON(JSON.stringify(param)));
 
-							$.ajax({ url : address,
-									 dataType : 'json',
-									 contentType : 'application/json; charset=utf-8',
-										type : 'POST',
-										traditional : true,
-										data : JSON.stringify(param),
-										success : function(data) {
-											// atualiza listagens de artigos e carrega proximo artigo na tela
-											var article = data['article'];
-											var percent = data['percent'];
-											var extraction = data['extraction'];
-											console.log('article post: ', article);
-											console.log('extraction post: ', extraction);
-											if (article == null || article.id == -1) {
-												var $notice = $('#notices');
-												var b = $notice.find('b').html('teste');
-// 												alert('Sem mais artigos para avaliar!');
-												//window.location.reload();
-											} else {
-												console.log('vou chamar o actualizar');
-												actualizeArticle(article, extraction);
-											}
-											actualizePercent(percent);
-											if(extraction == null || extraction.length == 0){
-												actualizeList(articleid, source);
-											}
-										},
-// 										done: function(body){
-// 											console.log('done ' + body);
-// 										},
-										error : function(e) {
-											console.error(e);
-										}
-									});
+	$.ajax({ 
+		url : address,
+		dataType : 'json',
+		contentType : 'application/json; charset=utf-8',
+		type : 'POST',
+		traditional : true,
+		data : JSON.stringify(param),
+		success : function(data) {
+			// atualiza listagens de artigos e carrega proximo artigo na tela
+			var article = data['article'];
+			var percent = data['percent'];
+			var extraction = data['extraction'];
+// 			console.log('article post: ', article);
+// 			console.log('extraction post: ', extraction);
 
-						};
+			messages('info', 'Artigo '+articleid, 'Extra&ccedil;&atilde;o do artigo realizada com sucesso');
+			
+			if (article == null || article.id == -1) {
+// 				var $notice = $('#notices');
+// 				var b = $notice.find('b').html('teste');
+				messages('warning', 'Article '+article.id, 'Todos os artigos j&aacute; foram extra&iatilde;dos com sucesso');
+			} else {
+// 				console.log('vou chamar o actualizar');
+				actualizeArticle(article, extraction);
+				
+			}
+			actualizePercent(percent);
+			if(extraction == null || extraction.length == 0){
+				actualizeList(articleid, source, score);
+			}
+		},
+		error : function(e) {
+			console.error(e);
+		}
+	});
 
-						$(document).on('click', '.buttonextraction',
-								function(event) {
-									evaluate(event);
-								});
-					});
+};
+
+	$(document).on('click', '.buttonextraction', function(event) {
+		evaluate(event);
+	});
+	
+	
+});
+					
+var messages = function (type, category, text){
+	console.log(type, category, text);
+	var msg = '';
+    $("#messages").empty();
+     
+    msg =	'<div class="alert alert-'+type+' alert-dismissible" role="alert" id="'+type+'">' +
+		'<button type="button" class="close" data-dismiss="alert" data-hide="alert">&times;</button>' +
+		'<b>' + category + '</b> - '+ text + '<br />' +
+	'</div>';
+	
+    $("#messages").append(msg);
+    
+    $('html, body').animate({ scrollTop: 0 }, 'slow');
+
+    $(".alert").click(function() {
+    	$(".alert").hide();
+    });
+};
 </script>
 
 <ol class="breadcrumb u-margin-top">
@@ -441,6 +402,18 @@ $(document).ready(function(){
 			</strong> <span id="articleReadSource">${article.source}</span>
 		<p>
 		
+		<p> 
+			<strong>
+				<fmt:message key="mapstudy.article.year"/>:
+			</strong> <span id="articleReadYear">${article.year}</span>
+		<p>
+		
+		<p> 
+			<strong>
+				<fmt:message key="mapstudy.article.doctype"/>:
+			</strong> <span id="articleReadDocType">${article.docType}</span>
+		<p>
+		
 		<hr/>
 		
 		</div>
@@ -457,6 +430,7 @@ $(document).ready(function(){
 				<input type="hidden" name="mapid"  id="mapid" value="${map.id}" />
 				<input type="hidden" name="articleid" id="articleid" value="${article.id}" />
 				<input type="hidden" id="articlesource" name="articlesource" value="${article.source}" />
+				<input type="hidden" id="articlescore" name="articlescore" value="${article.score}" />
 
 <!-- 				<div class="form-group"> -->
 						<c:forEach var="question" items="${form.questions}" varStatus="q">
@@ -518,6 +492,7 @@ $(document).ready(function(){
 						<thead>
 							<tr>
 								<th class="text-center">ID</th>
+								<th class="text-center"><fmt:message key="mapstudy.article.score" /></th>
 								<th class="text-center"><fmt:message key="mapstudy.article.title" /></th>
 								<th class="text-center"><fmt:message key="mapstudy.article.source" /></th>
 							</tr>
@@ -526,8 +501,9 @@ $(document).ready(function(){
 							<c:forEach var="article" items="${articlesToExtraction}" varStatus="s">
 								<tr class="${s.index % 2 == 0 ? 'even' : 'odd'} gradeA">
 									<td>${article.id}</td>
+									<td>${article.score}</td>
 									<td><a class="readArticle" actualid="${article.id}" nextid="${article.id }" href="${linkTo[ExtractionController].loadArticleAjax(map.id, article.id)}">${article.title}</a></td>
-									<td>${article.source}</td>
+									<td>${article.sourceView(article.source)}</td>
 								</tr>
 							</c:forEach>
 						</tbody>
@@ -545,6 +521,7 @@ $(document).ready(function(){
 						<thead>
 							<tr>
 								<th class="text-center">ID</th>
+								<th class="text-center"><fmt:message key="mapstudy.article.score" /></th>
 								<th class="text-center"><fmt:message key="mapstudy.article.title" /></th>
 								<th class="text-center"><fmt:message key="mapstudy.article.source" /></th>
 							</tr>
@@ -553,9 +530,9 @@ $(document).ready(function(){
 							<c:forEach var="eval" items="${extractions}" varStatus="s">
 								<tr class="${s.index % 2 == 0 ? 'even' : 'odd'} gradeA">
 									<td>${eval.id}</td>
-<%-- 									<td><a class="btnEvaluate" href="${linkTo[MapStudyController].evaluateArticle(map.id, eval.article.id)}">${eval.article.title}</a></td> --%>
+									<td>${eval.score}</td>
 									<td><a class="readArticle" actualid="${eval.id}" href="${linkTo[ExtractionController].loadArticleAjax(map.id, eval.id)}">${eval.title}</a></td>
-									<td>${eval.source}</td>
+									<td>${article.sourceView(article.source)}</td>
 								</tr>
 							</c:forEach>
 						</tbody>

@@ -1,5 +1,25 @@
 package br.com.ufpi.systematicmap.model.enums;
 
 public enum ArticleSourceEnum {
-	SCOPUS, ENGINEERING_VILLAGE, WEB_OF_SCIENCE, OTHER, MANUALLY
+	SCOPUS("Scopus"), ENGINEERING_VILLAGE("Engineering Village"), WEB_OF_SCIENCE("Web Of Science"), OTHER("Outros"), MANUALLY("Manual");
+	
+	private String description;
+	
+	private ArticleSourceEnum(String description){
+		this.description = description;
+	}
+
+	/**
+	 * @return the description
+	 */
+	public String getDescription() {
+		return description;
+	}
+
+	/**
+	 * @param description the description to set
+	 */
+	public void setDescription(String description) {
+		this.description = description;
+	}
 }

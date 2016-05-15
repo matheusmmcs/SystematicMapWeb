@@ -52,13 +52,11 @@ public class Question implements Serializable{
 	public void addAlternative(Alternative alternative){
 			this.alternatives.add(alternative);
 			alternative.setQuestion(this);
-			System.out.println("Add: " + alternative + " Size: " + this.alternatives.size());
 	}
 	
 	public void removeAlternative(Alternative alternative){
 		this.alternatives.remove(alternative);
 		alternative.setQuestion(null);
-		System.out.println("Remove: " + alternative + " Size: " + this.alternatives.size());
 }
 
 	/**

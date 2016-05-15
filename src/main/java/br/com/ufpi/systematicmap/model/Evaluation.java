@@ -120,7 +120,7 @@ public class Evaluation implements Serializable {
 	}
 	
 	public String getClassification(){
-		return getEvaluationStatus().toString();
+		return getEvaluationStatus().getDescription();
 	}
 	
 	public EvaluationStatusEnum getEvaluationStatus(){

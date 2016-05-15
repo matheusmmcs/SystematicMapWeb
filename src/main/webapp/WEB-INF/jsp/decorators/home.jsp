@@ -131,7 +131,8 @@
 	<div class="container">
 		<div class="row">
 <!-- 			<div class="col-md-4 col-md-offset-4"> -->
-							<c:if test="${not empty errors}">
+					<div id="messages"></div>
+					<c:if test="${not empty errors}">
 					<div class="alert alert-danger alert-dismissible" role="alert">
 						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
   						<span class="sr-only">Error:</span>
@@ -153,6 +154,14 @@
 							key="${notice.message}" />
 						<br />
 						<%--</c:forEach> --%>
+					</div>
+				</c:if>
+				
+				<c:if test="${not empty warning}">
+					<div class="alert alert-warning alert-dismissible" role="alert" id="warning">
+						<button type="button" class="close" data-dismiss="alert" data-hide="alert">&times;</button>
+						<b><fmt:message key="${warning.category}" /></b> - <fmt:message key="${warning.message}" />
+						<br />
 					</div>
 				</c:if>
 				

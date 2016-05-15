@@ -82,10 +82,10 @@
 							<td class="article-id">${acvo.article.id}</td>
 							<c:forEach var="u" items="${members}" varStatus="s">
 								<td class="${acvo.getEvaluationClassification(u) == 'ACCEPTED' ? 'success-eval' : (acvo.getEvaluationClassification(u) == 'REJECTED' ? 'error-eval' : 'no-eval')}">
-									${acvo.getEvaluationClassification(u)}
+									${acvo.getEvaluationClassification(u).description}
 								</td>
 							</c:forEach>
-							<td class="${acvo.article.showFinalEvaluation() == 'ACCEPTED' ? 'success-eval' : (acvo.article.showFinalEvaluation() == 'REJECTED' ? 'error-eval' : 'no-eval')}">${acvo.article.showFinalEvaluation()}</td>
+							<td class="${acvo.article.showFinalEvaluation() == 'ACCEPTED' ? 'success-eval' : (acvo.article.showFinalEvaluation() == 'REJECTED' ? 'error-eval' : 'no-eval')}">${acvo.article.showFinalEvaluation().description}</td>
 						</tr>
 					</c:forEach>
 				</tbody>
@@ -136,7 +136,7 @@
 				<div class="col-lg-6">
 					<select class="form-control" name="evaluation">
 						<c:forEach var="es" items="${evaluationStatus}">
-							<option value="${es}">${es}</option>
+							<option value="${es}">${es.description}</option>
 						</c:forEach>
 					</select>
 				</div>
@@ -171,11 +171,11 @@
 						<tr class="${s.index % 2 == 0 ? 'even' : 'odd'} gradeA text-center article-to-read">
 							<td class="article-id">${acvo.article.id}</td>
 							<c:forEach var="u" items="${members}" varStatus="s">
-								<td title="${u.login} - ${acvo.getEvaluationClassification(u)}" class="${acvo.getEvaluationClassification(u) == 'ACCEPTED' ? 'success-eval' : (acvo.getEvaluationClassification(u) == 'REJECTED' ? 'error-eval' : 'no-eval')}">
-									${acvo.getEvaluationClassification(u)}
+								<td title="${u.login} - ${acvo.getEvaluationClassification(u).description}" class="${acvo.getEvaluationClassification(u) == 'ACCEPTED' ? 'success-eval' : (acvo.getEvaluationClassification(u) == 'REJECTED' ? 'error-eval' : 'no-eval')}">
+									${acvo.getEvaluationClassification(u).description}
 								</td>
 							</c:forEach>
-							<td class="${acvo.article.showFinalEvaluation() == 'ACCEPTED' ? 'success-eval' : (acvo.article.showFinalEvaluation() == 'REJECTED' ? 'error-eval' : 'no-eval')}">${acvo.article.showFinalEvaluation()}</td>
+							<td class="${acvo.article.showFinalEvaluation() == 'ACCEPTED' ? 'success-eval' : (acvo.article.showFinalEvaluation() == 'REJECTED' ? 'error-eval' : 'no-eval')}">${acvo.article.showFinalEvaluation().description}</td>
 						</tr>
 					</c:forEach>
 				</tbody>
@@ -202,7 +202,7 @@
 			    });
 
 			    if (ids == null || ids === ""){
-					alert('Nenhum usuario foi slecionado !');
+					alert('Nenhum usuario foi selecionado !');
 					return;
 				}
 			    
@@ -263,6 +263,8 @@
 							$('#article-evaluations').html(evals);
 							
 							$('#article-popup').fadeIn();
+							
+							$('html,body').stop().animate({scrollTop: $('#article-popup').offset().top}, 2000);
 						}
 					},
 					error: function(err){

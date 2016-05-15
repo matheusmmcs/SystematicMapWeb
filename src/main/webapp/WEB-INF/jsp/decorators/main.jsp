@@ -156,12 +156,14 @@
                 </div>
     		</div>
     		<div class="col-md-9">
+    		
+    			<div id="messages"></div>
+    		
 				<c:if test="${not empty errors}">
 					<div class="alert alert-danger alert-dismissible" role="alert">
-						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-	 						<span class="sr-only">Error:</span>
+<!-- 						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> -->
+<!-- 	 						<span class="sr-only">Error:</span> -->
 	 						<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						<!-- <button type="button" class="close" data-dismiss="alert">&times;</button> -->
 						<c:forEach items="${errors}" var="error">
 							<b><fmt:message key="${error.category}" /></b> - <fmt:message key="${error.message}" />
 							<br />
@@ -170,26 +172,32 @@
 				</c:if>
 				<c:if test="${not empty notice}">
 					<div class="alert alert-info alert-dismissible" role="alert" id="notices">
-						<!-- <button type="button" class="close" data-dismiss="alert">&times;</button> -->
 						<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						<%-- <c:forEach items="${notices}" var="notice"> --%>
 						<b><fmt:message key="${notice.category}" /></b> - <fmt:message key="${notice.message}" />
 						<br />
-						<%--</c:forEach> --%>
 					</div>
 				</c:if>
+				
+				<c:if test="${not empty warning}">
+					<div class="alert alert-warning alert-dismissible" role="alert" id="warning">
+						<button type="button" class="close" data-dismiss="alert" data-hide="alert">&times;</button>
+						<b><fmt:message key="${warning.category}" /></b> - <fmt:message key="${warning.message}" />
+						<br />
+					</div>
+				</c:if>
+				
 				<decorator:body/>
     		</div>
     	</div>
     </div>
 
 	<!-- Footer -->
-	<footer>
-        <div class="container text-center" style="margin-top: 8px;">
-            <p>© 2015-2016. Todos os direitos reservados.</p>
-            <p><a href="http://easii.ufpi.br">EaSII</a> - Laborat&oacute;rio de Engenharia de Software e Inform&aacute;tica Industrial</p>
-        </div>
-    </footer>
+<!-- 	<footer> -->
+<!--         <div class="container text-center" style="margin-top: 8px;"> -->
+<!--             <p>© 2015-2016. Todos os direitos reservados.</p> -->
+<!--             <p><a href="http://easii.ufpi.br">EaSII</a> - Laborat&oacute;rio de Engenharia de Software e Inform&aacute;tica Industrial</p> -->
+<!--         </div> -->
+<!--     </footer> -->
 	
 	<!-- Modal -->
     <div id="generic-modal" class="modal fade">

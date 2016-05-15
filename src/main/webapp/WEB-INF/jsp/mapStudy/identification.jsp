@@ -54,7 +54,7 @@ $(document).ready(function(){
 							<div class="col-lg-6">
 								<select class="form-control" name="source">
 									<c:forEach var="source" items="${sources}">
-										<option value="${source}">${source}</option>
+										<option value="${source}">${source.description}</option>
 									</c:forEach>
 								</select>
 							</div>
@@ -92,6 +92,8 @@ $(document).ready(function(){
 							<tr>
 								<th class="text-center">ID</th>
 								<th class="text-center"><fmt:message
+										key="mapstudy.article.score" /></th>
+								<th class="text-center"><fmt:message
 										key="mapstudy.article.title" /></th>
 								<th class="text-center"><fmt:message
 										key="mapstudy.article.classification" /></th>
@@ -101,8 +103,9 @@ $(document).ready(function(){
 							<c:forEach var="article" items="${map.articles}" varStatus="s">
 								<tr class="${s.index % 2 == 0 ? 'even' : 'odd'} gradeA">
 									<td>${article.id}</td>
+									<td>${article.score}</td>
 									<td>${article.title}</td>
-									<td>${article.classification}</td>
+									<td>${article.classification.description}</td>
 								</tr>
 							</c:forEach>
 						</tbody>

@@ -5,6 +5,7 @@ import java.util.List;
 
 import br.com.ufpi.systematicmap.model.Article;
 import br.com.ufpi.systematicmap.model.Evaluation;
+import br.com.ufpi.systematicmap.model.EvaluationExtraction;
 import br.com.ufpi.systematicmap.model.User;
 import br.com.ufpi.systematicmap.model.enums.EvaluationStatusEnum;
 
@@ -13,14 +14,20 @@ public class ArticleCompareVO {
 	private Article article;
 	private List<User> users;
 	private HashMap<User, Evaluation> evaluations;
+	private HashMap<User, EvaluationExtraction> extractions;
 	
-	public ArticleCompareVO(Article article, List<User> users,
-			HashMap<User, Evaluation> evaluations) {
-		super();
-		this.article = article;
-		this.users = users;
-		this.evaluations = evaluations;
-	}
+	public ArticleCompareVO(Article article, List<User> users, HashMap<User, Evaluation> evaluations) {
+        this.article = article;
+        this.users = users;
+        this.evaluations = evaluations;
+    }
+
+    public ArticleCompareVO(Article article, List<User> users, HashMap<User, Evaluation> evaluations, HashMap<User, EvaluationExtraction> extractions) {
+        this.article = article;
+        this.users = users;
+        this.evaluations = evaluations;
+        this.extractions = extractions;
+    }
 	
 	public Article getArticle() {
 		return article;
@@ -51,4 +58,23 @@ public class ArticleCompareVO {
 		}
 		return EvaluationStatusEnum.NOT_EVALUATED;
 	}
+	
+	public HashMap<User, EvaluationExtraction> getExtractions() {
+        return this.extractions;
+    }
+
+    public void setExtractions(HashMap<User, EvaluationExtraction> extractions) {
+        this.extractions = extractions;
+    }
+
+    public EvaluationExtraction getEvaluateExtraction(User user) {
+        if (this.extractions.get(user) != null) {
+            return this.extractions.get(user);
+        }
+        return null;
+    }
+
+    public String toString() {
+        return "ArticleCompareVO [article=" + this.article + ", users=" + this.users + ", evaluations=" + this.evaluations + ", extractions=" + this.extractions + "]";
+    }
 }

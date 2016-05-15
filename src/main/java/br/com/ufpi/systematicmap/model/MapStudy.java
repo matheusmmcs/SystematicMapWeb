@@ -164,8 +164,6 @@ public class MapStudy implements Serializable{
 		int total = articleDao.countArticleNotRefined(this).intValue(),
 		    toEvaluate = articleDao.countArticleToEvaluate(user, this).intValue();
 		
-		System.out.println("total: " + total + " toEvaluate: " + toEvaluate);
-		 
 		BigDecimal tot = new BigDecimal(total);
 		BigDecimal dontEval = new BigDecimal(toEvaluate);
 		BigDecimal bigdecimal;
@@ -187,8 +185,6 @@ public class MapStudy implements Serializable{
 		int total = articleDao.countArticlesFinalAccepted(this).intValue(),
 			    toExtrantion = articleDao.countArticleToEvaluateExtraction(user, this).intValue();
 		
-		System.out.println("total: " + total + " toExtrantion: " + toExtrantion);
-			 
 			BigDecimal tot = new BigDecimal(total);
 			BigDecimal dontEval = new BigDecimal(toExtrantion);
 			BigDecimal bigdecimal;
@@ -385,7 +381,6 @@ public class MapStudy implements Serializable{
 
 	public void addForm(Form form) {
 		if (this.form != null){
-			System.out.println("LQ: " + form.getQuestions() + "ID: " + this.form.getId());
 //			form.setId(this.form.getId());
 //			form.setMapStudy(this);
 			for (Question q : form.getQuestions()) {

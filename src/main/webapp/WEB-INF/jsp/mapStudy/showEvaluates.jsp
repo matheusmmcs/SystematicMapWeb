@@ -163,7 +163,7 @@
 								<tr class="${s.index % 2 == 0 ? 'even' : 'odd'} gradeA">
 									<td>${article.id}</td>
 									<td><a href="${linkTo[MapStudyController].evaluateArticle(mapStudy.id, article.id)}">${article.title}</a></td>
-									<td>${article.classification}</td>
+									<td>${article.classification.description}</td>
 									<td>${article.getEvaluationClassification(user)}</td>
 								</tr>
 							</c:forEach>

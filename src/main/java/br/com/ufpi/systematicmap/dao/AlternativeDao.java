@@ -35,7 +35,6 @@ public class AlternativeDao extends Dao<Alternative>{
 		
 		try {
 			alternative = entityManager.createQuery("select a from Alternative a where a.question.id =:questionid and a.value = :value", Alternative.class).setParameter("questionid", questionid).setParameter("value", value).getSingleResult();
-			System.out.println("find : " + alternative);
 		} catch (Exception e) {
 			e.getMessage();
 		}

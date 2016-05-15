@@ -103,9 +103,7 @@ public class Form implements Serializable{
 	}
 	
 	private Question containsQuestion(Question question){
-		System.out.println("Entrou: " + question);
 		for (Question quest : questions) {
-			System.out.println("Comp: " + quest);
 			if(quest.equals(question)){
 				return quest;
 			}

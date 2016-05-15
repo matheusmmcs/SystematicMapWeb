@@ -63,6 +63,7 @@ public class FilterArticles {
 			System.out.println("Probs autores: "+filterAuthors());
 			System.out.println("Patentes: "+filterPatents());
 			filterRegex(limiartitulo, limiarabstract, limiarkeywords, limiartotal);
+			
 			System.out.println("Probs palavras: "+countPapers(ClassificationEnum.WORDS_DONT_MATCH));
 			if(levenshtein != -1){
 				calcTitleLevenshteinDistance(levenshtein);
@@ -100,9 +101,24 @@ public class FilterArticles {
 	private void filterRegex(int limiarTitle, int limiarAbs, int limiarKeys, int limiarTotal) {
 		for(Article p : papers){
 			Set<String> termos = new HashSet<String>();
+			
 			termos = countRegex(p, FieldEnum.TITLE, limiarTitle, termos);
+//			System.out.println("Termos: " +termos );
+//			System.out.println("SIze: " +termos.size() );
 			termos = countRegex(p, FieldEnum.ABS, limiarAbs, termos);
+//			System.out.println("Termos: " +termos );
+//			System.out.println("SIze: " +termos.size() );
 			termos = countRegex(p, FieldEnum.KEYS, limiarKeys, termos);
+			
+			
+//			System.out.println("Termos: " +termos );
+//			System.out.println("SIze: " +termos.size() );
+//			
+			System.out.println("ABS: " + p.getRegexAbs());
+			System.out.println("KEY: " + p.getRegexKeys());
+			System.out.println("TIT: " + p.getRegexTitle());
+			
+			p.setScore(p.getRegexAbs() + p.getRegexKeys() + p.getRegexTitle());
 			
 			if(termos.size() < limiarTotal){
 				p.setClassification(ClassificationEnum.WORDS_DONT_MATCH);

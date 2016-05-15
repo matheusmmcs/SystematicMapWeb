@@ -4,7 +4,6 @@ import static br.com.caelum.vraptor.view.Results.json;
 import static java.util.Arrays.asList;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,6 +20,7 @@ import javax.inject.Inject;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.jbibtex.BibTeXDatabase;
 import org.jbibtex.BibTeXEntry;
 import org.jbibtex.Key;
@@ -464,6 +464,7 @@ public class MapStudyController {
 			article.setRegexAbs(0);
 			article.setRegexKeys(0);
 			article.setRegexTitle(0);
+			article.setScore(0);
 			article.setClassification(null);
 			
 			if (article.getComments() != null){
@@ -507,7 +508,6 @@ public class MapStudyController {
 
 		List<Article> articlesToEvaluate = articleDao.getArticlesToEvaluate(userInfo.getUser(), mapStudy);
 		List<Evaluation> evaluations = evaluationDao.getEvaluations(userInfo.getUser(), mapStudy);
-		
 		Article article = null, nextArticle = null;
 		Long nextArticleId = null;
 		if(articleid != 0){
@@ -606,8 +606,8 @@ public class MapStudyController {
 			article = articleDao.find(nextArticleId);
 			evaluation = article.getEvaluation(userInfo.getUser());
 		}else{
-			article = new Article();
-			article.setId(-1l);
+			article = articleDao.find(articleid);
+			evaluation = article.getEvaluation(userInfo.getUser());
 		}		
 		
 		returns.put("evaluation", evaluation);
@@ -887,7 +887,7 @@ public class MapStudyController {
 		List<Article> articles = new ArrayList<Article>();
 		
 		validator.check(evaluations.size() > 0, new SimpleMessage("mapstudy.evaluations", "mapstudy.articles.not.evaluations"));
-		validator.onErrorRedirectTo(this).show(mapStudyId);
+		validator.onErrorRedirectTo(this).showEvaluates(mapStudyId);
 		
 		for(Evaluation e : evaluations){
 			if(e.getEvaluationStatus().equals(EvaluationStatusEnum.ACCEPTED)){
@@ -908,17 +908,19 @@ public class MapStudyController {
 		List<Article> articles = articleDao.getArticlesFinalAccepted(mapStudy);
 		
 		validator.check(articles.size() > 0, new SimpleMessage("mapstudy.articles", "mapstudy.articles.accepted.all.none"));
-		validator.onErrorRedirectTo(this).show(mapStudyId);
+		validator.onErrorRedirectTo(this).showEvaluates(mapStudyId);
 		
 		return generateFile(mapStudy, articles);
 	}
 	
 	//TODO Depois adicionar a visão uma lista dos possiveis campos para o arquivo
 	private Download generateFile(MapStudy mapStudy, List<Article> articles) throws IOException {
+		
 		//create file
 		String filename = mapStudy.getTitle().replaceAll(" ", "_")+ ".csv";
 		File file = new File(filename);
-		FileWriter writer = new FileWriter(file, false);
+		String encoding = "ISO-8859-1";
+		FileWriterWithEncoding writer = new FileWriterWithEncoding(file, encoding, false);
 		
 		Collections.sort(articles, new Comparator<Article>() {
 			@Override
@@ -949,12 +951,15 @@ public class MapStudyController {
 			writer.append(a.getId()+delimiter);
 			writer.append(a.getAuthor()+delimiter);
 			writer.append(a.getTitle()+delimiter);
-		    writer.append(a.getJournal()+delimiter);
+			writer.append((a.getJournal() != null ? a.getJournal() : "" ) +delimiter);
+//		    writer.append(a.getJournal()+delimiter);
 //			writer.append(a.getYear()+delimiter);
 //			writer.append(a.getPages()+delimiter);
-		    writer.append(a.getDoi()+delimiter);
+//		    writer.append(a.getDoi()+delimiter);
+		    writer.append((a.getDoi() != null ? a.getDoi() : "" ) +delimiter);
 //			writer.append(a.getUrl()+delimiter);
-		    writer.append(a.getDocType()+delimiter);
+//		    writer.append(a.getDocType()+delimiter);
+		    writer.append((a.getDocType() != null ? a.getDocType() : "" ) +delimiter);
 		    writer.append(a.getSource()+delimiter);
 //			writer.append(a.getLanguage()+delimiter);
 //			writer.append(a.getAbstrct()+delimiter);
@@ -1066,8 +1071,6 @@ public class MapStudyController {
 			}			
 		}		
 		
-		System.out.println("USERS ID: "+ usersIds +" SIZE: " + users.size());
-		
 		List<ArticleCompareVO> articlesCompare = new ArrayList<ArticleCompareVO>();
 		
 		for(Article a : articles){
@@ -1081,8 +1084,6 @@ public class MapStudyController {
 			ArticleCompareVO acvo = new ArticleCompareVO(a, users, evaluations);
 			articlesCompare.add(acvo);
 		}
-		
-		System.out.println("articlesCompare size: " + articlesCompare.size());
 		
 		retorno = FleissKappa.combineKappasMap(articlesCompare, users);
 		
@@ -1141,7 +1142,6 @@ public class MapStudyController {
 	@Get
 	@Path("/maps/{id}/planning")
 	public void planning(Long id, String mydiv){
-		System.out.println("planning " + mydiv);
 		MapStudy mapStudy = mapStudyDao.find(id);
 		User user = userInfo.getUser();
 		
@@ -1162,6 +1162,7 @@ public class MapStudyController {
 		}
 		
 		List<ArticleSourceEnum> sources = asList(ArticleSourceEnum.values());
+		sources.get(0).getDescription();
 //		sources.remove(ArticleSourceEnum.MANUALLY);
 		
 		if (mydiv == null){
@@ -1205,27 +1206,17 @@ public class MapStudyController {
 	public void addgoals(Long id, String goals){
 		validator.onErrorForwardTo(this).planning(id, "divgoals");
 		
-		System.out.println("goals: " + goals + " id: " + id);
-		
 		MapStudy mapStudy = mapStudyDao.find(id);
 		User user = userInfo.getUser();
 		
-		System.out.println(mapStudy + " - " + user);
-
 		validator.check(mapStudy != null, new SimpleMessage("mapstudy",	"mapstudy.is.not.exist"));
 		validator.onErrorRedirectTo(this).list();
 		
-		System.out.println("Erro 1");
-
 		validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.is.not.mapstudy"));
 		validator.onErrorRedirectTo(this).list();
 		
-		System.out.println("Erro 2");
-		
 		mapStudy.setGoals(goals);
 		mapStudyDao.update(mapStudy);
-		
-		System.out.println("MapGoals: " + mapStudy.getGoals());
 		
 		result.include("notice", new SimpleMessage("mapstudy", "mapstudy.goals.add.success"));		
 		result.redirectTo(this).planning(id, "divgoals"); 
@@ -1265,8 +1256,6 @@ public class MapStudyController {
 	@Post("/maps/addstring")
 	public void addstring(Long id, String string, ArticleSourceEnum source){
 		MapStudy mapStudy = mapStudyDao.find(id);
-		
-		System.out.println("String: " + id + " | " + string.length() + " | " + source);
 		
 		SearchString searchString = new SearchString();
 		searchString.setDescription(string);

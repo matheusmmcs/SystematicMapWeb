@@ -68,15 +68,13 @@ public class FleissKappa {
 				key+=u.getLogin()+evaluation;
     		}
     		
-    		if (key.length() > 0){
-    			Integer val = (Integer) map.get(key);
-    			if(val == null){
-    				map.put(key, 1);
-    			}else{
-    				map.put(key, val+1);
-    			}
-    		}
-    		
+    		Integer val = (Integer) map.get(key);
+			if(val == null){
+				map.put(key, 1);
+			}else{
+				map.put(key, val+1);
+			}
+			
     		mat[idx][0] = countacc;
     		mat[idx][1] = countrej;
     		mat[idx][2] = countnoteval;
@@ -85,18 +83,12 @@ public class FleissKappa {
     	}
     	
     	String members = "";
-    	
     	for(User u : users){
     		members += u.getName() + " ,";
     	}
+    	members = members.substring(0, members.length()-1);
     	
-    	if (members.length() > 0)
-    		members = members.substring(0, members.length()-1);
-    	
-    	float kappa = computeKappa(mat);
-    	if (kappa < 0) kappa = 0.0f;
-    	
-    	map.put("kappa", kappa);
+    	map.put("kappa", computeKappa(mat));
     	map.put("members", members);
     	
     	return map;
@@ -120,7 +112,6 @@ public class FleissKappa {
  
         // Computing p[]
         float[] p = new float[k] ;
-        if (n != 0 && N != 0){
         for(int j=0 ; j<k ; j++)
         {
             p[j] = 0 ;
@@ -128,12 +119,10 @@ public class FleissKappa {
                 p[j] += mat[i][j] ;
             p[j] /= N*n ;
         }
-        }
         if(DEBUG) System.out.println("p = "+Arrays.toString(p)) ;
  
         // Computing P[]    
         float[] P = new float[N] ;
-        if (n > 1){
         for(int i=0 ; i<N ; i++)
         {
             P[i] = 0 ;
@@ -141,14 +130,12 @@ public class FleissKappa {
                 P[i] += mat[i][j] * mat[i][j] ;
             P[i] = (P[i] - n) / (n * (n - 1)) ;
         }
-        }
         if(DEBUG) System.out.println("P = "+Arrays.toString(P)) ;
  
         // Computing Pbar
         float Pbar = 0 ;
         for(float Pi : P)
             Pbar += Pi ;
-        if (N != 0)
         Pbar /= N ;
         if(DEBUG) System.out.println("Pbar = "+Pbar) ;
  

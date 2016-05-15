@@ -39,6 +39,8 @@ $(document).ready(function(){
 		$('#articleReadKeywords').html(article.keywords);
 		$('#articleReadSource').html(article.source);
 		$('#articleReadAuthor').html(article.author);
+		$('#articleReadDoctype').html(article.docType);
+		$('#articleReadYear').html(article.year);
 
 
 		//funcoes auxiliares para evitar repeticao de codigo
@@ -76,25 +78,6 @@ $(document).ready(function(){
 		resetCriterias();
 
 		var user = '${userInfo.user}';
-		console.log('user: ', user)
-		
-// 		var e = article.evaluation(user);
-// 		console.log('e: ', e);
-		
-		//caso haja avaliação, altera-la
-// 		if (article.evaluations.length > 0) {
-// 			var evaluate = article.evaluations[0];
-// 			console.log('evaluation: ', evaluate);
-// 			if (evaluate.exclusionCriterias.length > 0) {
-// 				markCriterias(evaluate.exclusionCriterias, false);
-// 				$('#commentExclude').val(evaluate.comment);
-// 				console.log('possui avaliações exclusion');
-// 			} else if (evaluate.inclusionCriterias.length > 0) {
-// 				markCriterias(evaluate.inclusionCriterias, true);
-// 				$('#commentInclude').val(evaluate.comment);
-// 				console.log('possui avaliações inclusion');
-// 			}
-// 		}
 
 		if (evaluation != null) {
 // 			var evaluate = article.evaluations[0];
@@ -124,9 +107,10 @@ $(document).ready(function(){
 			success: function(data){
 				var article = data['article'];
 				var evaluation = data['evaluation'];
-				console.log('article read: ', article);
-				console.log('eval: ', evaluation);
+// 				console.log('article read: ', article);
+// 				console.log('eval: ', evaluation);
 				actualizeArticle(article, evaluation);
+				messages('info', 'Artigo '+article.id, 'Artigo carregado com sucesso');
 			},
 			error: function(e){
 				console.error(e);
@@ -147,9 +131,9 @@ $(document).ready(function(){
 		return result;
 	}
 
-	var actualizeList = function (articleid, isInclusion, source){
+	var actualizeList = function (articleid, isInclusion, source, score){
 		var $article = $(".tBodyArticlesToEvaluate .readArticle[nextid=\""+articleid+"\"]");
-		var classification = isInclusion ? 'ACCEPTED' : 'REJECTED';
+		var classification = isInclusion ? 'Aceito' : 'Rejeitado';
 		var newhref = $article.attr('href');
 		if (newhref == undefined){
 			return;
@@ -161,22 +145,18 @@ $(document).ready(function(){
 		///SystematicMap/maps/article/10/load 
 		tableToEvaluate.row($article.parents('tr')).remove().draw();
 		tableEvaluated.row.add([
-       		articleid, 
+       		articleid, score,
        		'<a class="readArticle" actualid="'+articleid+'" href="' + newhref + '">'+$article.html()+'</a>', source, classification]).draw();
 	};
 
 	var actualizePercent = function (percent){
-// 		var per = $('#per').html();
-// 		percent = '(' + percent + '%)';
-// 		$('#per').html(percent);
-// 		console.log('percent: ', percent,'per: ', per);
 		var p = percent.replace(",", ".");
 		
 		$('.progress-bar').attr('style', "min-width: 3em; width: "+p+"%");
 		$('.progress-bar').attr('aria-valuenow', p);
 		$('.progress-bar').html(percent + '%');
 
-		console.log(p);
+// 		console.log(p);
 	};
 
 	// ajax para salvar avaliações dos artigos
@@ -187,6 +167,7 @@ $(document).ready(function(){
 		var criterias = selectCriterias(isInclusion);
 		var comment = isInclusion ? $('#commentInclude').val() : $('#commentExclude').val();
 		var source = $('#articlesource').val();
+		var score = $('#articlescore').val();
 		var id = null;
 		
 		// assim ele vai pegar os readArticle "filhos" de tBodyArticlesToEvaluate
@@ -219,16 +200,20 @@ $(document).ready(function(){
 				        var percent = data['percent'];
 				        var evaluation = data['evaluation'];
 						//console.log('article: ', article);
-						console.log('eval: ', evaluation);
-						if (article.id == -1){
-							alert('Sem mais artigos para avaliar!');
+// 						console.log('eval: ', evaluation);
+
+						messages('info', 'Artigo '+articleid, 'Avalia&ccedil;&atilde;o do artigo realizada com sucesso');
+						
+						if (article.id == articleid){
+							messages('warning', 'Artigo', 'Todos os artigos j&aacute; foram avaliados');
+// 							alert('Sem mais artigos para avaliar!');
 // 							window.location.reload();
-						}else {
+						}//else {
 							actualizeArticle(article, evaluation);
-						}
+// 						}
 // 						if (evaluation.length == 0){
 							actualizePercent(percent);
-							actualizeList(articleid, isInclusion, source);
+							actualizeList(articleid, isInclusion, source, score);
 // 						}
 						
 		        },
@@ -239,7 +224,8 @@ $(document).ready(function(){
 			
 		} else {
 			//apresentar mensagem para o usuario -> ao menos um criterio deve ser selecionado
-			alert('Nenhum criterio foi selecionado !');
+			messages('warning', 'Crit&eacute;rios', 'Selecione pelo menos um crit&eacute;rio');
+// 			alert('Nenhum criterio foi selecionado !');
 		}		
 	};
 
@@ -250,6 +236,26 @@ $(document).ready(function(){
 	$(document).on('click', '.btnEvaluateExclusion', function(event){
 		evaluate(event, false);
 	});
+	
+	var messages = function (type, category, text){
+		console.log(type, category, text);
+		var msg = '';
+	    $("#messages").empty();
+	     
+	    msg =	'<div class="alert alert-'+type+' alert-dismissible" role="alert" id="'+type+'">' +
+			'<button type="button" class="close" data-dismiss="alert" data-hide="alert">&times;</button>' +
+			'<b>' + category + '</b> - '+ text + '<br />' +
+		'</div>';
+		
+	    $("#messages").append(msg);
+	    
+	    $('html, body').animate({ scrollTop: 0 }, 'slow');
+
+	    $(".alert").click(function() {
+	    	$(".alert").hide();
+	    });
+	};
+	
 });
 </script>
 
@@ -304,7 +310,19 @@ $(document).ready(function(){
 		<p> 
 			<strong>
 				<fmt:message key="mapstudy.article.source"/>:
-			</strong> <span id="articleReadSource">${article.source}</span>
+			</strong> <span id="articleReadSource">${article.sourceView(article.source)}</span>
+		<p>
+		
+		<p> 
+			<strong>
+				<fmt:message key="mapstudy.article.year"/>:
+			</strong> <span id="articleReadYear">${article.year}</span>
+		<p>
+		
+		<p> 
+			<strong>
+				<fmt:message key="mapstudy.article.doctype"/>:
+			</strong> <span id="articleReadDocType">${article.docType}</span>
 		<p>
 		
 		<hr/>
@@ -313,6 +331,8 @@ $(document).ready(function(){
 			<input type="hidden" id="mapid" name="mapid" value="${map.id}" />
 			<input type="hidden" id="articleid" name="articleid" value="${article.id}" />
 			<input type="hidden" id="articlesource" name="articlesource" value="${article.source}" />
+			<input type="hidden" id="articlescore" name="articlescore" value="${article.score}" />
+			
 			<p> 
 				<strong>
 					<fmt:message key="mapstudy.inclusion.criterias"/>:
@@ -349,6 +369,7 @@ $(document).ready(function(){
 			<input type="hidden" id="mapid" name="mapid" value="${map.id}" />
 			<input type="hidden" id="articleid" name="articleid" value="${article.id}" />
 			<input type="hidden" id="articlesource" name="articlesource" value="${article.source}" />
+			<input type="hidden" id="articlescore" name="articlescore" value="${article.score}" />
 			<p> 
 				<strong>
 					<fmt:message key="mapstudy.exclusion.criterias"/>:
@@ -401,6 +422,7 @@ $(document).ready(function(){
 						<thead>
 							<tr>
 								<th class="text-center">ID</th>
+								<th class="text-center"><fmt:message key="mapstudy.article.score" /></th>
 								<th class="text-center"><fmt:message key="mapstudy.article.title" /></th>
 								<th class="text-center"><fmt:message key="mapstudy.article.source" /></th>
 							</tr>
@@ -409,8 +431,9 @@ $(document).ready(function(){
 							<c:forEach var="article" items="${articlesToEvaluate}" varStatus="s">
 								<tr class="${s.index % 2 == 0 ? 'even' : 'odd'} gradeA">
 									<td>${article.id}</td>
+									<td>${article.score}</td>
 									<td><a class="readArticle" actualid="${article.id}" nextid="${article.id }" href="${linkTo[MapStudyController].loadArticle(map.id, article.id)}">${article.title}</a></td>
-									<td>${article.source}</td>
+									<td>${article.sourceView(article.source)}</td>
 								</tr>
 							</c:forEach>
 						</tbody>
@@ -428,6 +451,7 @@ $(document).ready(function(){
 						<thead>
 							<tr>
 								<th class="text-center">ID</th>
+								<th class="text-center"><fmt:message key="mapstudy.article.score" /></th>
 								<th class="text-center"><fmt:message key="mapstudy.article.title" /></th>
 								<th class="text-center"><fmt:message key="mapstudy.article.source" /></th>
 								<th class="text-center"><fmt:message key="mapstudy.article.evaluation" /></th>
@@ -437,9 +461,10 @@ $(document).ready(function(){
 							<c:forEach var="eval" items="${evaluations}" varStatus="s">
 								<tr class="${s.index % 2 == 0 ? 'even' : 'odd'} gradeA">
 									<td>${eval.article.id}</td>
+									<td>${eval.article.score}</td>
 <%-- 									<td><a class="btnEvaluate" href="${linkTo[MapStudyController].evaluateArticle(map.id, eval.article.id)}">${eval.article.title}</a></td> --%>
 									<td><a class="readArticle" actualid="${eval.article.id}" href="${linkTo[MapStudyController].loadArticle(map.id, eval.article.id)}">${eval.article.title}</a></td>
-									<td>${eval.article.source}</td>
+									<td>${eval.article.sourceView(article.source)}</td>
 									<td>${eval.classification}</td>
 								</tr>
 							</c:forEach>
