@@ -18,6 +18,10 @@ import br.com.ufpi.systematicmap.model.MapStudy;
 import br.com.ufpi.systematicmap.model.User;
 import br.com.ufpi.systematicmap.model.enums.EvaluationStatusEnum;
 
+/**
+ * @author Gleison Andrade
+ *
+ */
 @RequestScoped
 public class ArticleDao extends Dao<Article> {
 	
@@ -94,9 +98,15 @@ public class ArticleDao extends Dao<Article> {
 		return count;
 	}
 	
+	
+	/**
+	 * Conta quantos artigos não possuem avaliação final
+	 * @param mapStudy
+	 * @return
+	 */
 	public Long countArticlesFinalEvaluation(MapStudy mapStudy){
 		Long count = entityManager
-			.createQuery("select count(1) from Article a where a.finalEvaluation = null and a.mapStudy = :mapStudy", Long.class)
+			.createQuery("select count(1) from Article a where a.classification = null and a.finalEvaluation = null and a.mapStudy = :mapStudy", Long.class)
 				.setParameter("mapStudy", mapStudy)
 				.getSingleResult();
 		return count;

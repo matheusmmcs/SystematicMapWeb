@@ -155,7 +155,7 @@ $(document).ready(function(){
 <div class="row">
 	<div class="col-lg-12">
 	
-		<div class="panel panel-default">
+		<div class="panel panel-primary">
 			<div class="panel-heading">
 				<b><fmt:message key="mapstudy.details"/></b>
 			</div>
@@ -206,6 +206,53 @@ $(document).ready(function(){
 			</div>
 		</div>
 		
+<!-- Exibir questões e alternativas selecionadas		 -->
+
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			<b><fmt:message key="mapstudy.extractions.user"/></b>
+		</div>
+		<div class="panel-body">
+<%-- 			<c:forEach var="ext" items="${extractions}" varStatus="a"> --%>
+<%-- 				<b>${ext.key}</b><br /> --%>
+<%-- 				<c:forEach var="alt" items="${ext.value}" varStatus="aa"> --%>
+<%-- 					${alt.key} - ${alt.value}<br /> --%>
+<%-- 				</c:forEach>				 --%>
+<%-- 			</c:forEach> --%>
+<!-- 			<br /> -->
+
+	<c:forEach var="ext" items="${extractions}" varStatus="a">
+<!-- 		<div class="col-md-6 widget widget_tally_box"> -->
+<!--           <div class="x_panel fixed_height_100"> -->
+				<div class="x_panel">
+				  <div class="x_title">
+				    <b>${ext.key}</b>
+				    <ul class="nav navbar-right panel_toolbox">
+				      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+				      <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+				    </ul>
+				    <div class="clearfix"></div>
+				  </div>
+				  <div class="x_content">		
+				    <div>
+				      <ul class="list-inline widget_tally">
+				      <c:forEach var="alt" items="${ext.value}" varStatus="aa">
+				        <li>
+				          <p>
+				            <span class="month">${alt.key} </span>
+				            <span class="count">${alt.value}</span>
+				          </p>
+				        </li>
+				        </c:forEach>
+				      </ul>
+				    </div>
+				  </div>
+				</div>			
+<!-- 		</div> -->
+	</c:forEach>
+			</div>
+	</div>
+		
 <!-- 		Inicio artigos -->
 
 <div class="clear-both"></div>
@@ -250,71 +297,110 @@ $(document).ready(function(){
 		<hr/>
 		
 		</div>
-		<div class="panel panel-default">
-		<div class="panel-heading">
-			<b><fmt:message key="mapstudy.form" /></b>
-		</div>
-		<!-- /.panel-heading -->
-		<div class="panel-body">
-			<h4>
-				<fmt:message key="mapstudy.extractions.data" />
-			</h4>
-<%-- 			<form action="${linkTo[ExtractionController].evaluateAjax}" method="post" id="#forExtraction"> --%>
-				<input type="hidden" name="mapid"  id="mapid" value="${map.id}" />
-				<input type="hidden" name="articleid" id="articleid" value="${article.id}" />
-				<input type="hidden" id="articlesource" name="articlesource" value="${article.source}" />
+<!-- 		<div class="panel panel-default"> -->
+<!-- 		<div class="panel-heading"> -->
+<%-- 			<b><fmt:message key="mapstudy.form" /></b> --%>
+<!-- 		</div> -->
+<!-- 		<div class="panel-body"> -->
+<!-- 			<h4> -->
+<%-- 				<fmt:message key="mapstudy.extractions.data" /> --%>
+<!-- 			</h4> -->
+<%-- 				<input type="hidden" name="mapid"  id="mapid" value="${map.id}" /> --%>
+<%-- 				<input type="hidden" name="articleid" id="articleid" value="${article.id}" /> --%>
+<%-- 				<input type="hidden" id="articlesource" name="articlesource" value="${article.source}" /> --%>
 
-					<c:forEach var="question" items="${form.questions}" varStatus="q">
-						<div class="form-group group_question">
-						<input type="hidden" name="questions[${q.index}].id" value="${question.id}" class="group_question_id" id="question_id_${q.index}"/>
+<%-- 					<c:forEach var="question" items="${form.questions}" varStatus="q"> --%>
+<!-- 						<div class="form-group group_question"> -->
+<%-- 						<input type="hidden" name="questions[${q.index}].id" value="${question.id}" class="group_question_id" id="question_id_${q.index}"/> --%>
 						
-						<div class="padding-left-none">
-							<strong class="group_question_name" id="question_name_${q.index}">${question.name} :</strong>
-						</div>
-						<div class="float-right group_alternative">
-							<input type="text" class="form-control group_alternative_value" name="alternatives[${q.index}].value" id="alternative_value_${q.index}" value="${article.alternative(question, userInfo.user).value}" disabled/>
-						</div>		
-						</div>
-					</c:forEach>					
-					<div class="clear-both"></div>
-<!-- 				</form> -->
-		</div>
-	</div>
+<!-- 						<div class="padding-left-none"> -->
+<%-- 							<strong class="group_question_name" id="question_name_${q.index}">${question.name} :</strong> --%>
+<!-- 						</div> -->
+<!-- 						<div class="float-right group_alternative"> -->
+<%-- 							<input type="text" class="form-control group_alternative_value" name="alternatives[${q.index}].value" id="alternative_value_${q.index}" value="${article.alternative(question, userInfo.user).value}" disabled/> --%>
+<!-- 						</div>		 -->
+<!-- 						</div> -->
+<%-- 					</c:forEach>					 --%>
+<!-- 					<div class="clear-both"></div> -->
+<!-- 		</div> -->
+<!-- 	</div> -->
 <!-- </div> -->
+
+<!-- Exibir informações de extração -->
+
+
+
+
+
 
 <!-- <div class="row"> -->
-	<div class="panel panel-default">
-			<div class="panel-heading">
-				<b><fmt:message key="mapstudy.articles.list" /></b>
-			</div>
-			<div class="panel-body">			
-				<h4>
-					<fmt:message key="mapstudy.articles.list.extracted"/>
-				</h4>
-				<div class="dataTable_wrapper">
-					<table
-						class="table table-striped table-bordered table-hover datatable-evaluated">
-						<thead>
-							<tr>
-								<th class="text-center">ID</th>
-								<th class="text-center"><fmt:message key="mapstudy.article.title" /></th>
-								<th class="text-center"><fmt:message key="mapstudy.article.source" /></th>
-							</tr>
-						</thead>
-						<tbody class="tBodyArticlesEvaluate">
-							<c:forEach var="eval" items="${extractions}" varStatus="s">
-								<tr class="${s.index % 2 == 0 ? 'even' : 'odd'} gradeA">
-									<td>${eval.id}</td>
-<%-- 									<td><a class="btnEvaluate" href="${linkTo[MapStudyController].evaluateArticle(map.id, eval.article.id)}">${eval.article.title}</a></td> --%>
-									<td><a class="readArticle" actualid="${eval.id}" href="${linkTo[ExtractionController].loadArticleAjax(map.id, eval.id)}">${eval.title}</a></td>
-									<td>${eval.source}</td>
-								</tr>
-							</c:forEach>
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</div>
+<!-- 	<div class="panel panel-primary hide"> -->
+<!-- 			<div class="panel-heading"> -->
+<%-- 				<b><fmt:message key="mapstudy.articles.list" /></b> --%>
+<!-- 			</div> -->
+<!-- 			<div class="panel-body">			 -->
+<!-- 				<h4> -->
+<%-- 					<fmt:message key="mapstudy.articles.list.extracted"/> --%>
+<!-- 				</h4> -->
+<!-- 				<div class="dataTable_wrapper"> -->
+<!-- 					<table -->
+<!-- 						class="table table-striped table-bordered table-hover datatable-evaluated"> -->
+<!-- 						<thead> -->
+<!-- 							<tr> -->
+<!-- 								<th class="text-center">ID</th> -->
+<%-- 								<th class="text-center"><fmt:message key="mapstudy.article.title" /></th> --%>
+<%-- 								<th class="text-center"><fmt:message key="mapstudy.article.source" /></th> --%>
+<!-- 							</tr> -->
+<!-- 						</thead> -->
+<!-- 						<tbody class="tBodyArticlesEvaluate"> -->
+<%-- 							<c:forEach var="eval" items="${extractions}" varStatus="s"> --%>
+<%-- 								<tr class="${s.index % 2 == 0 ? 'even' : 'odd'} gradeA"> --%>
+<%-- 									<td>${eval.id}</td> --%>
+<%-- 									<td><a class="readArticle" actualid="${eval.id}" href="${linkTo[ExtractionController].loadArticleAjax(map.id, eval.id)}">${eval.title}</a></td> --%>
+<%-- 									<td>${eval.source}</td> --%>
+<!-- 								</tr> -->
+<%-- 							</c:forEach> --%>
+<!-- 						</tbody> -->
+<!-- 					</table> -->
+<!-- 				</div> -->
+<!-- 			</div> -->
+<!-- 		</div> -->
 <!-- </div> -->
 </div>
 </div>
+
+<script type="text/javascript">
+
+$('.close-link').click(function () {
+    var $BOX_PANEL = $(this).closest('.x_panel');
+
+    $BOX_PANEL.remove();
+});
+
+//Panel toolbox
+$(function () {
+    $('.collapse-link').on('click', function() {
+        var $BOX_PANEL = $(this).closest('.x_panel'),
+            $ICON = $(this).find('i'),
+            $BOX_CONTENT = $BOX_PANEL.find('.x_content');
+        
+        // fix for some div with hardcoded fix class
+        if ($BOX_PANEL.attr('style')) {
+            $BOX_CONTENT.slideToggle(200, function(){
+                $BOX_PANEL.removeAttr('style');
+            });
+        } else {
+            $BOX_CONTENT.slideToggle(200); 
+            $BOX_PANEL.css('height', 'auto');  
+        }
+
+        $ICON.toggleClass('fa-chevron-up fa-chevron-down');
+    });
+
+    $('.close-link').click(function () {
+        var $BOX_PANEL = $(this).closest('.x_panel');
+
+        $BOX_PANEL.remove();
+    });
+});
+</script>

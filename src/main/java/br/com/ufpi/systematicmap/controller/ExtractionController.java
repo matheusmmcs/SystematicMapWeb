@@ -6,6 +6,7 @@ package br.com.ufpi.systematicmap.controller;
 import static br.com.caelum.vraptor.view.Results.json;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -147,9 +148,10 @@ public class ExtractionController {
 		validator.check(mapStudy.getForm().getQuestions() != null && mapStudy.getForm().getQuestions().size() > 0, new SimpleMessage("mapstudy", "mapstudy.is.not.form"));
 		validator.onErrorRedirectTo(MapStudyController.class).show(mapid);
 		
-		Long countArticlesToFinal = articleDao.countArticlesFinalEvaluation(mapStudy);
+		Long countArticlesToExtraction = articleDao.countArticleToEvaluateExtraction(user, mapStudy);
 		
-		validator.check(countArticlesToFinal > 0l, new SimpleMessage("mapstudy", "mapstudy.is.not.final.evaluation"));
+		//se existe artigos para realizar extração entra
+		validator.check(countArticlesToExtraction > 0l, new SimpleMessage("mapstudy", "mapstudy.is.not.article.to.extraction"));
 		validator.onErrorRedirectTo(MapStudyController.class).show(mapid);
 		
 		result.redirectTo(this).evaluateExtraction(mapid, 0l);
@@ -330,6 +332,31 @@ public class ExtractionController {
         
         List<Article> extractions = this.articleDao.getExtractions(this.userInfo.getUser(), mapStudy);
         
+        HashMap<String,HashMap<String, Long>> ext = new HashMap<String, HashMap<String,Long>>();
+        
+        for (Article article : extractions) {
+			for (EvaluationExtraction ee : article.getEvaluationExtraction(user)) {
+				String questionName = ee.getQuestion().getName();
+				HashMap<String, Long> aux = new HashMap<String, Long>();
+				
+				if (ext.containsKey(questionName)){					
+					aux = ext.get(questionName);
+				}
+				
+				String alternativeValue = ee.getAlternative().getValue();
+				Long count = 1l;
+				
+				if (aux.containsKey(alternativeValue)){
+					count = aux.get(alternativeValue) + 1;
+				}		
+				
+				aux.put(alternativeValue, count);
+				ext.put(questionName, aux);				
+			}
+		}
+        
+        
+        
         validator.check(extractions.size() > 0, new SimpleMessage("mapstudy.articles", "mapstudy.extraction.none"));
         validator.onErrorRedirectTo(MapStudyController.class).show(mapid);
         
@@ -337,7 +364,7 @@ public class ExtractionController {
         
         this.result.include("map", mapStudy);
         this.result.include("article", extractions.get(0));
-        this.result.include("extractions", extractions);
+        this.result.include("extractions", ext);
         this.result.include("form", mapStudy.getForm());
         this.result.include("percentEvaluatedDouble", percentEvaluatedDouble);
 	}
@@ -486,7 +513,7 @@ public class ExtractionController {
 		// Todos os artigos com a avaliação final aceita
 		List<Article> articles = articleDao.getArticlesFinalExtraction(mapStudy);
 		
-		validator.check(articles.size() > 0, new SimpleMessage("mapstudy.articles", "mapstudy.articles.accepted.all.none"));
+		validator.check(articles.size() > 0, new SimpleMessage("mapstudy.articles", "mapstudy.articles.extractionfinal.all.none"));
 		validator.onErrorRedirectTo(this).showExtractionEvaluates(mapStudyId);
 		
 		return generateFile(mapStudy, articles, true);
@@ -498,6 +525,7 @@ public class ExtractionController {
 		File file = new File(filename);
 		String encoding = "ISO-8859-1";
 		FileWriterWithEncoding writer = new FileWriterWithEncoding(file, encoding, false);
+//		FileWriter writer = new FileWriter(file, false);
 		
 		Collections.sort(articles, new Comparator<Article>() {
 			@Override
@@ -506,36 +534,56 @@ public class ExtractionController {
 			}
 		});
 		
+		String data = "";
+		
 		String delimiter = ";";
 		
 		//create header
-		writer.append("ID"+delimiter);
-		writer.append("Author"+delimiter);
-		writer.append("Title"+delimiter);
-	    writer.append("Journal"+delimiter);
-	    writer.append("Year"+delimiter);
-	    writer.append("DocType"+delimiter);
-	    writer.append("Source"+delimiter);
+//		writer.append("ID"+delimiter);
+//		writer.append("Author"+delimiter);
+//		writer.append("Title"+delimiter);
+//	    writer.append("Journal"+delimiter);
+//	    writer.append("Year"+delimiter);
+//	    writer.append("DocType"+delimiter);
+//	    writer.append("Source"+delimiter);
+		
+		data += "Id"+delimiter;
+		data += "Author"+delimiter;
+		data += "Title"+delimiter;
+		data += "Journal"+delimiter;
+		data += "Year"+delimiter;
+		data += "DocType"+delimiter;
+		data += "Source"+delimiter;
 	    
 	    String[] head = questionsName(mapStudy);
 	    //create head name questions	    
 	    for (String s : head) {
-	    	 writer.append(s + delimiter);
+//	    	 writer.append(s + delimiter);
+	    	data += (s + delimiter);
 		}
 	    
 	    
-	    writer.append('\n');
+//	    writer.append('\n');
+	    data += "\n";
 	    
 	    HashMap<String, String> questionsAndAlternative = new HashMap<String, String>();
 	
 		for(Article a : articles){
-			writer.append(a.getId() + delimiter);
-			writer.append(a.getAuthor() + delimiter);
-			writer.append(a.getTitle() + delimiter);
-		    writer.append((a.getJournal() != null ? a.getJournal() : "" ) + delimiter);
-			writer.append((a.getYear() != null ? a.getYear() : "" ) +delimiter);
-		    writer.append((a.getDocType() != null ? a.getDocType() : "" ) + delimiter);
-		    writer.append(a.getSource() + delimiter);
+//			writer.append(a.getId() + delimiter);
+//			writer.append(a.getAuthor() + delimiter);
+//			writer.append(a.getTitle() + delimiter);
+//		    writer.append((a.getJournal() != null ? a.getJournal() : "" ) + delimiter);
+//			writer.append((a.getYear() != null ? a.getYear() : "" ) +delimiter);
+//		    writer.append((a.getDocType() != null ? a.getDocType() : "" ) + delimiter);
+//		    writer.append(a.getSource() + delimiter);
+			
+			data += a.getId() + delimiter;
+			data += a.getAuthor() + delimiter;
+			data += a.getTitle() + delimiter;
+			data += (a.getJournal() != null ? a.getJournal() : "Dado não extraído") + delimiter;
+			data += (a.getYear() != null ? a.getYear() : "Dado não extraído") +delimiter;
+			data += (a.getDocType() != null && !a.getDocType().equals("") ? a.getDocType() : "Dado não extraído") + delimiter;
+			data += a.sourceView(a.getSource()) + delimiter;
 		    
 		    if (all){
 		    	questionsAndAlternative = a.getEvaluateFinalExtractionAlternative();
@@ -544,11 +592,15 @@ public class ExtractionController {
 		    }
 		    
 		    for (String s : head) {
-		    	 writer.append((questionsAndAlternative.get(s) != null ? questionsAndAlternative.get(s) : "Dado não extraído") + delimiter);
+//		    	 writer.append((questionsAndAlternative.get(s) != null ? questionsAndAlternative.get(s) : "Dado não extraído") + delimiter);
+		    	String v = questionsAndAlternative.get(s); 
+		    	data = data + ((v != null ? v : "Dado não extraído") + delimiter);
 			} 
-		    
-		    writer.append('\n');
+//		    writer.append('\n');
+		    data += "\n";
 		}
+		
+		writer.append(data);
 		
 		writer.flush();
 	    writer.close();

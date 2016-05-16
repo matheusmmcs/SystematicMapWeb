@@ -210,6 +210,7 @@ $(document).ready(function(){
 
 	var actualizeList = function (articleid, source, score){
 		console.log('atualiza list entrou: ' +score);
+		console.log('Source: ' + source);
 		var $article = $(".tBodyArticlesToEvaluate .readArticle[nextid=\""+articleid+"\"]");
 		var newhref = $article.attr('href');
 		if (newhref == undefined){
@@ -302,7 +303,7 @@ $(document).ready(function(){
 			if (article == null || article.id == -1) {
 // 				var $notice = $('#notices');
 // 				var b = $notice.find('b').html('teste');
-				messages('warning', 'Article '+article.id, 'Todos os artigos j&aacute; foram extra&iatilde;dos com sucesso');
+				messages('warning', 'Article', 'Todos os artigos j&aacute; foram extra&itilde;dos com sucesso');
 			} else {
 // 				console.log('vou chamar o actualizar');
 				actualizeArticle(article, extraction);
@@ -429,7 +430,7 @@ var messages = function (type, category, text){
 		<form action="${linkTo[ExtractionController].evaluateAjax}" method="post" id="#forExtraction">
 				<input type="hidden" name="mapid"  id="mapid" value="${map.id}" />
 				<input type="hidden" name="articleid" id="articleid" value="${article.id}" />
-				<input type="hidden" id="articlesource" name="articlesource" value="${article.source}" />
+				<input type="hidden" id="articlesource" name="articlesource" value="${artivle.sourceView(article.source)}" />
 				<input type="hidden" id="articlescore" name="articlescore" value="${article.score}" />
 
 <!-- 				<div class="form-group"> -->

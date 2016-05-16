@@ -70,6 +70,9 @@ $(document).ready(function(){
 						<a class="btn btn-primary" href="${linkTo[ExtractionController].showExtractionEvaluates(map.id)}">
 							<fmt:message key="mapstudy.viewextractions" />
 						</a>
+						<a class="btn btn-primary" href="${linkTo[MapStudyController].report(map.id)}">
+							<fmt:message key="mapstudy.report" />
+						</a>
 		</div>
 	</div>
 	<div class="panel panel-default">
