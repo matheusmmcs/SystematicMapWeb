@@ -49,8 +49,10 @@ import br.com.ufpi.systematicmap.model.Form;
 import br.com.ufpi.systematicmap.model.MapStudy;
 import br.com.ufpi.systematicmap.model.Question;
 import br.com.ufpi.systematicmap.model.User;
+import br.com.ufpi.systematicmap.model.enums.ReturnStatusEnum;
 import br.com.ufpi.systematicmap.model.vo.ExtractionCompareVO;
 import br.com.ufpi.systematicmap.model.vo.QuestionVO;
+import br.com.ufpi.systematicmap.model.vo.ReturnVO;
 
 /**
  * @author Gleison Andrade
@@ -129,6 +131,106 @@ public class ExtractionController {
 		mapStudyDao.update(mapStudy);
 
 		result.use(json()).indented().withoutRoot().from(mapStudy).recursive().serialize();
+	}
+	
+	@Post
+	@Consumes("application/json")
+	public void loadQuestions(Long mapid){
+		MapStudy mapStudy = mapStudyDao.find(mapid);
+		result.use(json()).indented().withoutRoot().from(mapStudy.getForm().getQuestions()).recursive().serialize();
+	}
+	
+	@Post
+	@Consumes("application/json")
+	public void removeQuestion(Long mapid, Long questionId){
+
+		MapStudy mapStudy = mapStudyDao.find(mapid);
+		Question question = questionDao.find(questionId);
+		
+		boolean containsQuestion = false;
+		for (Question q : mapStudy.getForm().getQuestions()) {
+			if (question.getId().equals(q.getId())) {
+				containsQuestion = true;
+				break;
+			}
+		}
+		
+		ReturnVO retorno;
+		if (containsQuestion) {
+			for (Alternative a : question.getAlternatives()){
+				alternativeDao.delete(a);
+			}
+			question.getAlternatives().clear();
+			evaluationExtrationDao.removeQuestion(question);
+			mapStudy.getForm().getQuestions().remove(question);
+			questionDao.delete(question);
+			mapStudyDao.update(mapStudy);
+			
+			retorno = new ReturnVO(ReturnStatusEnum.SUCESSO, "");
+		} else {
+			retorno = new ReturnVO(ReturnStatusEnum.ERRO, "Ops, não foi possível concluir. Tente novamente.");
+		}
+			
+		result.use(json()).indented().withoutRoot().from(retorno).recursive().serialize();
+	}
+	
+	@Post
+	@Consumes("application/json")
+	public void addQuestion(Long mapid, Question question){
+		Form form = new Form();		
+		MapStudy mapStudy = mapStudyDao.find(mapid);
+		Set<Question> questions = new HashSet<Question>(mapStudy.getForm().getQuestions());
+		
+		//se já existir form no mapeamento
+		if (mapStudy.getForm() != null && question.getId() != null) {
+			for (Question q : questions) {
+				//verifico se já existe algum com o id passado
+				if (question.getId().equals(q.getId())) {
+					for (Alternative a : q.getAlternatives()){
+						alternativeDao.delete(a);
+					}
+					q.getAlternatives().clear();
+					questionDao.delete(q);	
+					evaluationExtrationDao.removeQuestion(q);
+					mapStudy.getForm().getQuestions().remove(q);
+				}
+			}
+		}
+		
+		question.setId(null);
+		for (Alternative a : question.getAlternatives()) {
+			a.setQuestion(question);
+		}
+		form.addQuestion(question);
+		mapStudy.addForm(form);
+		mapStudyDao.update(mapStudy);
+
+		result.use(json()).indented().withoutRoot().from(mapStudy).recursive().serialize();
+	}
+	
+	@Post
+	@Consumes("application/json")
+	public void getQuestion(Long mapid, Long questionId){
+		MapStudy mapStudy = mapStudyDao.find(mapid);
+		Question question = questionDao.find(questionId);
+		
+		boolean containsQuestion = false;
+		for (Question q : mapStudy.getForm().getQuestions()) {
+			if (question.getId().equals(q.getId())) {
+				containsQuestion = true;
+				break;
+			}
+		}
+		
+		ReturnVO retorno;
+		if (containsQuestion) {
+			retorno = new ReturnVO(ReturnStatusEnum.SUCESSO, "");
+			retorno.setData(question);
+		} else {
+			retorno = new ReturnVO(ReturnStatusEnum.ERRO, "Ops, não foi possível concluir. Tente novamente.");
+		}
+			
+		result.use(json()).indented().withoutRoot().from(retorno).recursive().serialize();
 	}
 	
 	@Get("/maps/extraction/{mapid}")

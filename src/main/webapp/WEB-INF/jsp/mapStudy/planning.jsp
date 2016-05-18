@@ -258,7 +258,10 @@
 			param = {
 				"questionVO" : questionVO
 			};
-
+			
+			console.log(param);
+			
+			/*
 			$.ajax({
 				url : address,
 				dataType : 'json',
@@ -273,7 +276,235 @@
 					console.error(e);
 				}
 			});
+			*/
 		});
+		
+		/* QUESTOES PARA EXTRACAO */
+		
+		var mapId = $('#mapid').val();
+		var $divsAlternatives = $('.subquestion-hasalternatives'),
+			$divAddSubquestionExt = $('#div-add-subquestion-extraction'),
+			$divTableSubquestionExt = $('#div-table-subquestions-extraction'),
+			$divAlternativesExt = $('#form-add-subquestion-extraction-alternatives');
+		
+		function showListSubQuesiton() {
+			$divAddSubquestionExt.hide();
+			$divTableSubquestionExt.show();
+		}
+			
+		function showFormSubQuesiton() {
+			$divAddSubquestionExt.show();
+			$divTableSubquestionExt.hide();
+		}
+		
+		$(document).on('click', '#btn-add-subquestion-extraction', function(e) {
+			e.preventDefault();
+			renderQuestionNew();
+		});
+		
+		$(document).on('click', '#btn-back-subquestion-extraction', function(e) {
+			e.preventDefault();
+			loadAllQuestions(function(){
+				showListSubQuesiton();
+			});
+		});
+		
+		$(document).on('click', '#btn-add-alternative-subquestion-extraction', function(e) {
+			e.preventDefault();
+			$divAlternativesExt.append(renderAlternative());
+		});
+		
+		$(document).on('click', '.subquestion-alternative-rmv', function(e) {
+			e.preventDefault();
+			$(this).closest('.subquestion-alternative').remove();
+		});
+		
+		$(document).on('change', '#subquestion-type', function(e) {
+			var val = $(this).val();
+			if (val == 'LIST' || val == 'MULT') {
+				$divsAlternatives.show();
+			} else {
+				$divAlternativesExt.html('');
+				$divsAlternatives.hide();
+			}
+		});
+		
+		$(document).on('click', '#btn-save-subquestion-extraction', function(e){
+			e.preventDefault();
+			
+			var question = {
+				name: $('#subquestion-name').val(),
+				type: $('#subquestion-type').val()
+			};
+			var alternatives = [];
+			var questionId = $('#subquestion-id').val();
+			if (questionId) {
+				question.id = questionId;
+			}
+			
+			$('.subquestion-alternative').each(function(idx){
+				var id = $(this).find('.subquestion-alternative-id').val();
+				var title = $(this).find('.subquestion-alternative-title').val();
+				alternatives.push({
+					value: title
+				});
+			});
+			question.alternatives = alternatives;
+			
+			saveQuestion(question);
+		});
+		
+		$(document).on('click', '.subquestions-extraction-edit', function(e){
+			e.preventDefault();
+			var questionId = $(this).attr('data-question-id');
+			loadQuestion(questionId, function(data) {
+				if (data.status == 'SUCESSO' && data.data) {
+					renderQuestionEdit(data.data);
+				}
+			});
+		});
+
+		function loadAllQuestions(callback) {
+			$.ajax({
+				url : '${linkTo[ExtractionController].loadQuestions}',
+				dataType : 'json',
+				contentType : 'application/json; charset=utf-8',
+				type : 'POST',
+				data : JSON.stringify({
+					"mapid" : mapId
+				}),
+				success : function(data) {
+					var html = '';
+					for (var i in data) {
+						var q = data[i];
+						html += renderLinhaQuestion(q.id, q.name, q.type);
+					}
+					$('#table-subquestions-extraction tbody').html(html);
+					if(callback && typeof(callback) === "function") {
+			            callback(data);
+			        }
+				},
+				error : function(e) {
+					console.log(e);
+				}
+			});
+		}
+		
+		function loadQuestion(questionid, callback, callbackError) {
+			$.ajax({
+				url : '${linkTo[ExtractionController].getQuestion}',
+				dataType : 'json',
+				contentType : 'application/json; charset=utf-8',
+				type : 'POST',
+				data : JSON.stringify({
+					"mapid" : mapId,
+					"questionId" : questionid
+				}),
+				success : function(data) {
+					if(callback && typeof(callback) === "function") {
+			            callback(data);
+			        }
+				},
+				error : function(e) {
+					if(callbackError && typeof(callbackError) === "function") {
+						callbackError(e);
+			        }
+				}
+			});
+		}
+
+		function saveQuestion(question) {
+			$.ajax({
+				url : '${linkTo[ExtractionController].addQuestion}',
+				dataType : 'json',
+				contentType : 'application/json; charset=utf-8',
+				type : 'POST',
+				traditional : true,
+				data : JSON.stringify({
+					"mapid" : mapId,
+					"question" : question
+				}),
+				success : function(data) {
+					loadAllQuestions(function(){
+						showListSubQuesiton();
+					});
+				},
+				error : function(e) {
+					console.error(e);
+				}
+			});
+		}
+		
+		function removeQuestion(questionid) {
+			$.ajax({
+				url : '${linkTo[ExtractionController].removeQuestion}',
+				dataType : 'json',
+				contentType : 'application/json; charset=utf-8',
+				type : 'POST',
+				traditional : true,
+				data : JSON.stringify({
+					"mapid" : mapId,
+					"questionId" : questionid
+				}),
+				success : function(data) {
+					console.log(data);
+					loadAllQuestions();
+				},
+				error : function(e) {
+					console.error(questionid, e);
+				}
+			});
+		}
+		
+		function renderQuestionNew() {
+			$('#subquestion-id').val('');
+			$('#subquestion-name').val('');
+			$divAlternativesExt.html('');
+			showFormSubQuesiton();
+		}
+		
+		function renderQuestionEdit(question) {
+			$('#subquestion-id').val(question.id);
+			$('#subquestion-name').val(question.name);
+			$('#subquestion-type').val(question.type).trigger('change');
+			
+			$divAlternativesExt.html('');
+			for (var i in question.alternatives) {
+				var a = question.alternatives[i];
+				$divAlternativesExt.append(renderAlternative(a.id, a.value));
+			}
+			showFormSubQuesiton();
+		}
+		
+		function renderLinhaQuestion(id, name, type) {
+			var str = '<tr><td>'+name+'</td><td>'+type+'</td><td class="text-center">';
+			str += '<a class="btn btn-primary subquestions-extraction-edit" data-question-id="'+id+'" href="#"><i class="glyphicon glyphicon-pencil"></i></a>';
+			str += '<a class="btn btn-danger confirmation-modal subquestions-extraction-remove" data-question-id="'+id+'" data-conf-modal-body="<fmt:message key="mapstudy.excluir.message" />" href="#" data-conf-modal-callback="window.removeSubQuestion('+id+')" ><i class="glyphicon glyphicon-remove"></i></a>';
+			str += '</td></tr>';
+			return str;
+		}
+	
+		function renderAlternative(id, val) {
+			val = val ? val : '';
+			id = id ? id : '';
+			var result = '<div class="form-group subquestion-alternative"><div class="row"><div class="col-sm-10">';
+			result += '<input class="subquestion-alternative-id" type="hidden" value="' + id + '"/>';
+			result += '<input type="text" class="form-control subquestion-alternative-title" placeholder="Alternativa" value="' + val + '"/>'; 
+			result += '</div><div class="col-sm-2"><a class="btn btn-danger subquestion-alternative-rmv" href="#"><i class="glyphicon glyphicon-remove"></i> <fmt:message key="remove"/></a></div></div></div>';
+			return result;
+		}
+		
+		window.removeSubQuestion = function(questionid) {
+			removeQuestion(questionid);
+		}
+		
+		//init
+		$divsAlternatives.hide();
+		loadAllQuestions(function(){
+			showListSubQuesiton();
+		});
+		
+		
 	});
 })(jQuery);
 </script>
@@ -290,6 +521,7 @@
 </h3>
 
 <form><input type="hidden" name="mydiv" value="${mydiv}" id="mydiv"/></form>
+<input type="hidden" name="mapid" id="mapid" value="${map.id}" />
 
 <ul class="nav nav-tabs" style="background-color: #f8f8f8;">
 <!-- border: 1px solid #E7E7E7;"> -->
@@ -301,6 +533,89 @@
 </ul>
 
 <p>
+
+<!-- Formulário de extração -->
+<div  id="divextraction" class="hide">
+	<div class="panel panel-default">
+			<div class="panel-heading">
+				<b><fmt:message key="mapstudy.form" /></b>
+			</div>
+			<!-- /.panel-heading -->
+			<div class="panel-body">
+				<div id="div-table-subquestions-extraction">
+					<h4>
+						Listagem de Subquestões para Extração
+						<a id="btn-add-subquestion-extraction" href="#" class="btn btn-primary u-btn-pull-right">Adicionar Subquestão</a> 
+					</h4>
+					<hr/>
+					<table id="table-subquestions-extraction" class="table table-striped table-bordered table-hover">
+						<thead>
+							<tr>
+								<th style="width: 60%" class="text-center">Título</th>
+								<th style="width: 20%" class="text-center">Tipo</th>
+								<th style="width: 20%" class="text-center">Ações</th>
+							</tr>
+						</thead>
+						<tbody>
+							<c:forEach var="question" items="${questions}" varStatus="s">
+								<tr>
+									<td>${question.name}</td>
+									<td>${question.type.description}</td>
+									<td class="text-center">
+										<a class="btn btn-primary subquestions-extraction-edit" data-question-id="${question.id}" href="#"><i class="glyphicon glyphicon-pencil"></i></a>
+										<a class="btn btn-danger confirmation-modal subquestions-extraction-remove" data-question-id="${question.id}" data-conf-modal-body="<fmt:message key="mapstudy.excluir.message" />" href="#" data-conf-modal-callback="window.removeSubQuestion(${question.id})" ><i class="glyphicon glyphicon-remove"></i></a>
+									</td>
+								</tr>
+							</c:forEach>
+						</tbody>
+					</table>
+				</div>
+				
+				<div id="div-add-subquestion-extraction">
+					<h4>
+						Adicionar Subquestão para Extração
+						<a id="btn-back-subquestion-extraction" href="#" class="btn btn-default u-btn-pull-right">Voltar para Listagem de Subquestões</a> 
+					</h4>
+					<hr/>
+					<form action="#" method="post" id="form-add-subquestion-extraction">
+						<input type="hidden" name="id" id="subquestion-id" value="" />
+						<div class="form-group">
+							<div class="row">
+								<div class="col-sm-6">
+									<label for="subquestion-name" class=""><fmt:message key="mapstudy.question.name"/></label>
+									<input type="text" class="form-control" name="name" id="subquestion-name" value=""/>
+								</div>
+								<div class="col-sm-6">
+									<label for="subquestion-type" class=""><fmt:message key="mapstudy.question.type" /></label> 
+									<select class="form-control selectiontype group_question_type" name="type" id="subquestion-type">
+										<c:forEach var="type" items="${questionTypes}">
+											<option value="${type}">${type.description}</option>
+										</c:forEach>
+									</select>
+								</div>
+							</div>
+						</div>
+						
+						<div class="form-group subquestion-hasalternatives">
+							<hr/>
+							<h4>
+								Alternativas da Subquestão
+								<a class="btn btn-default u-btn-pull-right" id="btn-add-alternative-subquestion-extraction" href="#">Adicionar Alternativa</a>
+							</h4>
+							<div id="form-add-subquestion-extraction-alternatives">
+							</div>
+						</div>
+					
+						<div class="form-group">	
+							<hr/>
+							<button type="submit" class="btn btn-primary pull-right" id="btn-save-subquestion-extraction">Salvar</button>
+						</div>	
+					</form>
+				</div>
+				
+			</div>
+		</div>
+</div>
 
 <!-- Objetivos -->
 
@@ -495,119 +810,7 @@
 
 </div>
 
-<!-- Formulário de extração -->
-<div  id="divextraction" class="hide">
-	<div class="panel panel-default">
-			<div class="panel-heading">
-				<b><fmt:message key="mapstudy.form" /></b>
-			</div>
-			<!-- /.panel-heading -->
-			<div class="panel-body">
-				<h4>
-					<fmt:message key="mapstudy.form.add" />
-				</h4>
-				<form class="form-horizontal" action="${linkTo[ExtractionController].formAjax}" method="post" id="formExtraction">
-				<input type="hidden" name="mapid" id="mapid" value="${map.id}" />
-				
-<!-- 				Aqui fica as questões -->
-<div id="allquestions">
-		<div class="form-group group_question" id="group_question_inicial">
-			<div class="row">
-				<div class="col-md-6">
-					<label for="quest_inicial" class=""><fmt:message key="mapstudy.question.name" /></label> 
-					<input type="text" class="form-control group_question_name" id="quest_inicial" name="questions[]" placeholder="<fmt:message key="mapstudy.question.name"/>" />
-				</div>
-				<div class="col-md-3">
-					<label for="type_inicial" class=""><fmt:message key="mapstudy.question.type" /></label> 
-					<select class="form-control selectiontype group_question_type" name="types[]" id="type_inicial">
-						<c:forEach var="type" items="${questionTypes}">
-							<option value="${type}">${type.description}</option>
-						</c:forEach>
-					</select>
-				</div>
-				<div class="col-md-3">
-					<label class="" for="buttonquestionadd">&nbsp;&nbsp;&nbsp;</label>
-					<a href="#" class="btn btn-success buttonquestionadd form-control" id="buttonquestionadd">  <i class="glyphicon glyphicon-plus"></i> <fmt:message key="mapstudy.question.add" /></a>
-				</div>
-			</div>			
-			<hr />
-		</div>	
-	
-	<c:forEach var="question" items="${questions}" varStatus="q">
-		<div class="form-group group_question" id="group_question_${q.index}">
-			<div class="row">
-				<div class="col-md-6">
-					<label for="quest_${q.index}" class=""><fmt:message key="mapstudy.question.name" /></label> 
-					<input type="text" class="form-control group_question_name" id="quest_${q.index}" name="questions[]" value="${question.name}" placeholder="<fmt:message key="mapstudy.question.name"/>" />
-				</div>
-				<div class="col-md-3">
-					<label for="type_${q.index}" class=""><fmt:message key="mapstudy.question.type" /></label> 
-					<select class="form-control selectiontype group_question_type" name="types[]" id="type_${q.index}">
-					<option name="types[]" data-email="" selected="selected" value="${question.type}">${question.type.description}</option>	
-						<c:forEach var="type" items="${questionTypes}">
-							<option value="${type}">${type.description}</option>
-						</c:forEach>
-					</select>
-				</div>
 
-<%-- 				<c:if test="${q.index == 0}"> --%>
-<!-- 					<div class="col-md-3"> -->
-<!-- 						<label class="" for="buttonquestionadd">&nbsp;&nbsp;&nbsp;</label> -->
-<%-- 						<a href="#" class="btn btn-success buttonquestionadd form-control" id="buttonquestionadd">  <i class="glyphicon glyphicon-plus"></i> <fmt:message key="mapstudy.question.add" /></a> --%>
-<!-- 					</div> -->
-<%-- 				</c:if> --%>
-<%-- 				<c:if test="${q.index != 0}"> --%>
-					<div class="col-md-3">
-						<label class="" for="btnquestionremove_${q.index}">&nbsp;&nbsp;&nbsp;</label>
-						<a href="#" class="btn btn-danger buttonquestionremove form-control" id="btnquestionremove_${q.index}" idquest="group_question_${q.index}"> <i class="glyphicon glyphicon-remove"></i> <fmt:message key="mapstudy.question.remove" /> </a>
-					</div>
-<%-- 				</c:if> --%>
-
-			</div>			
-			<hr />
-<!-- 					Alternative Inicio -->
-			<c:if test="${question.type == 'LIST'}">
-				<c:forEach var="alt" items="${question.alternatives}" varStatus="a">
-					<div class="form_group group_alternative" id="group_alternative_${q.index}_${a.index}">
-						<div class="col-md-6">
-							<label for="alternative_${q.index}_${a.index}" class=""> <fmt:message key="mapstudy.alternative.value" /></label>
-							<input type="text" class="form-control group_alternative_name" id="alternative_${q.index}_${a.index}" value="${alt.value}" name="alternatives[].value" placeholder="<fmt:message key="mapstudy.alternative.value"/>"questassociation="${q.index}"/>
-						</div>
-					<c:if test="${a.index == 0}">
-						<div class="col-md-3">
-							<label class="" for="buttonalternativeadd_${q.index}_${a.index}">&nbsp;&nbsp;&nbsp;</label>
-							<a href="#" class="btn btn-success buttonalternativeadd form-control" id="buttonalternativeadd_${q.index}_${a.index}" questassociation="${q.index}"> <i class="glyphicon glyphicon-plus"></i> <fmt:message key="mapstudy.alternative.add" /></a>
-						</div>
-					</c:if>
-					<c:if test="${a.index != 0}">
-						<div class="col-md-1">
-							<label class="" for="buttonalternativeremove_${q.index}_${a.index}">&nbsp;&nbsp;&nbsp;</label>
-							<a href="#" alternativeid="group_alternative_${q.index}_${a.index}" class="btn btn-danger buttonalternativeremove form-control" id="buttonalternativeremove_${q.index}_${a.index}"> <i class="glyphicon glyphicon-remove"></i>	<!-- <fmt:message key="mapstudy.alternative.remove" />--></a>
-						</div>
-					</c:if>
-
-					</div>
-				</c:forEach>
-
-			</c:if>
-
-		</div>
-
-	</c:forEach>
-				
-</div>
-<!-- Fim das questões -->
-				
-				<div class="form-group">
-						<button type="submit" id="buttonextraction" class="btn btn-large btn-primary buttonextraction">
-							<fmt:message key="salve" />
-						</button>
-					</div>
-					<div class="clear-both"></div>
-				</form>
-			</div>
-		</div>
-</div>
 
 <!-- Criterios de inclusão e exclusão -->
 
