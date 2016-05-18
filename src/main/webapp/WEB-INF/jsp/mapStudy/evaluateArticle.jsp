@@ -330,7 +330,7 @@ $(document).ready(function(){
 		<form id="formInclude" action="${linkTo[MapStudyController].includearticle}" method="post">
 			<input type="hidden" id="mapid" name="mapid" value="${map.id}" />
 			<input type="hidden" id="articleid" name="articleid" value="${article.id}" />
-			<input type="hidden" id="articlesource" name="articlesource" value="${article.source}" />
+			<input type="hidden" id="articlesource" name="articlesource" value="${artivle.sourceView(article.source)}" />
 			<input type="hidden" id="articlescore" name="articlescore" value="${article.score}" />
 			
 			<p> 
@@ -368,7 +368,7 @@ $(document).ready(function(){
 		<form id="formExclude" action="${linkTo[MapStudyController].excludearticle}" method="post">
 			<input type="hidden" id="mapid" name="mapid" value="${map.id}" />
 			<input type="hidden" id="articleid" name="articleid" value="${article.id}" />
-			<input type="hidden" id="articlesource" name="articlesource" value="${article.source}" />
+			<input type="hidden" id="articlesource" name="articlesource" value="${artivle.sourceView(article.source)}" />
 			<input type="hidden" id="articlescore" name="articlescore" value="${article.score}" />
 			<p> 
 				<strong>
@@ -417,8 +417,7 @@ $(document).ready(function(){
 					<fmt:message key="mapstudy.articles.list.toreview"/>
 				</h4>
 				<div class="dataTable_wrapper">
-					<table
-						class="table table-striped table-bordered table-hover datatable-to-evaluate">
+					<table class="table table-striped table-bordered table-hover datatable-to-evaluate">
 						<thead>
 							<tr>
 								<th class="text-center">ID</th>

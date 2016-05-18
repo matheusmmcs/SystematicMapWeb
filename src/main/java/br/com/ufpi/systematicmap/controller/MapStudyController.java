@@ -932,7 +932,7 @@ public class MapStudyController {
 		String delimiter = ";";
 		
 		//create header
-		writer.append("ID"+delimiter);
+		writer.append("Id"+delimiter);
 		writer.append("Author"+delimiter);
 		writer.append("Title"+delimiter);
 	    writer.append("Journal"+delimiter);
@@ -960,7 +960,7 @@ public class MapStudyController {
 //			writer.append(a.getUrl()+delimiter);
 //		    writer.append(a.getDocType()+delimiter);
 		    writer.append((a.getDocType() != null ? a.getDocType() : "" ) +delimiter);
-		    writer.append(a.getSource()+delimiter);
+		    writer.append(a.sourceView(a.getSource())+delimiter);
 //			writer.append(a.getLanguage()+delimiter);
 //			writer.append(a.getAbstrct()+delimiter);
 //			writer.append(a.getKeywords());
@@ -1306,6 +1306,20 @@ public class MapStudyController {
 	@Get("/maps/editexclusioncriteria/{criteriaid}")
 	public void editexclusioncriteria(Long mapid, Long criteriaid){
 		
+	}
+	
+	@Get("/maps/{mapid}/report")
+	public void report(Long mapid){
+		MapStudy map = mapStudyDao.find(mapid);
+		Set<Question> questions = map.getForm().getQuestions();
+		String eixos[] = new String[2];
+		
+		eixos[0] = "Eixo X";
+		eixos[1] = "Eixo Y";
+		
+		result.include("questions", questions);
+		result.include("eixos", eixos);
+		result.include("map", map);
 	}
 		
 }

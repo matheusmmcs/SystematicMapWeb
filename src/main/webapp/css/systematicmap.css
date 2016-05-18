@@ -200,6 +200,171 @@ footer {
 	margin-bottom: 0;
 }
 
+/* Css para exibir as extrações do usuário */
+
+.fixed_height_100 {
+  height: 200px;
+}
+
+.fixed_width_100 {
+  width: 100px;
+}
+
+ul.widget_tally, ul.widget_tally li {
+  width: 100%;
+}
+
+ul.widget_tally li {
+  padding: 2px 10px;
+  border-bottom: 1px solid #ECECEC;
+  padding-bottom: 4px;
+}
+
+ul.widget_tally .month {
+  width: 70%;
+  float: left;
+}
+
+ul.widget_tally .month2 {
+/*   width: 70%; */
+  float: left;
+}
+
+ul.widget_tally .count {
+  width: 30%;
+  float: left;
+  text-align: right
+}
+
+.widget_tally_box p, .widget_tally_box span {
+  text-align: center;
+}
+.widget_tally_box .name {
+  text-align: center;
+  margin: 25px;
+}
+.widget_tally_box .name_title {
+  text-align: center;
+  margin: 5px;
+}
+.widget_tally_box ul.legend {
+  margin: 0;
+}
+.widget_tally_box ul.legend p, .widget_tally_box ul.legend span {
+  text-align: left;
+}
+.widget_tally_box ul.legend li .icon {
+  font-size: 20px;
+  float: left;
+  width: 14px;
+}
+.widget_tally_box ul.legend li .name {
+  font-size: 14px;
+  margin: 5px 0 0 14px;
+  text-overflow: ellipsis;
+  float: left;
+}
+.widget_tally_box ul.legend p {
+  display: inline-block;
+  margin: 0;
+}
+.widget_tally_box ul.verticle_bars li {
+  height: 140px;
+  width: 23%;
+}
+.widget_tally_box .btn-group button {
+  text-align: center
+}
+.widget_tally_box .btn-group button {
+  color: inherit;
+  font-weight: 500;
+  background-color: #f5f5f5;
+  border: 1px solid #e7e7e7;
+}
+.widget_tally_box .flex {
+  display: flex;
+}
+
+
+.clearfix:after, form:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+
+.x_panel {
+  position: relative;
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 10px 17px;
+  display: inline-block;
+  background: #fff;
+  border: 1px solid #E6E9ED;
+  -webkit-column-break-inside: avoid;
+  -moz-column-break-inside: avoid;
+  column-break-inside: avoid;
+  opacity: 1;
+  -moz-transition: all .2s ease;
+  -o-transition: all .2s ease;
+  -webkit-transition: all .2s ease;
+  -ms-transition: all .2s ease;
+  transition: all .2s ease;
+}
+.x_title {
+  border-bottom: 2px solid #E6E9ED;
+  padding: 1px 5px 6px;
+  margin-bottom: 10px;
+}
+.x_title .filter {
+  width: 40%;
+  float: right;
+}
+.x_title h2 {
+  margin: 5px 0 6px;
+  float: left;
+  display: block;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.x_title h2 small {
+  margin-left: 10px;
+}
+.x_title span {
+  color: #BDBDBD;
+}
+.x_content {
+  padding: 0 5px 6px;
+  position: relative;
+  width: 100%;
+  float: left;
+  clear: both;
+  margin-top: 5px;
+}
+.x_content h4 {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.panel_toolbox {
+  float: right;
+  min-width: 70px;
+}
+.panel_toolbox>li {
+  float: left;
+  cursor: pointer;
+}
+.panel_toolbox>li>a {
+  padding: 5px;
+  color: #C5C7CB;
+  font-size: 14px;
+}
+.panel_toolbox>li>a:hover {
+  background: #F5F7FA;
+
+/* css alternatives e questions */
 .subquestion-alternative {
 	margin: 20px 0 -20px;
     border-top: 1px solid #DDD;
