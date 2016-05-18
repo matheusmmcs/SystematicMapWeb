@@ -221,6 +221,11 @@ ul.widget_tally .month {
   float: left;
 }
 
+ul.widget_tally .month2 {
+/*   width: 70%; */
+  float: left;
+}
+
 ul.widget_tally .count {
   width: 30%;
   float: left;

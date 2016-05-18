@@ -622,5 +622,12 @@ public class ExtractionController {
 		
 		return head;
 	}
+	
+	public void alternatives(Long questionId){
+		Question question = questionDao.find(questionId);
+		Set<Alternative> alternatives= question.getAlternatives();
+		
+		result.use(Results.json()).indented().withoutRoot().from(alternatives).recursive().serialize();	
+	}
 
 }
