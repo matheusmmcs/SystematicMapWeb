@@ -191,6 +191,21 @@ footer {
 	margin-top: 10px;
 }
 
+.u-btn-pull-right {
+	float: right;
+	margin-top: -8px;
+}
+
 .fileupload {
 	margin-bottom: 0;
+}
+
+.subquestion-alternative {
+	margin: 20px 0 -20px;
+    border-top: 1px solid #DDD;
+    padding: 15px 0;
+}
+
+.subquestions-extraction-edit{
+	margin-right: 5px;	
 }

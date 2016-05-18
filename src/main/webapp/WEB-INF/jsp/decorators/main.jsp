@@ -268,14 +268,21 @@
 				e.preventDefault();
 				var $this = $(this), 
 					$modal = $('#generic-modal'),
-					body = $this.data('conf-modal-body');
+					body = $this.data('conf-modal-body'),
+					callBack = $this.data('conf-modal-callback');
+				
 				if(body){
 					$modal.find('.modal-body').html(body);
 				}
+				
 				$modal.modal('show');
 				$modal.find('#generic-modal-confirmation').unbind('click').on('click', function(e){
-					// console.log('hadouken', $this.attr('href'));
-					document.location.href = $this.attr('href');
+					if (!callBack) {
+						document.location.href = $this.attr('href');
+					} else {
+						eval(callBack);
+						$modal.modal('hide');
+					}
 				});
 			});
 		});
