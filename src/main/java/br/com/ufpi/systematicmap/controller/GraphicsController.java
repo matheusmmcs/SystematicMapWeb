@@ -9,6 +9,7 @@ import static java.util.Arrays.asList;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -16,11 +17,15 @@ import javax.inject.Inject;
 import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Result;
+import br.com.ufpi.systematicmap.dao.ArticleDao;
 import br.com.ufpi.systematicmap.dao.EvaluationDao;
+import br.com.ufpi.systematicmap.dao.EvaluationExtractionFinalDao;
 import br.com.ufpi.systematicmap.dao.MapStudyDao;
+import br.com.ufpi.systematicmap.dao.QuestionDao;
 import br.com.ufpi.systematicmap.dao.UserDao;
 import br.com.ufpi.systematicmap.interceptor.Public;
 import br.com.ufpi.systematicmap.interceptor.UserInfo;
+import br.com.ufpi.systematicmap.model.Alternative;
 import br.com.ufpi.systematicmap.model.Article;
 import br.com.ufpi.systematicmap.model.Data;
 import br.com.ufpi.systematicmap.model.Drilldown;
@@ -29,12 +34,12 @@ import br.com.ufpi.systematicmap.model.ExclusionCriteria;
 import br.com.ufpi.systematicmap.model.InclusionCriteria;
 import br.com.ufpi.systematicmap.model.MapStudy;
 import br.com.ufpi.systematicmap.model.Pie;
+import br.com.ufpi.systematicmap.model.Question;
 import br.com.ufpi.systematicmap.model.User;
 import br.com.ufpi.systematicmap.model.enums.ArticleSourceEnum;
 import br.com.ufpi.systematicmap.model.enums.ClassificationEnum;
 import br.com.ufpi.systematicmap.model.enums.EvaluationStatusEnum;
 import br.com.ufpi.systematicmap.model.vo.Bubble;
-import br.com.ufpi.systematicmap.model.vo.SubQuestion;
 
 /**
  * @author Gleison
@@ -44,29 +49,29 @@ import br.com.ufpi.systematicmap.model.vo.SubQuestion;
 public class GraphicsController {
 	private final UserInfo userInfo;
 	private MapStudyDao mapStudyDao;
-	private final UserDao userDao;
-	private final EvaluationDao evaluationDao;
-	private final Result result;
+	private ArticleDao articleDao;
+	private UserDao userDao;
+	private EvaluationDao evaluationDao;
+	private Result result;
+	private EvaluationExtractionFinalDao extractionFinalDao;
+	private QuestionDao questionDao;
 	
 	protected GraphicsController(){
-		this(null, null, null, null, null);
+		this(null, null, null, null, null, null, null, null);
 	}
-	
-	/**
-	 * @param userInfo
-	 * @param mapStudyDao
-	 * @param userDao
-	 * @param result
-	 */
+
 	@Inject
 	public GraphicsController(UserInfo userInfo, MapStudyDao mapStudyDao,
-			UserDao userDao, Result result, EvaluationDao evaluationDao) {
+			UserDao userDao, Result result, EvaluationDao evaluationDao, ArticleDao articleDao, EvaluationExtractionFinalDao extractionFinalDao, QuestionDao questionDao) {
 		super();
 		this.userInfo = userInfo;
 		this.mapStudyDao = mapStudyDao;
 		this.userDao = userDao;
 		this.result = result;
 		this.evaluationDao = evaluationDao;
+		this.articleDao = articleDao;
+		this.extractionFinalDao = extractionFinalDao;
+		this.questionDao = questionDao;
 	}
 
 
@@ -281,112 +286,76 @@ public class GraphicsController {
 		result.use(json()).indented().withoutRoot().from(pie).recursive().serialize();
 	}
 	
-	private HashMap<String, HashMap<String, Long>> alternativesHash(List<Long> x, List<Long> y){
+	/**
+	 * @param mapStudy eixo x
+	 * @param question1 eixo y
+	 * @param question2
+	 * @return
+	 */
+	private HashMap<String, HashMap<String, Long>> alternativesHash(MapStudy mapStudy, Question question1, Question question2){
+//		MapStudy mapStudy = mapStudyDao.find(question2);
+//		List<EvaluationExtractionFinal> extractions = extractionFinalDao.getExtractionsFinal(q1, q2);
+		List<Article> articles = articleDao.getArticlesFinalExtraction(mapStudy);
+		
+		System.out.println("hash : " + articles.size());
+		
 		HashMap<String, HashMap<String, Long>> map = new HashMap<String, HashMap<String, Long>>();
+		Set<Alternative> alternativeX = question1.getAlternatives();
+		Set<Alternative> alternativeY = question2.getAlternatives();
+		
+		for (Alternative x : alternativeX) {
+			HashMap<String, Long> v = new HashMap<String, Long>();
+			map.put(x.getValue(), v);
+			
+			for (Alternative y : alternativeY) {
+				Long count = 0l;
+				for (Article a : articles){
+					count += a.alternativesCount(x, y);
+				}
+				
+				System.out.println("count: " + count);
+				
+				map.get(x.getValue()).put(y.getValue(), count);
+			}
+		}
+		
+//		for (Article a : articles) {
+//			for (EvaluationExtractionFinal eef: a.getEvaluationExtractionsFinal()){
+//				HashMap<String, Long> v = map.get(eef.getAlternative().getValue());
+//				if (v != null){
+//					v.get(key)
+//				}
+//			}
+//		}	
 		
 		return map;
 	}
 	
-	@Get("/graphics/bubble")
-	public void bubble(){ //Long mapid, List<Long> eixoX, List<Long> eixoY
+	@Get("/graphics/bubble/")
+	public void bubble(Long mapid, Long q1, Long q2){
 		List<Bubble> bubble = new ArrayList<>();
+		MapStudy mapStudy = mapStudyDao.find(mapid);
+		Question question1 = questionDao.find(q1),  question2 = questionDao.find(q2);
 		
-		SubQuestion subquestion1[] = new SubQuestion[2];
+		System.out.println("Ant for");
 		
-		subquestion1[0] = new SubQuestion(); 
-		subquestion1[1] = new SubQuestion(); 
+		HashMap<String, HashMap<String, Long>> map = alternativesHash(mapStudy, question1, question2);
 		
-		subquestion1[0].setQuestion("Tipo");
-		subquestion1[0].setSubquestion("Framework");
-		subquestion1[1].setQuestion("Tipo");
-		subquestion1[1].setSubquestion("Feramenta");
+		System.out.println("For");
 		
-		SubQuestion subquestion2[] = new SubQuestion[3];
-		subquestion2[0] = new SubQuestion();
-		subquestion2[1] = new SubQuestion();
-		subquestion2[2] = new SubQuestion();
-		
-		subquestion2[0].setQuestion("Plataforma");
-		subquestion2[0].setSubquestion("Mobile");
-		subquestion2[1].setQuestion("Plataforma");
-		subquestion2[1].setSubquestion("Web");
-		subquestion2[1].setQuestion("Plataforma");
-		subquestion2[1].setSubquestion("Desktop");
-		
-		// Question
-		Bubble b = new Bubble();
-		
-		b.setQ1(subquestion1[0].getQuestion());
-		b.setQ2(subquestion2[0].getQuestion());
-		
-		b.setSub_q1(subquestion1[0].getSubquestion());
-		b.setSub_q2(subquestion2[0].getSubquestion());
-		
-		b.setQnt(0);
-		
-		// Question
-		Bubble b2 = new Bubble();
-		
-		b2.setQ1(subquestion1[0].getQuestion());
-		b2.setQ2(subquestion2[1].getQuestion());
-		
-		b2.setSub_q1(subquestion1[0].getSubquestion());
-		b2.setSub_q2(subquestion2[1].getSubquestion());
-		
-		b2.setQnt(0);
-		
-		// Question
-		Bubble b3 = new Bubble();
-		
-		b3.setQ1(subquestion1[0].getQuestion());
-		b3.setQ2(subquestion2[2].getQuestion());
-		
-		b3.setSub_q1(subquestion1[0].getSubquestion());
-		b3.setSub_q2(subquestion2[2].getSubquestion());
-		
-		b3.setQnt(16);
-		
-		
-		
-		// Question
-		Bubble b4 = new Bubble();
-		
-		b4.setQ1(subquestion1[1].getQuestion());
-		b4.setQ2(subquestion2[0].getQuestion());
-		
-		b4.setSub_q1(subquestion1[1].getSubquestion());
-		b4.setSub_q2(subquestion2[0].getSubquestion());
-		
-		b4.setQnt(0);
-		
-		// Question
-		Bubble b5 = new Bubble();
-		
-		b5.setQ1(subquestion1[1].getQuestion());
-		b5.setQ2(subquestion2[1].getQuestion());
-		
-		b5.setSub_q1(subquestion1[1].getSubquestion());
-		b5.setSub_q2(subquestion2[1].getSubquestion());
-		
-		b5.setQnt(2);
-		
-		// Question
-		Bubble b6 = new Bubble();
-		
-		b6.setQ1(subquestion1[1].getQuestion());
-		b6.setQ2(subquestion2[2].getQuestion());
-		
-		b6.setSub_q1(subquestion1[1].getSubquestion());
-		b6.setSub_q2(subquestion2[2].getSubquestion());
-		
-		b6.setQnt(4);
-		
-		bubble.add(b);
-		bubble.add(b2);
-		bubble.add(b3);
-		bubble.add(b4);
-		bubble.add(b5);
-		bubble.add(b6);
+		for(Map.Entry<String, HashMap<String, Long>> m : map.entrySet()){
+			for (Map.Entry<String, Long> v : m.getValue().entrySet()) {
+				Bubble b = new Bubble();
+				b.setQ1(question1.getName());
+				b.setQ2(question2.getName());
+				
+				b.setSub_q1(m.getKey());
+				b.setSub_q2(v.getKey());
+				b.setQnt(v.getValue());
+				
+				bubble.add(b);
+			}			
+		}	
 				
 		result.use(json()).indented().withoutRoot().from(bubble).recursive().serialize();		
 				

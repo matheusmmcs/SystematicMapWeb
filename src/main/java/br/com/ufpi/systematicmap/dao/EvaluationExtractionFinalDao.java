@@ -21,9 +21,10 @@ import javax.persistence.EntityManager;
 import br.com.ufpi.systematicmap.model.Article;
 import br.com.ufpi.systematicmap.model.EvaluationExtractionFinal;
 import br.com.ufpi.systematicmap.model.MapStudy;
+import br.com.ufpi.systematicmap.model.Question;
 
-public class EvaluationExtractionFinalDao
-extends Dao<EvaluationExtractionFinal> {
+public class EvaluationExtractionFinalDao extends Dao<EvaluationExtractionFinal> {
+		
     protected EvaluationExtractionFinalDao() {
         this(null);
     }
@@ -37,6 +38,12 @@ extends Dao<EvaluationExtractionFinal> {
         List<Article> articles = this.entityManager.createQuery("select a from Article a where a.classification = null and a.mapStudy = :mapStudy order by a.title asc", Article.class)
         		.setParameter("mapStudy", mapStudy).getResultList();
         return articles;
+    }
+    
+    public List<EvaluationExtractionFinal> getExtractionsFinal(Long q1, Long q2){
+    	List<EvaluationExtractionFinal> extractions = this.entityManager.createQuery("select e from EvaluationExtractionFinal e where e.question.id :q1 or e.question.id :q2", EvaluationExtractionFinal.class)
+        		.setParameter("q1", q1).setParameter("q2", q2).getResultList();
+        return extractions;
     }
 }
 

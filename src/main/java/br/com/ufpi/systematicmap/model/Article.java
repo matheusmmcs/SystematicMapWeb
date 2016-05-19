@@ -554,4 +554,18 @@ public class Article implements Serializable {
 	public void setScore(int score) {
 		this.score = score;
 	}
+
+	public Long alternativesCount(Alternative x, Alternative y) {
+		System.out.println("entrou count");
+		Long c=0l;
+		for (EvaluationExtractionFinal ee : getEvaluationExtractionsFinal()) {
+			System.out.println(ee);
+			if (ee.getAlternative().equals(x) || ee.getAlternative().equals(y)){
+				System.out.println("c: " +c);
+				c++;
+				if (c == 2) return 1l;
+			}
+		}
+		return 0l;
+	}
 }

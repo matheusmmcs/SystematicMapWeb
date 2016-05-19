@@ -12,7 +12,7 @@
 				data: param,
 		        success: function (data) {
 // 			        console.log(data);
-			        activeDiv(div, data);
+			        activeDiv(div, data, questionId);
 		        },
 				error: function(e){
 					console.error(e);
@@ -20,7 +20,7 @@
 			});	
 		};		
 		
-		var activeDiv = function(divId, alternatives){
+		var activeDiv = function(divId, alternatives, questionId){
 			var Obj = $('#' + divId);
 			Obj.empty();
 			
@@ -38,8 +38,7 @@
 							    '<div>' +
 							      '<ul class="list-inline widget_tally">';
 							      for (var int = 0; int < alternatives.length; int++) {
-							    	  content += '<li><p><span class="month2 alternative-value" alt-id='+alternatives[int].id+'>'+alternatives[int].value+'</span></p></li>';
-							      }
+							    	  content += '<li><p><span class="month2 alternative-value" alt-id='+alternatives[int].id+'>'+alternatives[int].value+'</span></p></li>';							      }
 							      content += '</ul>' +
 							    '</div>' +
 							  '</div>' +
@@ -50,23 +49,23 @@
 			
 		};
 		
-		var listIdsXAndY = function (){
-			var listX = $('#divquestion_x').find('.alternative-value'); 
-			var listIdsX = [];
-			$.each(listX, function(){
-				listIdsX.push($(this).attr('alt-id'))
-			});
+// 		var listIdsXAndY = function (){
+// 			var listX = $('#divquestion_x').find('.alternative-value'); 
+// 			var listIdsX = [];
+// 			$.each(listX, function(){
+// 				listIdsX.push($(this).attr('alt-id'))
+// 			});
 			
-			var listY = $('#divquestion_y').find('.alternative-value'); 
-			var listIdsY = [];
-			$.each(listY, function(){
-				listIdsY.push($(this).attr('alt-id'))
-			});
+// 			var listY = $('#divquestion_y').find('.alternative-value'); 
+// 			var listIdsY = [];
+// 			$.each(listY, function(){
+// 				listIdsY.push($(this).attr('alt-id'))
+// 			});
 			
 			
-			console.log(listIdsX);
-			console.log(listIdsY);
-		}
+// 			console.log(listIdsX);
+// 			console.log(listIdsY);
+// 		}
 		
 		$(document).on('change', '.select-quest', function(){
 			var question_id = $(this).val();
@@ -75,9 +74,32 @@
 			alternatives(question_id, div);			
 		});
 		
+		var bubbleData = function (mapid, q1, q2){
+			var address = "${linkTo[GraphicsController].bubble}";
+			var param = {"mapid": mapid, "q1": q1, "q2": q2};
+			$.ajax({
+		        url: address,
+		        type: 'GET',
+				data: param,
+		        success: function (data) {
+			        console.log(data);
+		        },
+				error: function(e){
+					console.error(e);
+				}
+			});	
+		};
+		
 		$(document).on('click', '.buttonbubble', function(event){
 			event.preventDefault();
-			listIdsXAndY()			
+			
+			var q1 = $('#question_x').val();
+			var q2 = $('#question_y').val();
+			var mapid = $('#mapid').html();
+			
+			console.log(q1, q2, mapid);		
+			
+			bubbleData(mapid, q1, q2);	
 		});
 		
 		
@@ -96,9 +118,10 @@
 	<a id="return" class="btn btn-default pull-right" href="${linkTo[MapStudyController].show(map.id)}"><fmt:message key="button.back"/></a>
 </h3>
 
+<span id="mapid" class="hide">${map.id}</span>
+
 <div class="row">
-	<div class="col-lg-12">
-	
+	<div class="col-lg-12">	
 		<div class="panel panel-primary">
 			<div class="panel-heading">
 				<b><fmt:message key="mapstudy.graphs"/></b>
@@ -120,8 +143,7 @@
 				    	<div class="form-group">
 							<div class="row">
 								<div class="col-md-6">
-									<label for="question_x" class="">Eixo X</label> 
-									
+									<label for="question_x" class="">Eixo X</label> 									
 									<select class="form-control select-quest" name="question_x" id="question_x">
 										<option selected value="-1">Selecione uma questão</option>
 										<c:forEach var="q" items="${questions}">

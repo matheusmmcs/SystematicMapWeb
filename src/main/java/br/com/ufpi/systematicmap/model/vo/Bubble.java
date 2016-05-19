@@ -15,7 +15,21 @@ public class Bubble {
 	private String sub_q1;
 	private String sub_q2;
 	
-	private int qnt;
+	private Long qnt;
+
+	/**
+	 * @return the qnt
+	 */
+	public Long getQnt() {
+		return qnt;
+	}
+
+	/**
+	 * @param qnt the qnt to set
+	 */
+	public void setQnt(Long qnt) {
+		this.qnt = qnt;
+	}
 
 	/**
 	 * @return the q1
@@ -43,20 +57,6 @@ public class Bubble {
 	 */
 	public void setQ2(String q2) {
 		this.q2 = q2;
-	}
-	
-	/**
-	 * @return the qnt
-	 */
-	public int getQnt() {
-		return qnt;
-	}
-
-	/**
-	 * @param qnt the qnt to set
-	 */
-	public void setQnt(int qnt) {
-		this.qnt = qnt;
 	}
 
 	/**
@@ -86,7 +86,5 @@ public class Bubble {
 	public void setSub_q2(String sub_q2) {
 		this.sub_q2 = sub_q2;
 	}
-	
-	
 	
 }

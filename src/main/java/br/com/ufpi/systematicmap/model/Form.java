@@ -102,6 +102,13 @@ public class Form implements Serializable{
 		}
 	}
 	
+	public Set<Alternative> getAlternatives(String name, Long id){
+		for (Question question : questions) {
+			if (question.getId().equals(id) || question.getName().equals(name)) return question.getAlternatives();
+		}		
+		return null;
+	}
+	
 	private Question containsQuestion(Question question){
 		for (Question quest : questions) {
 			if(quest.equals(question)){

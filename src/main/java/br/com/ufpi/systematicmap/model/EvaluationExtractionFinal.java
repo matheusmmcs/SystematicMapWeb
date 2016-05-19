@@ -169,4 +169,16 @@ public class EvaluationExtractionFinal implements Serializable{
 		return true;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "EvaluationExtractionFinal [id=" + id + ", mapStudy=" + mapStudy.getId()
+				+ ", article=" + article.getId() + ", alternative=" + alternative.getId()
+				+ ", question=" + question.getId() + "]";
+	}
+	
+	
+
 }
