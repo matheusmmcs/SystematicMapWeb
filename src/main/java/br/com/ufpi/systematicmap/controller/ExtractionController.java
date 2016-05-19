@@ -137,7 +137,11 @@ public class ExtractionController {
 	@Consumes("application/json")
 	public void loadQuestions(Long mapid){
 		MapStudy mapStudy = mapStudyDao.find(mapid);
-		result.use(json()).indented().withoutRoot().from(mapStudy.getForm().getQuestions()).recursive().serialize();
+		Set<Question> questions = new HashSet<>();
+		if (mapStudy != null && mapStudy.getForm() != null) {
+			questions = mapStudy.getForm().getQuestions();
+		}
+		result.use(json()).indented().withoutRoot().from(questions).recursive().serialize();
 	}
 	
 	@Post
@@ -179,10 +183,10 @@ public class ExtractionController {
 	public void addQuestion(Long mapid, Question question){
 		Form form = new Form();		
 		MapStudy mapStudy = mapStudyDao.find(mapid);
-		Set<Question> questions = new HashSet<Question>(mapStudy.getForm().getQuestions());
 		
 		//se já existir form no mapeamento
 		if (mapStudy.getForm() != null && question.getId() != null) {
+			Set<Question> questions = new HashSet<Question>(mapStudy.getForm().getQuestions());
 			for (Question q : questions) {
 				//verifico se já existe algum com o id passado
 				if (question.getId().equals(q.getId())) {

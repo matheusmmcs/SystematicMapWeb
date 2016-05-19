@@ -287,6 +287,13 @@
 			$divTableSubquestionExt = $('#div-table-subquestions-extraction'),
 			$divAlternativesExt = $('#form-add-subquestion-extraction-alternatives');
 		
+		function showPreloader() {
+			$('#preloader').show();
+		}
+		function hidePreloader() {
+			$('#preloader').hide();
+		}
+		
 		function showListSubQuesiton() {
 			$divAddSubquestionExt.hide();
 			$divTableSubquestionExt.show();
@@ -365,6 +372,7 @@
 		});
 
 		function loadAllQuestions(callback) {
+			showPreloader();
 			$.ajax({
 				url : '${linkTo[ExtractionController].loadQuestions}',
 				dataType : 'json',
@@ -374,23 +382,32 @@
 					"mapid" : mapId
 				}),
 				success : function(data) {
-					var html = '';
+					var html = '', count = 0;
 					for (var i in data) {
 						var q = data[i];
 						html += renderLinhaQuestion(q.id, q.name, q.type);
+						count++;
+					}
+					if (count == 0) {
+						html = renderLinhaQuestionEmpty();
 					}
 					$('#table-subquestions-extraction tbody').html(html);
+					hidePreloader();
+					
 					if(callback && typeof(callback) === "function") {
 			            callback(data);
 			        }
 				},
 				error : function(e) {
+					hidePreloader();
+					alert('Ops, ocorreu um problema ao carregar a lista de questões. Tente novamente');
 					console.log(e);
 				}
 			});
 		}
 		
 		function loadQuestion(questionid, callback, callbackError) {
+			showPreloader();
 			$.ajax({
 				url : '${linkTo[ExtractionController].getQuestion}',
 				dataType : 'json',
@@ -401,11 +418,14 @@
 					"questionId" : questionid
 				}),
 				success : function(data) {
+					hidePreloader();
 					if(callback && typeof(callback) === "function") {
 			            callback(data);
 			        }
 				},
 				error : function(e) {
+					hidePreloader();
+					alert('Ops, ocorreu um problema ao carregar a questão. Tente novamente');
 					if(callbackError && typeof(callbackError) === "function") {
 						callbackError(e);
 			        }
@@ -414,6 +434,7 @@
 		}
 
 		function saveQuestion(question) {
+			showPreloader();
 			$.ajax({
 				url : '${linkTo[ExtractionController].addQuestion}',
 				dataType : 'json',
@@ -425,17 +446,21 @@
 					"question" : question
 				}),
 				success : function(data) {
+					//hide pelo load
 					loadAllQuestions(function(){
 						showListSubQuesiton();
 					});
 				},
 				error : function(e) {
+					hidePreloader();
+					alert('Ops, ocorreu um problema ao salvar a questão. Tente novamente');
 					console.error(e);
 				}
 			});
 		}
 		
 		function removeQuestion(questionid) {
+			showPreloader();
 			$.ajax({
 				url : '${linkTo[ExtractionController].removeQuestion}',
 				dataType : 'json',
@@ -447,10 +472,12 @@
 					"questionId" : questionid
 				}),
 				success : function(data) {
-					console.log(data);
+					//hide pelo load
 					loadAllQuestions();
 				},
 				error : function(e) {
+					hidePreloader();
+					alert('Ops, ocorreu um problema ao remover a questão. Tente novamente');
 					console.error(questionid, e);
 				}
 			});
@@ -474,6 +501,10 @@
 				$divAlternativesExt.append(renderAlternative(a.id, a.value));
 			}
 			showFormSubQuesiton();
+		}
+		
+		function renderLinhaQuestionEmpty() {
+			return '<tr><td colspan="3" class="text-center">Sem Subquestões Cadastradas</td></tr>';
 		}
 		
 		function renderLinhaQuestion(id, name, type) {
@@ -544,19 +575,24 @@
 			<div class="panel-body">
 				<div id="div-table-subquestions-extraction">
 					<h4>
-						Listagem de Subquestões para Extração
-						<a id="btn-add-subquestion-extraction" href="#" class="btn btn-primary u-btn-pull-right">Adicionar Subquestão</a> 
+						<fmt:message key="mapstudy.extraction.subquestions.list" />
+						<a id="btn-add-subquestion-extraction" href="#" class="btn btn-primary u-btn-pull-right"><fmt:message key="mapstudy.extraction.subquestions.add" /></a> 
 					</h4>
 					<hr/>
 					<table id="table-subquestions-extraction" class="table table-striped table-bordered table-hover">
 						<thead>
 							<tr>
-								<th style="width: 60%" class="text-center">Título</th>
-								<th style="width: 20%" class="text-center">Tipo</th>
-								<th style="width: 20%" class="text-center">Ações</th>
+								<th style="width: 60%" class="text-center"><fmt:message key="mapstudy.title" /></th>
+								<th style="width: 20%" class="text-center"><fmt:message key="mapstudy.type" /></th>
+								<th style="width: 20%" class="text-center"><fmt:message key="actions" /></th>
 							</tr>
 						</thead>
 						<tbody>
+							<c:if test="${empty questions}">
+								<tr>
+									<td class="text-center" colspan="3"><fmt:message key="mapstudy.extraction.subquestions.list.empy" /></td>
+								</tr>
+							</c:if>
 							<c:forEach var="question" items="${questions}" varStatus="s">
 								<tr>
 									<td>${question.name}</td>
@@ -573,8 +609,8 @@
 				
 				<div id="div-add-subquestion-extraction">
 					<h4>
-						Adicionar Subquestão para Extração
-						<a id="btn-back-subquestion-extraction" href="#" class="btn btn-default u-btn-pull-right">Voltar para Listagem de Subquestões</a> 
+						<fmt:message key="mapstudy.extraction.subquestions.add.ex" />
+						<a id="btn-back-subquestion-extraction" href="#" class="btn btn-default u-btn-pull-right"><fmt:message key="mapstudy.extraction.subquestions.list.back" /></a> 
 					</h4>
 					<hr/>
 					<form action="#" method="post" id="form-add-subquestion-extraction">
@@ -599,8 +635,8 @@
 						<div class="form-group subquestion-hasalternatives">
 							<hr/>
 							<h4>
-								Alternativas da Subquestão
-								<a class="btn btn-default u-btn-pull-right" id="btn-add-alternative-subquestion-extraction" href="#">Adicionar Alternativa</a>
+								<fmt:message key="mapstudy.extraction.subquestions.alternatives" />
+								<a class="btn btn-default u-btn-pull-right" id="btn-add-alternative-subquestion-extraction" href="#"><fmt:message key="mapstudy.extraction.subquestions.alternatives.add" /></a>
 							</h4>
 							<div id="form-add-subquestion-extraction-alternatives">
 							</div>
@@ -608,7 +644,7 @@
 					
 						<div class="form-group">	
 							<hr/>
-							<button type="submit" class="btn btn-primary pull-right" id="btn-save-subquestion-extraction">Salvar</button>
+							<button type="submit" class="btn btn-primary pull-right" id="btn-save-subquestion-extraction"><fmt:message key="salve" /></button>
 						</div>	
 					</form>
 				</div>

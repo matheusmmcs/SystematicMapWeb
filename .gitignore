@@ -15,3 +15,11 @@
 hs_err_pid*
 
 target/
+
+backups/systematicmap_2015_02_26.sql
+backups/systematicmap_2015_06_04.sql
+backups/systematicmap_2015_06_22.sql
+backups/systematicmap_2015_06_24.sql
+backups/systematicmap_2015_06_08.sql
+backups/systematicmap_fixed_2015_06_04.sql
+000-default.conf

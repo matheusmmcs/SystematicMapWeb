@@ -363,7 +363,7 @@ ul.widget_tally .count {
 }
 .panel_toolbox>li>a:hover {
   background: #F5F7FA;
-
+}
 /* css alternatives e questions */
 .subquestion-alternative {
 	margin: 20px 0 -20px;
@@ -373,4 +373,17 @@ ul.widget_tally .count {
 
 .subquestions-extraction-edit{
 	margin-right: 5px;	
+}
+
+div#preloader { 
+	display: none;
+	position: fixed; 
+	left: 0; 
+	top: 0; 
+	z-index: 9999; 
+	width: 100%; 
+	height: 100%; 
+	overflow: visible;
+	background-color: #333; 
+	background: rgba(0,0,0,0.1) url('../images/gears.svg') no-repeat center center;
 }

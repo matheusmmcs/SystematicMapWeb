@@ -114,6 +114,7 @@
     
 </head>
 <body class="background_main">
+	<div id="preloader"></div>
 	<div id="wrapper">
         <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
             <div class="container">
