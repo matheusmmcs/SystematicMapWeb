@@ -4,22 +4,8 @@ public class Data {
 	private String name;
 	private Double y;
 	private Double percent;
-	private Drilldown drilldown;
-	
-	
-	/**
-	 * @return the drilldown
-	 */
-	public Drilldown getDrilldown() {
-		return drilldown;
-	}
-
-	/**
-	 * @param drilldown the drilldown to set
-	 */
-	public void setDrilldown(Drilldown drilldown) {
-		this.drilldown = drilldown;
-	}
+	private String drilldown;
+//	private Drilldown drilldown;
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
@@ -27,6 +13,20 @@ public class Data {
 	@Override
 	public String toString() {
 		return "Data [name=" + name + ", y=" + y + "]";
+	}
+
+	/**
+	 * @return the drilldown
+	 */
+	public String getDrilldown() {
+		return drilldown;
+	}
+
+	/**
+	 * @param drilldown the drilldown to set
+	 */
+	public void setDrilldown(String drilldown) {
+		this.drilldown = drilldown;
 	}
 
 	/**

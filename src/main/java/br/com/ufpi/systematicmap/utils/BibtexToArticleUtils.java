@@ -25,6 +25,7 @@ public class BibtexToArticleUtils {
 //		article.setNumber(number);
 		
 		String author = getAttr(fields, BibTeXEntry.KEY_AUTHOR);
+		
 		if (author.length() > 2000){
 			author = author.substring(0, 1994) + "(...)";
 		}

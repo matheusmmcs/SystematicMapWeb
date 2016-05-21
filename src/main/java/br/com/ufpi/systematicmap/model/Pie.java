@@ -2,12 +2,27 @@ package br.com.ufpi.systematicmap.model;
 
 import java.util.List;
 
+import br.com.ufpi.systematicmap.model.vo.Series;
+
 public class Pie {
 	private String title;
 	private String name;
 	private boolean colorByPoint;
 	private List<Data> data;
+	private Series series;
 	
+	/**
+	 * @return the series
+	 */
+	public Series getSeries() {
+		return series;
+	}
+	/**
+	 * @param series the series to set
+	 */
+	public void setSeries(Series series) {
+		this.series = series;
+	}
 	/**
 	 * @return the title
 	 */

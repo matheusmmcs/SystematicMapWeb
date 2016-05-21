@@ -224,16 +224,16 @@ $(document).ready(function(){
 	<c:forEach var="ext" items="${extractions}" varStatus="a">
 <!-- 		<div class="col-md-6 widget widget_tally_box"> -->
 <!--           <div class="x_panel fixed_height_100"> -->
-				<div class="x_panel">
+				<div class="x_panel" style="height: auto;">
 				  <div class="x_title">
 				    <b>${ext.key}</b>
 				    <ul class="nav navbar-right panel_toolbox">
-				      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a></li>
+				      <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a></li>
 				      <li><a class="close-link"><i class="fa fa-close"></i></a></li>
 				    </ul>
 				    <div class="clearfix"></div>
 				  </div>
-				  <div class="x_content">		
+				  <div class="x_content" style="display: none;">		
 				    <div>
 				      <ul class="list-inline widget_tally">
 				      <c:forEach var="alt" items="${ext.value}" varStatus="aa">

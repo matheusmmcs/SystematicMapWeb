@@ -1311,7 +1311,10 @@ public class MapStudyController {
 	@Get("/maps/{mapid}/report")
 	public void report(Long mapid){
 		MapStudy map = mapStudyDao.find(mapid);
-		Set<Question> questions = map.getForm().getQuestions();
+		Set<Question> questions = new HashSet<Question>();
+		if (map.getForm() != null){
+			questions = map.getForm().getQuestions();
+		}
 		String eixos[] = new String[2];
 		
 		eixos[0] = "Eixo X";

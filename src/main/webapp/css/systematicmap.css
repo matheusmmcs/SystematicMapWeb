@@ -87,17 +87,16 @@ footer {
 	
 }
 
-#wrapper table.dataTable thead .sorting:after, #wrapper table.dataTable thead .sorting_desc:after,
-	#wrapper table.dataTable thead .sorting_asc:after {
+table.dataTable thead .sorting:after, table.dataTable thead .sorting_desc:after,
+	table.dataTable thead .sorting_asc:after {
 	content: "";
 }
 
-#wrapper .select2-container--default .select2-selection--single .select2-selection__rendered
+.select2-container--default .select2-selection--single .select2-selection__rendered
 	{
 	line-height: 1.42857143;
 }
-
-#wrapper .select2-container--default .select2-selection--single {
+.select2-container--default .select2-selection--single {
 	height: 34px;
 	padding: 6px 12px;
 	font-size: 14px;

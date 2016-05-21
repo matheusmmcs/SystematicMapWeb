@@ -28,10 +28,6 @@ import br.com.ufpi.systematicmap.interceptor.UserInfo;
 import br.com.ufpi.systematicmap.model.Alternative;
 import br.com.ufpi.systematicmap.model.Article;
 import br.com.ufpi.systematicmap.model.Data;
-import br.com.ufpi.systematicmap.model.Drilldown;
-import br.com.ufpi.systematicmap.model.Evaluation;
-import br.com.ufpi.systematicmap.model.ExclusionCriteria;
-import br.com.ufpi.systematicmap.model.InclusionCriteria;
 import br.com.ufpi.systematicmap.model.MapStudy;
 import br.com.ufpi.systematicmap.model.Pie;
 import br.com.ufpi.systematicmap.model.Question;
@@ -40,6 +36,7 @@ import br.com.ufpi.systematicmap.model.enums.ArticleSourceEnum;
 import br.com.ufpi.systematicmap.model.enums.ClassificationEnum;
 import br.com.ufpi.systematicmap.model.enums.EvaluationStatusEnum;
 import br.com.ufpi.systematicmap.model.vo.Bubble;
+import br.com.ufpi.systematicmap.model.vo.Column;
 
 /**
  * @author Gleison
@@ -81,7 +78,7 @@ public class GraphicsController {
 		
 	}
 
-	@Get("/graphics/{mapid}/sources")
+	@Get("/graphics/pie/sources")
 	public void articlesSources(Long mapid){
 		System.out.println(mapid);
 		MapStudy mapStudy = mapStudyDao.find(mapid);
@@ -125,14 +122,116 @@ public class GraphicsController {
 		result.use(json()).indented().withoutRoot().from(pie).recursive().serialize();
 	}
 
-	@Get("/graphics/{mapid}/evaluates")
+//	@Get("/graphics/pie/evaluates")
+//	public void articlesEvaluates(Long mapid){
+//		MapStudy mapStudy = mapStudyDao.find(mapid);
+//		mapStudyDao.refresh(mapStudy);
+//		User user = userInfo.getUser();
+//		
+////		Set<Article> articles = mapStudy.getArticles();
+//		List<Evaluation> evaluations = evaluationDao.getEvaluations(user, mapStudy);
+//		
+//		HashMap<String, Double> sources = new HashMap<>();
+//		List<EvaluationStatusEnum> listEvaluate = asList(EvaluationStatusEnum.values());
+//		
+//		for (EvaluationStatusEnum evaluationStatusEnum : listEvaluate) {
+//			sources.put(evaluationStatusEnum.toString(), 0d);
+//		}
+//		
+//		HashMap<String, Double> acceptedMap = new HashMap<String, Double>();
+//		HashMap<String, Double> rejectedMap = new HashMap<String, Double>();
+//		HashMap<String, Double> noEvaluate = new HashMap<String, Double>();
+//		
+//		for(Evaluation e : evaluations){
+//			String criteriaType = e.getEvaluationStatus().toString();
+//			Double value = sources.get(criteriaType);
+//			++value;
+//			sources.put(criteriaType, value);
+//			
+//			if ("ACCEPTED".equals(criteriaType)){
+//				for(InclusionCriteria i : e.getInclusionCriterias()){
+//					if(acceptedMap.containsKey(i.getId().toString())){
+//						Double cont = acceptedMap.get(i.getId().toString());
+//						++cont;
+//						acceptedMap.put(i.getId().toString(), cont);
+//					}else{
+//						acceptedMap.put(i.getId().toString(), (double) 1);
+//					}					
+//				}
+//				
+//			}else if ("REJECTED".equals(criteriaType)){
+//				for(ExclusionCriteria i : e.getExclusionCriterias()){
+//					if(rejectedMap.containsKey(i.getId().toString())){
+//						Double cont = rejectedMap.get(i.getId().toString());
+//						++cont;
+//						rejectedMap.put(i.getId().toString(), cont);
+//					}else{
+//						rejectedMap.put(i.getId().toString(), (double) 1);
+//					}					
+//				}
+//			}			
+//		}
+//		
+//		Double count = sources.get("ACCEPTED") + sources.get("REJECTED");
+//		sources.put("NOT_EVALUATED", count);
+//		
+//		int total = articles.size();
+//		
+//		System.out.println("total: " + total);
+//		
+//		Pie pie = new Pie();
+//		List<Data> data = new ArrayList<>();
+//		List<Series> series = new ArrayList<Series>();
+//		
+//		for (EvaluationStatusEnum evaluationStatusEnum : listEvaluate) {
+//			Data d = new Data();
+//			d.setName(evaluationStatusEnum.getDescription());
+//			
+//			if (d.getName().equals("ACCEPTED")){
+//				Series serie = new Series();
+//				serie.setData(acceptedMap);
+//				serie.setName(d.getName());
+//				serie.setId(d.getName());				
+//				d.setDrilldown(serie.getId());
+//			}else if(d.getName().equals("REJECTED")){
+//				Series serie = new Series();
+//				serie.setData(rejectedMap);
+//				serie.setName(d.getName());
+//				serie.setId(d.getName());				
+//				d.setDrilldown(serie.getId());
+//			}else{
+//				Series serie = new Series();
+//				serie.setData(noEvaluate);
+//				serie.setName(d.getName());
+//				serie.setId(d.getName());				
+//				d.setDrilldown(serie.getId());
+//			}
+//			
+//			d.setY(sources.get(evaluationStatusEnum.toString()));
+//			Double percent = (d.getY() / total) * 100;
+//			d.setPercent(percent);
+//			data.add(d);
+//			System.out.println();
+//			System.out.println(d);
+//		}	
+//		
+//		pie.setTitle("Avaliação dos artigos");
+//		pie.setColorByPoint(true);
+//		pie.setName("Artigos");
+//		pie.setData(data);		
+//		
+//		System.out.println("total: " + total + " pie: " + pie);
+//		
+//		result.use(json()).indented().withoutRoot().from(pie).recursive().serialize();
+//	}
+	
+	@Get("/graphics/pie/evaluates")
 	public void articlesEvaluates(Long mapid){
 		MapStudy mapStudy = mapStudyDao.find(mapid);
 		mapStudyDao.refresh(mapStudy);
-		User user = userInfo.getUser();
+//		User user = userInfo.getUser();
 		
-		Set<Article> articles = mapStudy.getArticles();
-		List<Evaluation> evaluations = evaluationDao.getEvaluations(user, mapStudy);
+		List<Article> articles = articleDao.getArticlesToEvaluate(mapStudy);
 		
 		HashMap<String, Double> sources = new HashMap<>();
 		List<EvaluationStatusEnum> listEvaluate = asList(EvaluationStatusEnum.values());
@@ -141,93 +240,36 @@ public class GraphicsController {
 			sources.put(evaluationStatusEnum.toString(), 0d);
 		}
 		
-		HashMap<String, Double> acceptedMap = new HashMap<String, Double>();
-		HashMap<String, Double> rejectedMap = new HashMap<String, Double>();
-		HashMap<String, Double> noEvaluate = new HashMap<String, Double>();
-		
-		for(Evaluation e : evaluations){
-			String criteriaType = e.getEvaluationStatus().toString();
-			Double value = sources.get(criteriaType);
+		for (Article article : articles) {
+			String evaluation = article.getFinalEvaluation().toString();
+			Double value = sources.get(evaluation);
 			++value;
-			sources.put(criteriaType, value);
-			
-			if ("ACCEPTED".equals(criteriaType)){
-				for(InclusionCriteria i : e.getInclusionCriterias()){
-					if(acceptedMap.containsKey(i.getId().toString())){
-						Double cont = acceptedMap.get(i.getId().toString());
-						++cont;
-						acceptedMap.put(i.getId().toString(), cont);
-					}else{
-						acceptedMap.put(i.getId().toString(), (double) 1);
-					}					
-				}
-				
-			}else if ("REJECTED".equals(criteriaType)){
-				for(ExclusionCriteria i : e.getExclusionCriterias()){
-					if(rejectedMap.containsKey(i.getId().toString())){
-						Double cont = rejectedMap.get(i.getId().toString());
-						++cont;
-						rejectedMap.put(i.getId().toString(), cont);
-					}else{
-						rejectedMap.put(i.getId().toString(), (double) 1);
-					}					
-				}
-			}			
-		}
-		
-		Double count = sources.get("ACCEPTED") + sources.get("REJECTED");
-		sources.put("NOT_EVALUATED", count);
+			sources.put(evaluation, value);
+		}	
 		
 		int total = articles.size();
-		
-		System.out.println("total: " + total);
 		
 		Pie pie = new Pie();
 		List<Data> data = new ArrayList<>();
 		
-		for (EvaluationStatusEnum evaluationStatusEnum : listEvaluate) {
+		for (EvaluationStatusEnum eval : listEvaluate) {
 			Data d = new Data();
-			d.setName(evaluationStatusEnum.toString());
-			
-			if (d.getName().equals("ACCEPTED")){
-				Drilldown drilldown = new Drilldown();
-				drilldown.setData(acceptedMap);
-				drilldown.setName(d.getName());
-				drilldown.setId(d.getName());				
-				d.setDrilldown(drilldown);
-			}else if(d.getName().equals("REJECTED")){
-				Drilldown drilldown = new Drilldown();
-				drilldown.setData(rejectedMap);
-				drilldown.setName(d.getName());
-				drilldown.setId(d.getName());				
-				d.setDrilldown(drilldown);
-			}else{
-				Drilldown drilldown = new Drilldown();
-				drilldown.setData(noEvaluate);
-				drilldown.setName(d.getName());
-				drilldown.setId(d.getName());				
-				d.setDrilldown(drilldown);
-			}
-			
-			d.setY(sources.get(evaluationStatusEnum.toString()));
+			d.setName(eval.getDescription());
+			d.setY(sources.get(eval.toString()));
 			Double percent = (d.getY() / total) * 100;
 			d.setPercent(percent);
 			data.add(d);
-			System.out.println();
-			System.out.println(d);
-		}	
+		}		
 		
-		pie.setTitle("Avaliação dos artigos");
+		pie.setTitle("Artigos por base de busca");
 		pie.setColorByPoint(true);
 		pie.setName("Artigos");
 		pie.setData(data);		
 		
-		System.out.println("total: " + total + " pie: " + pie);
-		
 		result.use(json()).indented().withoutRoot().from(pie).recursive().serialize();
 	}
 	
-	@Get("/graphics/{mapid}/refine")
+	@Get("/graphics/pie/refine")
 	public void articlesRefine(Long mapid){
 		System.out.println(mapid);
 		MapStudy mapStudy = mapStudyDao.find(mapid);
@@ -262,7 +304,7 @@ public class GraphicsController {
 		
 		for (ClassificationEnum articleSourceEnum : listRefines) {
 			Data d = new Data();
-			d.setName(articleSourceEnum.toString());
+			d.setName(articleSourceEnum.getDescription());
 			d.setY(sources.get(articleSourceEnum.toString()));
 			Double percent = (d.getY() / total) * 100;
 			d.setPercent(percent);
@@ -270,7 +312,7 @@ public class GraphicsController {
 		}		
 		
 		Data d = new Data();
-		d.setName("NO_CLASSIFICATION");
+		d.setName("Não Refinados");
 		d.setY(sources.get("NO_CLASSIFICATION"));
 		Double percent = (d.getY() / total) * 100;
 		d.setPercent(percent);
@@ -334,31 +376,84 @@ public class GraphicsController {
 	@Get("/graphics/bubble/")
 	public void bubble(Long mapid, Long q1, Long q2){
 		List<Bubble> bubble = new ArrayList<>();
-		MapStudy mapStudy = mapStudyDao.find(mapid);
-		Question question1 = questionDao.find(q1),  question2 = questionDao.find(q2);
 		
-		System.out.println("Ant for");
-		
-		HashMap<String, HashMap<String, Long>> map = alternativesHash(mapStudy, question1, question2);
-		
-		System.out.println("For");
-		
-		for(Map.Entry<String, HashMap<String, Long>> m : map.entrySet()){
-			for (Map.Entry<String, Long> v : m.getValue().entrySet()) {
-				Bubble b = new Bubble();
-				b.setQ1(question1.getName());
-				b.setQ2(question2.getName());
-				
-				b.setSub_q1(m.getKey());
-				b.setSub_q2(v.getKey());
-				b.setQnt(v.getValue());
-				
-				bubble.add(b);
-			}			
-		}	
+		if (q1 != -1 && q2 != -1){
+			MapStudy mapStudy = mapStudyDao.find(mapid);
+			Question question1 = questionDao.find(q1),  question2 = questionDao.find(q2);
+			
+			System.out.println("Ant for");
+			
+			HashMap<String, HashMap<String, Long>> map = alternativesHash(mapStudy, question1, question2);
+			
+			System.out.println("For");
+			
+			for(Map.Entry<String, HashMap<String, Long>> m : map.entrySet()){
+				for (Map.Entry<String, Long> v : m.getValue().entrySet()) {
+					Bubble b = new Bubble();
+					b.setQ1(question1.getName());
+					b.setQ2(question2.getName());
+					
+					b.setSub_q1(m.getKey());
+					b.setSub_q2(v.getKey());
+					b.setQnt(v.getValue());
+					
+					bubble.add(b);
+				}			
+			}	
+		}
 				
 		result.use(json()).indented().withoutRoot().from(bubble).recursive().serialize();		
 				
+	}
+	
+	@Get("/graphics/column/year")
+	public void articlesYear(Long mapid){
+		MapStudy mapStudy = mapStudyDao.find(mapid);
+		mapStudyDao.refresh(mapStudy);
+//		User user = userInfo.getUser();
+		
+		List<Article> articles = articleDao.getArticlesToEvaluate(mapStudy);
+		
+		HashMap<Integer, Double> sources = new HashMap<>();
+		
+		System.out.println(articles +" "+ sources + " " + mapStudy);
+		
+		
+		for (Article article : articles) {
+			Integer year = article.getYear();
+			
+			if (year == null){
+				year = -1;
+			}
+			
+			Double value = 0d;
+			
+			if (sources.containsKey(year)){
+				value = sources.get(year);
+			}
+			
+			++value;
+			sources.put(year, value);
+		}	
+		
+//		int total = articles.size();
+		
+		Column column = new Column();
+		
+		System.out.println(column);
+		
+		column.setTitle("Publicações por Ano");
+		column.setSubTitle("Mostra uma visão da quatidade de publicções por anos de acordo com artigos aceitos");
+		column.setName("Artigos");
+		column.setyAxis("Quantidade de Publicações");
+		
+		for(Map.Entry<Integer, Double> m : sources.entrySet()){
+			System.out.println(m.getKey());
+			column.getCategories().add(m.getKey().toString());
+			column.getData().add(m.getValue());
+		}
+		
+		result.use(json()).indented().withoutRoot().from(column).recursive().serialize();
 	}
 	
 
