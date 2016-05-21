@@ -654,62 +654,43 @@
 </div>
 
 <!-- Objetivos -->
-
 <div  id="divgoals" class="hide">
 	<div class="panel panel-default">
-			<div class="panel-heading">
-				<b><fmt:message key="mapstudy.goals" /></b>
-			</div>
-			<!-- /.panel-heading -->
-			<div class="panel-body">
-				<h4>
-					<fmt:message key="mapstudy.goals.add" />
-				</h4>
-				<form action="${linkTo[MapStudyController].addgoals}" method="post" id="formGoals">
-					<input type="hidden" name="id" id="id" value="${map.id}" />
-					<div class="form-group">
-						<div class="col-lg-9 padding-left-none">
-<%-- 							<input type="text" class="form-control" id="goal" name="goal" placeholder="<fmt:message key="mapstudy.goals"/>" /> --%>
-							<textarea rows="5" class="form-control" id="goal" name="goals" placeholder="<fmt:message key="mapstudy.goals"/>"></textarea>
+		<div class="panel-heading"><b><fmt:message key="mapstudy.goals" /></b></div>
+		<div class="panel-body">
+			<h4><fmt:message key="mapstudy.goals.add" /></h4>
+			<div class="row">
+				<div class="col-md-7">
+					<form action="${linkTo[MapStudyController].addgoals}" method="post" id="formGoals">
+						<input type="hidden" name="id" id="id" value="${map.id}" />
+						<div class="form-group">
+							<textarea rows="8" class="form-control" id="goal" name="goals" placeholder="<fmt:message key="mapstudy.goals"/>"></textarea>
 						</div>
-						<button type="submit" id="buttongoals" class="btn btn-large btn-primary col-lg-3 float-right buttongoals">
-							<fmt:message key="add" />
-						</button>
-						<div class="clear-both"></div>
-					</div>
-				</form>
-				
-				<c:if test="${map.goals != null}">				
-				<div class="row">
-  					<div class="col-lg-12">
-					<h4><fmt:message key="mapstudy.goals"/></h4>
-					<hr />
-						<p> 
-							<span>${map.goals}</span>
-						<p>
-						<hr />
+						<div class="form-group">
+							<button type="submit" style="width: 100%;" class="btn btn-large btn-primary"><fmt:message key="add" /></button>
+						</div>
+					</form>
+				</div>
+				<div class="col-md-5">
+					<div class="panel panel-default">
+						<div class="panel-body">
+							<p class="text-justify"><strong>Objetivos:</strong> o pesquisador deve especificar o propósito da realização do Mapeamento Sistemático. 
+							Exemplo: em [Braga et al. 2015], o objetivo é identificar as ferramentas que apoiam pesquisadores e profissionais 
+							no desenvolvimento de sistemas baseados em Inteligência Computacional.</p>
+						</div>
 					</div>
 				</div>
-				</c:if>
-
-<!-- 				<div class="table-responsive"> -->
-<!-- 					<table class="table table-striped table-bordered table-hover"> -->
-<!-- 						<thead> -->
-<!-- 							<tr> -->
-<%-- 								<th><fmt:message key="mapstudy.goals" /></th> --%>
-<%-- 								<th><fmt:message key="update" /></th> --%>
-<!-- 							</tr> -->
-<!-- 						</thead> -->
-<!-- 						<tbody> -->
-<!-- 								<tr> -->
-<%-- 									<td>${map.goals}</td> --%>
-<%-- 									<td class="text-center"><a class="btn btn-primary" href="${linkTo[MapStudyController].updategoals(map.id, map.goals)}"><i class="fa fa-edit"></a></td> --%>
-<!-- 								</tr>								 -->
-<!-- 						</tbody> -->
-<!-- 					</table> -->
-<!-- 				</div> -->
+			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<c:if test="${map.goals != null}">				
+						<h4><fmt:message key="mapstudy.goals"/></h4><hr/>
+						<p><span>${map.goals}</span></p>
+					</c:if>
+				</div>
 			</div>
 		</div>
+	</div>
 </div>
 
 <!-- Questões de Pesquisa -->
@@ -767,108 +748,67 @@
 <!-- String de Busca -->
 <div  id="divstring" class="hide">
 	<div class="panel panel-default">
-			<div class="panel-heading">
-				<b><fmt:message key="mapstudy.search.string" /></b>
-			</div>
-			<!-- /.panel-heading -->
-			<div class="panel-body">
-				<h4>
-					<fmt:message key="mapstudy.search.string.add" />
-				</h4>
-				<form action="${linkTo[MapStudyController].addstring}" method="post" id="formString">
-					<input type="hidden" name="id" id="id" value="${map.id}" />
-					<div class="form-group">
-						<div class="col-lg-6">
-<%-- 							<input type="text" class="form-control" id="stringdescription" name="string" placeholder="<fmt:message key="mapstudy.search.string.description"/>" /> --%>
-							<textarea rows="5" class="form-control" id="stringdescription" name="string" placeholder="<fmt:message key="mapstudy.search.string.description"/>"></textarea>
-						</div>
-						
-						<div class="col-lg-4">
+		<div class="panel-heading">
+			<b><fmt:message key="mapstudy.search.string" /></b>
+		</div>
+		<div class="panel-body">
+			<h4><fmt:message key="mapstudy.search.string.add" /></h4>
+			<div class="row">
+				<div class="col-md-7">
+					<form action="${linkTo[MapStudyController].addstring}" method="post" id="formString">
+						<input type="hidden" name="id" id="id" value="${map.id}" />
+						<div class="form-group">
 								<select class="form-control" name="source">
 									<c:forEach var="source" items="${sources}">
 										<option value="${source}">${source.description}</option>
 									</c:forEach>
 								</select>
-						</div>						
-						
-						<button type="submit" id="buttonquestion" class="btn buttonquestion btn-primary">
-							<fmt:message key="add" />
-						</button>
-						<div class="clear-both"></div>
-					</div>
-				</form>
-				
-				<div class="row">
-  					<div class="col-lg-12">
-					<h4><fmt:message key="mapstudy.search.string.list"/></h4>
-					<hr />
-				
-					<c:forEach var="search" items="${map.searchString}" varStatus="s">
-						<p> 
-							<strong><fmt:message key="mapstudy.search.string.source"/> :</strong> <span>${search.source.description}</span>
-						<p>
-						<p> 
-							<strong><fmt:message key="mapstudy.search.string"/> :</strong>
-						<p>	
-							<span>${search.description}</span>
-						<p>
-						<hr />
-					</c:forEach>
-					
+						</div>
+						<div class="form-group">
+							<textarea rows="8" class="form-control" id="stringdescription" name="string" placeholder="<fmt:message key="mapstudy.search.string.description"/>"></textarea>
+						</div>
+						<div class="form-group">
+							<button style="width: 100%;" type="submit" id="buttonquestion" class="btn buttonquestion btn-primary"><fmt:message key="add" /></button>
+						</div>
+					</form>
+				</div>
+				<div class="col-md-5">
+					<div class="panel panel-default">
+						<div class="panel-body">
+							<p class="text-justify">A <strong>String de Busca</strong> representa os termos que serão aplicados nas bases de dados para 
+							a busca de estudos primários. É importante que seja realizada uma pesquisa piloto para verificar se os 
+							termos estão retornando resultados esperados. O pesquisador deve definir um conjunto de trabalhos para 
+							validar e ajustar a string durante a fase de planejamento para evitar ameaças à validade do Mapeamento.</p>
+						</div>
 					</div>
 				</div>
-
-<!-- 				<div class="table-responsive"> -->
-<!-- 					<table class="table table-striped table-bordered table-hover"> -->
-<!-- 						<thead> -->
-<!-- 							<tr> -->
-<%-- 								<th><fmt:message key="mapstudy.search.string" /></th> --%>
-<%-- 								<th><fmt:message key="mapstudy.search.string.source" /></th> --%>
-<%-- 								<th><fmt:message key="actions" /></th> --%>
-<!-- 							</tr> -->
-<!-- 						</thead> -->
-<!-- 						<tbody> -->
-<%-- 							<c:forEach var="search" items="${map.searchString}" varStatus="s"> --%>
-<!-- 								<tr> -->
-<%-- 									<td>${search.description}</td> --%>
-<%-- 									<td>${search.source}</td> --%>
-<!-- 									<td class="text-center"> -->
-<!-- 										<a class="btn btn-danger" href="#"><i class="glyphicon glyphicon-remove"></i></a> -->
-<!-- 										<a class="btn btn-primary" href="#"><i class="glyphicon glyphicon-edit"></i></a> -->
-<!-- 									</td> -->
-<!-- 								</tr>								 -->
-<%-- 							</c:forEach> --%>
-<!-- 						</tbody> -->
-<!-- 					</table> -->
-<!-- 				</div> -->
+			</div>
+			<div class="row">
+ 				<div class="col-md-12">
+					<h4><fmt:message key="mapstudy.search.string.list"/></h4><hr/>
+					<c:forEach var="search" items="${map.searchString}" varStatus="s">
+						<p><strong><fmt:message key="mapstudy.search.string.source"/>:</strong> <span>${search.source.description}</span></p>
+						<p><strong><fmt:message key="mapstudy.search.string"/>:</strong> <span>${search.description}</span></p><hr/>
+					</c:forEach>
+				</div>
 			</div>
 		</div>
-
+	</div>
 </div>
 
-
-
 <!-- Criterios de inclusão e exclusão -->
-
 <div  id="divcriterias" class="hide">
 	<div class="panel panel-default">
-			<div class="panel-heading">
-				<b><fmt:message key="mapstudy.inclusion.criterias" /></b>
-			</div>
-			<!-- /.panel-heading -->
+		<div class="panel-heading"><b><fmt:message key="mapstudy.inclusion.criterias" /></b></div>
 			<div class="panel-body">
-				<h4>
-					<fmt:message key="mapstudy.inclusion.criteria.add" />
-				</h4>
-				<form action="${linkTo[MapStudyController].addinclusion}"
-					method="post" id="formInclusion">
+				<h4><fmt:message key="mapstudy.inclusion.criteria.add" /></h4>
+				<form action="${linkTo[MapStudyController].addinclusion}" method="post" id="formInclusion">
 					<input type="hidden" name="id" id="id" value="${map.id}" />
 					<div class="form-group">
 						<div class="col-lg-9 padding-left-none">
 							<input type="text" class="form-control" id="incdescription" name="description" placeholder="<fmt:message key="mapstudy.inclusion.criteria"/>" />
 						</div>
-						<button type="submit" id="buttoninclusion"
-							class="btn buttoninclusion btn-large btn-primary col-lg-3 float-right">
+						<button type="submit" id="buttoninclusion" class="btn buttoninclusion btn-large btn-primary col-lg-3 float-right">
 							<fmt:message key="add" />
 						</button>
 						<div class="clear-both"></div>
