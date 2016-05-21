@@ -149,25 +149,70 @@
     <div class="container container_main">
     	<div class="row">
     		<div class="col-md-3">
-    			<p class="lead">Menu Principal</p>
-    			<div class="list-group">
-                    <a href="#" class="list-group-item active">Dashboard</a>
-                    <a href="#" class="list-group-item">Listar Mapeamentos</a>
-                    <a href="#" class="list-group-item">Novo Mapeamento</a>
-                </div>
+	            <div class="panel-group" id="accordion">
+	                <div class="panel panel-default">
+	                    <div class="panel-heading">
+	                        <h4 class="panel-title">
+	                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+	                            	<span class="glyphicon glyphicon-folder-close marginRight10"></span>
+	                            	Dashboard
+	                            </a>
+	                        </h4>
+	                    </div>
+	                    <div id="collapseOne" class="panel-collapse collapse in">
+	                        <div class="panel-body">
+	                            <table class="table">
+	                                <tr><td>
+                                        <span class="glyphicon glyphicon-home text-primary marginRight10"></span>
+                                        <a href="">Home</a>
+	                                </td></tr>
+	                                <tr><td>
+                                        <span class="glyphicon glyphicon-list text-success marginRight10"></span>
+                                        <a href="">Listar Mapeamentos</a>
+	                                </td></tr>
+	                                <tr><td>
+	                                	<span class="glyphicon glyphicon-plus text-info marginRight10"></span>
+	                                	<a href="">Novo Mapeamento</a>
+	                                </td></tr>
+	                            </table>
+	                        </div>
+	                    </div>
+	                </div>
+	                <div class="panel panel-default">
+	                    <div class="panel-heading">
+	                        <h4 class="panel-title">
+	                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
+	                            	<span class="glyphicon glyphicon-user marginRight10"></span>
+	                            	Conta
+	                            </a>
+	                        </h4>
+	                    </div>
+	                    <div id="collapseThree" class="panel-collapse collapse">
+	                        <div class="panel-body">
+	                            <table class="table">
+	                                <tr><td>
+	                                	<span class="glyphicon glyphicon-user text-info marginRight10"></span>
+	                                	<a href="">Perfil</a>
+	                                </td></tr>
+	                                <tr><td>
+	                                	<span class="glyphicon glyphicon-off text-info marginRight10"></span>
+	                                	<a href="">Logout</a>
+	                                </td></tr>
+	                            </table>
+	                        </div>
+	                    </div>
+	                </div>
+	            </div>
     		</div>
     		<div class="col-md-9">
-    		
     			<div id="messages"></div>
-    		
 				<c:if test="${not empty errors}">
 					<div class="alert alert-danger alert-dismissible" role="alert">
-<!-- 						<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> -->
-<!-- 	 						<span class="sr-only">Error:</span> -->
+							<!-- <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> -->
+							<!-- <span class="sr-only">Error:</span> -->
 	 						<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 						<c:forEach items="${errors}" var="error">
-							<b><fmt:message key="${error.category}" /></b> - <fmt:message key="${error.message}" />
-							<br />
+							<b><fmt:message key="${error.category}" /></b> - <fmt:message key="${error.message}" /><br/>
 						</c:forEach>
 					</div>
 				</c:if>
@@ -175,7 +220,7 @@
 					<div class="alert alert-info alert-dismissible" role="alert" id="notices">
 						<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 						<b><fmt:message key="${notice.category}" /></b> - <fmt:message key="${notice.message}" />
-						<br />
+						<br/>
 					</div>
 				</c:if>
 				
@@ -183,10 +228,9 @@
 					<div class="alert alert-warning alert-dismissible" role="alert" id="warning">
 						<button type="button" class="close" data-dismiss="alert" data-hide="alert">&times;</button>
 						<b><fmt:message key="${warning.category}" /></b> - <fmt:message key="${warning.message}" />
-						<br />
+						<br/>
 					</div>
 				</c:if>
-				
 				<decorator:body/>
     		</div>
     	</div>
