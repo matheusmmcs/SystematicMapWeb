@@ -24,6 +24,14 @@ footer p {
 	color: #337AB7;
 }
 
+.marginRight10{
+	margin-right: 10px;
+}
+
+.listWidthButton{
+	width: 48%;
+}
+
 footer {
 	position: absolute;
 	left: 0;

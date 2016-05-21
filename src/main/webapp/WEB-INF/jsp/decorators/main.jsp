@@ -148,29 +148,28 @@
     
     <div class="container container_main">
     	<div class="row">
-    		<div class="col-md-3">
+    		<div class="col-md-3" style="padding-top: 22px;">
 	            <div class="panel-group" id="accordion">
 	                <div class="panel panel-default">
 	                    <div class="panel-heading">
 	                        <h4 class="panel-title">
 	                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-	                            	<span class="glyphicon glyphicon-folder-close marginRight10"></span>
-	                            	Dashboard
+	                            	<span class="glyphicon glyphicon-folder-close marginRight10"></span>Dashboard
 	                            </a>
 	                        </h4>
 	                    </div>
 	                    <div id="collapseOne" class="panel-collapse collapse in">
 	                        <div class="panel-body">
-	                            <table class="table">
-	                                <tr><td>
-                                        <span class="glyphicon glyphicon-home text-primary marginRight10"></span>
+	                            <table class="table" style="margin-bottom: 0px;">
+	                                <tr><td style="border-top-width: 0px; padding: 10px 8px;">
+                                        <span class="glyphicon glyphicon-home text-info marginRight10"></span>
                                         <a href="">Home</a>
 	                                </td></tr>
-	                                <tr><td>
-                                        <span class="glyphicon glyphicon-list text-success marginRight10"></span>
+	                                <tr><td style="padding: 10px 8px;">
+                                        <span class="glyphicon glyphicon-list text-info marginRight10"></span>
                                         <a href="">Listar Mapeamentos</a>
 	                                </td></tr>
-	                                <tr><td>
+	                                <tr><td style="padding: 10px 8px;">
 	                                	<span class="glyphicon glyphicon-plus text-info marginRight10"></span>
 	                                	<a href="">Novo Mapeamento</a>
 	                                </td></tr>
@@ -182,19 +181,18 @@
 	                    <div class="panel-heading">
 	                        <h4 class="panel-title">
 	                            <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
-	                            	<span class="glyphicon glyphicon-user marginRight10"></span>
-	                            	Conta
+	                            	<span class="glyphicon glyphicon-user marginRight10"></span>Conta
 	                            </a>
 	                        </h4>
 	                    </div>
 	                    <div id="collapseThree" class="panel-collapse collapse">
 	                        <div class="panel-body">
-	                            <table class="table">
-	                                <tr><td>
+	                            <table class="table" style="margin-bottom: 0px;">
+	                                <tr><td style="border-top-width: 0px; padding: 10px 8px;">
 	                                	<span class="glyphicon glyphicon-user text-info marginRight10"></span>
 	                                	<a href="">Perfil</a>
 	                                </td></tr>
-	                                <tr><td>
+	                                <tr><td style="padding: 10px 8px;">
 	                                	<span class="glyphicon glyphicon-off text-info marginRight10"></span>
 	                                	<a href="">Logout</a>
 	                                </td></tr>
