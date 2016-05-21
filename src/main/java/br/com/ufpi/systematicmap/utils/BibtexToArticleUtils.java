@@ -43,6 +43,7 @@ public class BibtexToArticleUtils {
 		article.setVolume(getAttrInt(fields, BibTeXEntry.KEY_VOLUME));
 		article.setPages(getAttr(fields, BibTeXEntry.KEY_PAGES));
 		article.setDoi(getAttr(fields, BibTeXEntry.KEY_DOI));
+		article.setYear(Integer.getInteger(getAttr(fields, BibTeXEntry.KEY_YEAR)));
 		
 		article.setAbstrct(getAttr(fields, new Key("abstract")));
 		
