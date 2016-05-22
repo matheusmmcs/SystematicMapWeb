@@ -10,16 +10,15 @@ $(document).ready(function(){
 }); 
 </script>
 
-<ol class="breadcrumb u-margin-top">
+<ol class="breadcrumb u-margin-top" style="margin-top: 0px;">
   <li><a href="<c:url value="/" />"><fmt:message key="home"/></a></li>
   <li class="active"><fmt:message key="mapstudy.details"/></li>
 </ol>
 
 <h3 class="color-primary">
-	<fmt:message key="mapstudy" />
-	- ${map.title}
-	<a id="return" class="btn btn-default pull-right" href="<c:url value="/" />"><fmt:message key="button.back"/></a>
+	${map.title} <a id="return" class="btn btn-default pull-right" href="<c:url value="/" />"><fmt:message key="button.back"/></a>
 </h3>
+<hr/>
 
 <div class="row">
 	<div class="col-md-12">
@@ -51,19 +50,22 @@ $(document).ready(function(){
 				</div>
 				<div class="row">
 					<div class="col-md-12">
-						<a style="width: 24.5%;" class="btn btn-default" href="${linkTo[MapStudyController].planning(map.id)}">
+						<a style="width: 22.9%;" class="btn btn-default" href="${linkTo[MapStudyController].planning(map.id)}">
 							<span class="glyphicon glyphicon-pencil"></span>
 							<fmt:message key="mapstudy.planning"/>
 						</a>
-						<a style="width: 24.5%;" class="btn btn-default" href="${linkTo[MapStudyController].identification(map.id)}">
+						<span class="glyphicon glyphicon-arrow-right"></span>
+						<a style="width: 22.9%;" class="btn btn-default" href="${linkTo[MapStudyController].identification(map.id)}">
 							<span class="glyphicon glyphicon-search"></span>
 							<fmt:message key="mapstudy.searching"/>
 						</a>
-						<a style="width: 24.5%;" class="btn btn-default" href="${linkTo[MapStudyController].evaluate(map.id)}">
+						<span class="glyphicon glyphicon-arrow-right"></span>
+						<a style="width: 22.9%;" class="btn btn-default" href="${linkTo[MapStudyController].evaluate(map.id)}">
 							<span class="glyphicon glyphicon-ok"></span>
 							<fmt:message key="mapstudy.screening" />
 						</a>
-						<a style="width: 24.5%;" class="btn btn-default" href="${linkTo[MapStudyController].showEvaluates(map.id)}">
+						<span class="glyphicon glyphicon-arrow-right"></span>
+						<a style="width: 22.9%;" class="btn btn-default" href="${linkTo[MapStudyController].showEvaluates(map.id)}">
 							<span class="glyphicon glyphicon-list-alt"></span>
 							<fmt:message key="mapstudy.viewarticles" />
 						</a>
@@ -71,15 +73,17 @@ $(document).ready(function(){
 				</div>
 				<div class="row" style="margin-top: 5px;">
 					<div class="col-md-12">
-						<a style="width: 24.5%;" class="btn btn-default" href="${linkTo[ExtractionController].extraction(map.id)}">
+						<a style="width: 22.9%;" class="btn btn-default" href="${linkTo[ExtractionController].extraction(map.id)}">
 							<span class="glyphicon glyphicon-cog"></span>
 							<fmt:message key="mapstudy.extraction" />
 						</a>
-						<a style="width: 24.5%;" class="btn btn-default" href="${linkTo[ExtractionController].showExtractionEvaluates(map.id)}">
+						<span class="glyphicon glyphicon-arrow-right"></span>
+						<a style="width: 22.9%;" class="btn btn-default" href="${linkTo[ExtractionController].showExtractionEvaluates(map.id)}">
 							<span class="glyphicon glyphicon-th-list"></span>
 							<fmt:message key="mapstudy.viewextractions" />
 						</a>
-						<a style="width: 24.5%;" class="btn btn-default" href="${linkTo[MapStudyController].report(map.id)}">
+						<span class="glyphicon glyphicon-arrow-right"></span>
+						<a style="width: 22.9%;" class="btn btn-default" href="${linkTo[MapStudyController].report(map.id)}">
 							<span class="glyphicon glyphicon-tasks"></span>
 							<fmt:message key="mapstudy.report" />
 						</a>

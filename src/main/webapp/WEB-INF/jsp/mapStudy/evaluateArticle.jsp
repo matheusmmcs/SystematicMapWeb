@@ -278,17 +278,17 @@ $(document).ready(function(){
 });
 </script>
 
-<ol class="breadcrumb u-margin-top">
+<ol class="breadcrumb u-margin-top" style="margin-top: 0px;">
   <li><a href="<c:url value="/" />"><fmt:message key="home"/></a></li>
   <li><a href="${linkTo[MapStudyController].show(map.id)}"><fmt:message key="mapstudy.details"/></a></li>
   <li class="active"><fmt:message key="mapstudy.evaluation"/></li>
 </ol>
 
 <h3 class="color-primary">
-	<fmt:message key="mapstudy.evaluation"/> - ${map.title}
+	${map.title}
 	<a id="return" class="btn btn-default pull-right" href="${linkTo[MapStudyController].show(map.id)}"><fmt:message key="button.back"/></a>
 </h3>
-<%-- <h3 class="color-primary" id="per">(${percentEvaluated}%)</h3> --%>
+<hr/>
 
 <div class="progress">
 	<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="${percentEvaluated}" aria-valuemin="0" aria-valuemax="100" style="min-width: 3em; width: ${percentEvaluated}%">
@@ -299,126 +299,80 @@ $(document).ready(function(){
 
 <div class="row">
   	<div class="col-lg-12">
-  		
 		<h2><fmt:message key="mapstudy.article"/> - <span id="articleReadId">${article.id}</span></h2>
-		
-		<p> 
-			<strong>
-				<fmt:message key="mapstudy.article.title"/>:
-			</strong> <span id="articleReadTitle">${article.title}</span>
-		<p>
-		
-		<p> 
-			<strong>
-				<fmt:message key="mapstudy.article.abstract"/>:
-			</strong> <span id="articleReadAbstract">${article.abstrct}</span>
-		<p>
-		
-		<p> 
-			<strong>
-				<fmt:message key="mapstudy.article.key"/>:
-			</strong> <span id="articleReadKeywords">${article.keywords}</span>
-		<p>
-		
-		<p> 
-			<strong>
-				<fmt:message key="mapstudy.article.author"/>:
-			</strong> <span id="articleReadAuthor">${article.author}</span>
-		<p>
-		
-		<p> 
-			<strong>
-				<fmt:message key="mapstudy.article.source"/>:
-			</strong> <span id="articleReadSource">${article.sourceView(article.source)}</span>
-		<p>
-		
-		<p> 
-			<strong>
-				<fmt:message key="mapstudy.article.year"/>:
-			</strong> <span id="articleReadYear">${article.year}</span>
-		<p>
-		
-		<p> 
-			<strong>
-				<fmt:message key="mapstudy.article.doctype"/>:
-			</strong> <span id="articleReadDocType">${article.docType}</span>
-		<p>
-		
+		<p><strong><fmt:message key="mapstudy.article.title"/>:</strong> <span id="articleReadTitle">${article.title}</span></p>
+		<p><strong><fmt:message key="mapstudy.article.abstract"/>:</strong> <span id="articleReadAbstract">${article.abstrct}</span></p>
+		<p><strong>Palavras-chave:</strong> <span id="articleReadKeywords">${article.keywords}</span></p>
+		<p><strong><fmt:message key="mapstudy.article.author"/>:</strong> <span id="articleReadAuthor">${article.author}</span></p>
+		<p><strong><fmt:message key="mapstudy.article.source"/>:</strong> <span id="articleReadSource">${article.sourceView(article.source)}</span></p>
+		<p><strong><fmt:message key="mapstudy.article.year"/>:</strong> <span id="articleReadYear">${article.year}</span></p>
+		<p><strong><fmt:message key="mapstudy.article.doctype"/>:</strong> <span id="articleReadDocType">${article.docType}</span></p>
 		<hr/>
 		
-		<form id="formInclude" action="${linkTo[MapStudyController].includearticle}" method="post">
-			<input type="hidden" id="mapid" name="mapid" value="${map.id}" />
-			<input type="hidden" id="articleid" name="articleid" value="${article.id}" />
-			<input type="hidden" id="articlesource" name="articlesource" value="${article.sourceView(article.source)}" />
-			<input type="hidden" id="articlescore" name="articlescore" value="${article.score}" />
-			
-			<p> 
-				<strong>
-					<fmt:message key="mapstudy.inclusion.criterias"/>:
-				</strong><br/>
-				<c:forEach items="${inclusionOrdered}" var="criteria" varStatus="c">
-				
-					<c:set var="containsExc" value="false" />
-					<c:forEach var="done" items="${evaluationDone.inclusionCriterias}">
-					  <c:if test="${criteria.id eq done.id}">
-					    <c:set var="containsExc" value="true" />
-					  </c:if>
-					</c:forEach>
+		<div class="row">
+			<div class="col-md-6">
+				<form id="formInclude" action="${linkTo[MapStudyController].includearticle}" method="post">
+					<input type="hidden" id="mapid" name="mapid" value="${map.id}" />
+					<input type="hidden" id="articleid" name="articleid" value="${article.id}" />
+					<input type="hidden" id="articlesource" name="articlesource" value="${article.sourceView(article.source)}" />
+					<input type="hidden" id="articlescore" name="articlescore" value="${article.score}" />
 					
-	                <input class="inclusions" type="checkbox" name="inclusions[${c.index}]" value="${criteria.id}" ${containsExc ? 'checked="checked"' : '' } />  
-	                ${criteria.description}<br/>  
-	            </c:forEach>
-			<p>
-			
-			<p> 
-				<strong>
-					<fmt:message key="mapstudy.article.comments"/>:
-				</strong><br/>
-				<textarea class="form-control" id="commentInclude" name="comment" rows="3" cols="">${evaluationDone.comment}</textarea>
-			<p>
-			
-			<button type="submit" id="submitInclusion" class="btn btn-large btn-success btnEvaluateInclusion" style="display: inline-block;">
-				<fmt:message key="mapstudy.include"/>
-			</button>
-		</form>
+					<p><strong><fmt:message key="mapstudy.inclusion.criterias"/>:</strong></p>
+					<c:forEach items="${inclusionOrdered}" var="criteria" varStatus="c">
+						<c:set var="containsExc" value="false" />
+						<c:forEach var="done" items="${evaluationDone.inclusionCriterias}">
+						  	<c:if test="${criteria.id eq done.id}">
+						    	<c:set var="containsExc" value="true" />
+						  	</c:if>
+						</c:forEach>
+						
+						<div class="form-group">
+		                	<input class="inclusions" type="checkbox" name="inclusions[${c.index}]" value="${criteria.id}" ${containsExc ? 'checked="checked"' : '' } />  
+			                ${criteria.description}<br/>  
+						</div>
+			        </c:forEach>
+					
+					<p><strong><fmt:message key="mapstudy.article.comments"/>:</strong><br/>
+					<textarea class="form-control" id="commentInclude" name="comment" rows="5" cols="">${evaluationDone.comment}</textarea></p>
+					
+					<button type="submit" id="submitInclusion" class="btn btn-large btn-success btnEvaluateInclusion" style="display: inline-block; width: 100%;">
+						<fmt:message key="mapstudy.include"/>
+					</button>
+				</form>
+			</div>
+			<div class="col-md-6">
+				<form id="formExclude" action="${linkTo[MapStudyController].excludearticle}" method="post">
+					<input type="hidden" id="mapid" name="mapid" value="${map.id}" />
+					<input type="hidden" id="articleid" name="articleid" value="${article.id}" />
+					<input type="hidden" id="articlesource" name="articlesource" value="${artivle.sourceView(article.source)}" />
+					<input type="hidden" id="articlescore" name="articlescore" value="${article.score}" />
+					
+					<p><strong><fmt:message key="mapstudy.exclusion.criterias"/>:</strong></p>
+					<c:forEach items="${exclusionOrdered}" var="criteria" varStatus="c">
+						<c:set var="containsExc" value="false" />
+						<c:forEach var="done" items="${evaluationDone.exclusionCriterias}">
+						  	<c:if test="${criteria.id eq done.id}">
+						    	<c:set var="containsExc" value="true" />
+						  	</c:if>
+						</c:forEach>
+						<div class="form-group">
+			                <input class="exclusions" type="checkbox" name="exclusions[${c.index}]" value="${criteria.id}" ${containsExc ? 'checked="checked"' : '' } />
+			                ${criteria.description}<br/>
+		                </div>
+		            </c:forEach>
+					<p><strong><fmt:message key="mapstudy.article.comments"/>:</strong><br/>
+					<textarea class="form-control" id="commentExclude" name="comment" rows="5" cols="">${evaluationDone.comment}</textarea></p>
+					
+					<button type="submit" id="submitExclusion" class="btn btn-large btn-danger btnEvaluateExclusion" style="display: inline-block; width: 100%;">
+						<fmt:message key="mapstudy.exclude"/>
+					</button>
+				</form>
+			</div>
+		</div>
+		
 		
 		<hr/>
 			
-		<form id="formExclude" action="${linkTo[MapStudyController].excludearticle}" method="post">
-			<input type="hidden" id="mapid" name="mapid" value="${map.id}" />
-			<input type="hidden" id="articleid" name="articleid" value="${article.id}" />
-			<input type="hidden" id="articlesource" name="articlesource" value="${artivle.sourceView(article.source)}" />
-			<input type="hidden" id="articlescore" name="articlescore" value="${article.score}" />
-			<p> 
-				<strong>
-					<fmt:message key="mapstudy.exclusion.criterias"/>:
-				</strong><br/>
-				
-				<c:forEach items="${exclusionOrdered}" var="criteria" varStatus="c">
-				
-					<c:set var="containsExc" value="false" />
-					<c:forEach var="done" items="${evaluationDone.exclusionCriterias}">
-					  <c:if test="${criteria.id eq done.id}">
-					    <c:set var="containsExc" value="true" />
-					  </c:if>
-					</c:forEach>
-				
-	                <input class="exclusions" type="checkbox" name="exclusions[${c.index}]" value="${criteria.id}" ${containsExc ? 'checked="checked"' : '' } />
-	                ${criteria.description}<br/>
-	            </c:forEach>
-			<p> 
-			
-			<p> 
-				<strong>
-					<fmt:message key="mapstudy.article.comments"/>:
-				</strong><br/>
-				<textarea class="form-control" id="commentExclude" name="comment" rows="3" cols="">${evaluationDone.comment}</textarea>
-			<p>
-			
-			<button type="submit" id="submitExclusion" class="btn btn-large btn-danger btnEvaluateExclusion" style="display: inline-block;">
-				<fmt:message key="mapstudy.exclude"/>
-			</button>
-		</form>
   		
 	</div>
 </div>

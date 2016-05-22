@@ -1,16 +1,17 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<ol class="breadcrumb u-margin-top">
+<ol class="breadcrumb u-margin-top" style="margin-top: 0px;">
   <li><a href="<c:url value="/" />"><fmt:message key="home"/></a></li>
   <li><a href="${linkTo[MapStudyController].show(mapStudy.id)}"><fmt:message key="mapstudy.details"/></a></li>
   <li class="active"><fmt:message key="mapstudy.viewarticles"/></li>
 </ol>
 
 <h3 class="color-primary">
-	<fmt:message key="mapstudy.evaluations.results"/> - ${mapStudy.title}
+	${mapStudy.title}
 	<a id="return" class="btn btn-default pull-right" href="${linkTo[MapStudyController].show(mapStudy.id)}"><fmt:message key="button.back"/></a>
 </h3>
+<hr/>
 
 <div class="row">
 	<div class="col-lg-12">
@@ -21,48 +22,27 @@
 			</div>
 			<!-- /.panel-heading -->
 			<div class="panel-body">
-				<p> 
-					<strong>
-						<fmt:message key="mapstudy.title"/>:
-					</strong> ${mapStudy.title}
-				<p>
-				
-				<p> 
-					<strong>
-						<fmt:message key="mapstudy.description"/>:
-					</strong> ${mapStudy.description}
-				<p>
-				
-				<p>
-					<strong>
-						<fmt:message key="mapstudy.evaluation.rate"/>:
-					</strong> ${percentEvaluated}%
-				<p>
-				
+				<dl class="dl-horizontal">
+					<dt class="mydt"><strong><fmt:message key="mapstudy.title"/>:</strong></dt><dd class="mydd">${mapStudy.title}</dd>
+				  	<dt class="mydt"><strong><fmt:message key="mapstudy.description"/>:</strong></dt><dd class="mydd">${mapStudy.description}</dd>
+				  	<dt class="mydt"><strong><fmt:message key="mapstudy.evaluation.rate"/>:</strong></dt><dd class="mydd">${percentEvaluated}%</dd>
+				</dl>
 				<hr/>
 				
-				<p>
-					<strong>
-						<fmt:message key="mapstudy.evaluations.compare"/>:
-					</strong>
-					<c:if test="${percentEvaluatedDouble >= 100}">
-						<a class="btn btn-primary" href="${linkTo[MapStudyController].compareEvaluations(mapStudy.id)}"><fmt:message key="mapstudy.evaluations.compare"/></a>
-					</c:if>
-					<c:if test="${percentEvaluatedDouble < 100}">
-						<fmt:message key="mapstudy.evaluations.compare.undone"/>
-					</c:if>
-					<div class="clear-both"></div>
-				<p>
-				
-				<p>
-					<strong>
-						<fmt:message key="mapstudy.evaluations.export"/>:
-					</strong> 
-					<a class="btn btn-default" href="${linkTo[MapStudyController].downloadMine(mapStudy.id)}"><fmt:message key="mapstudy.evaluations.export.csv.mine"/></a>
-					<a class="btn btn-default" href="${linkTo[MapStudyController].downloadAll(mapStudy.id)}"><fmt:message key="mapstudy.evaluations.export.csv.all"/></a>
-					<div class="clear-both"></div>
-				<p>
-				 
+				<dl class="dl-horizontal">
+					<dt class="mydt"><strong><fmt:message key="mapstudy.evaluations.compare"/>:</strong></dt>
+					<dd class="mydd" style="margin-bottom: 10px;">
+						<c:if test="${percentEvaluatedDouble >= 100}">
+							<a class="btn btn-primary btn-xs" style="width: 170px;" href="${linkTo[MapStudyController].compareEvaluations(mapStudy.id)}"><fmt:message key="mapstudy.evaluations.compare"/></a>
+						</c:if>
+						<c:if test="${percentEvaluatedDouble < 100}"><fmt:message key="mapstudy.evaluations.compare.undone"/></c:if>
+					</dd>
+				  	<dt class="mydt"><strong><fmt:message key="mapstudy.evaluations.export"/>:</strong></dt>
+				  	<dd class="mydd">
+				  		<a class="btn btn-default btn-xs" style="width: 170px;" href="${linkTo[MapStudyController].downloadMine(mapStudy.id)}"><fmt:message key="mapstudy.evaluations.export.csv.mine"/></a>
+						<a class="btn btn-default btn-xs" style="width: 170px;" href="${linkTo[MapStudyController].downloadAll(mapStudy.id)}"><fmt:message key="mapstudy.evaluations.export.csv.all"/></a>
+				  	</dd>
+				</dl>
 			</div>
 		</div>
 		

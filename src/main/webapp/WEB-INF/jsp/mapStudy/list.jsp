@@ -1,7 +1,8 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<h3 class="color-primary"><fmt:message key="mapstudy.my"/></h3>
+<h3 class="color-primary" style="margin-top: 0px;"><fmt:message key="mapstudy.my"/></h3>
+<hr/>
 
 <table class="table table-striped table-bordered table-hover personalized-table-simple">
 	<thead>

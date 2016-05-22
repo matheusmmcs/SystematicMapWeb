@@ -50,7 +50,7 @@
 	})(jQuery);
 </script>
 
-<ol class="breadcrumb u-margin-top">
+<ol class="breadcrumb u-margin-top" style="margin-top: 0px;">
   <li><a href="<c:url value="/" />"><fmt:message key="home"/></a></li>
   <li><a href="${linkTo[MapStudyController].show(map.id)}"><fmt:message key="mapstudy.details"/></a></li>
   <li><a href="${linkTo[MapStudyController].identification(map.id)}"><fmt:message key="mapstudy.searching"/></a></li>
@@ -61,6 +61,7 @@
 	<fmt:message key="mapstudy.article.addmanually" />
 	<a id="return" class="btn btn-default pull-right" href="${linkTo[MapStudyController].identification(map.id)}"><fmt:message key="button.back"/></a>
 </h3>
+<hr/>
 
 <div class="well">
 	<div class="row">
@@ -88,7 +89,6 @@
 			
 			<div class="form-group">
 				<label for="abstract" class=""><fmt:message key="mapstudy.article.abstract"/></label>
-<%-- 				<input type="text" class="form-control" name="article.abstrct" id="abstract" value="${article.abstrct}"/> --%>
 				<textarea class="form-control" name="article.abstrct" rows="3" cols="" id="abstract">${article.abstrct}</textarea>
 			</div>
 			
@@ -118,7 +118,7 @@
 			</div>
 			
 			<div class="form-group pull-right">	
-				<button type="submit" class="btn btn-primary"><fmt:message key="mapstudy.article.addmanually"/></button>
+				<button type="submit" class="btn btn-primary">Adicionar</button>
 			</div>	
 		</form>
 	</div>		

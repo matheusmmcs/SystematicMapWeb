@@ -15,7 +15,7 @@
     <meta name="description" content="TheEnd">
 	
 	<title>Systematic Map</title>
-	<link rel="shortcut icon" href="images/books.png" type="image/png">
+	<link rel="shortcut icon" href="/images/books.png" type="image/png">
 	
 	<decorator:head/>
 	
@@ -202,7 +202,7 @@
 	                </div>
 	            </div>
     		</div>
-    		<div class="col-md-9">
+    		<div class="col-md-9" style="padding-top: 22px;">
     			<div id="messages"></div>
 				<c:if test="${not empty errors}">
 					<div class="alert alert-danger alert-dismissible" role="alert">

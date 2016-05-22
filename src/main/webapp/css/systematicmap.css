@@ -32,6 +32,14 @@ footer p {
 	width: 48%;
 }
 
+.mydt{
+	width: 200px !important;
+}
+
+.mydd{
+	margin-left: 210px !important;
+}
+
 footer {
 	position: absolute;
 	left: 0;
