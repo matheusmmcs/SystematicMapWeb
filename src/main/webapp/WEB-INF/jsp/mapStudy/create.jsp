@@ -29,11 +29,10 @@
 	})(jQuery);
 </script>
 
-<h3 class="color-primary"><fmt:message key="mapstudy.create"/></h3>
-
-
+<h3 class="color-primary" style="margin-top: 0px;"><fmt:message key="mapstudy.create"/></h3>
+<hr/>
 <div class="row">
-	<div class="col-md-8">
+	<div class="col-md-offset-2 col-md-8">
 		<div class="well">
 			<form action="${linkTo[MapStudyController].add}" method="post" id="formAddMapStudy">
 				<div class="form-group">

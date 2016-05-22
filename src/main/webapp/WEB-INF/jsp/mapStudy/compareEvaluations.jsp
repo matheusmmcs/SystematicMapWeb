@@ -1,7 +1,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<ol class="breadcrumb u-margin-top">
+<ol class="breadcrumb u-margin-top" style="margin-top: 0px;">
   <li><a href="<c:url value="/" />"><fmt:message key="home"/></a></li>
   <li><a href="${linkTo[MapStudyController].show(mapStudy.id)}"><fmt:message key="mapstudy.details"/></a></li>
   <li><a href="${linkTo[MapStudyController].showEvaluates(mapStudy.id)}"><fmt:message key="mapstudy.details"/></a></li>
@@ -10,38 +10,23 @@
 
 
 <h3 class="color-primary">
-	<fmt:message key="mapstudy.evaluations.compare"/> - ${mapStudy.title}
+	${mapStudy.title}
 	<a id="return" class="btn btn-default pull-right" href="${linkTo[MapStudyController].showEvaluates(mapStudy.id)}"><fmt:message key="button.back"/></a>
 </h3>
+<hr/>
 
 <div class="row">
   	<div class="col-lg-12">
-  	
   		<div class="panel panel-default">
 			<div class="panel-heading">
 				<b><fmt:message key="mapstudy.details"/></b>
 			</div>
-			<!-- /.panel-heading -->
 			<div class="panel-body">
-				<p> 
-					<strong>
-						<fmt:message key="mapstudy.title"/>:
-					</strong> ${mapStudy.title}
-				<p>
-				
+				<p><strong><fmt:message key="mapstudy.title"/>:</strong> ${mapStudy.title}</p>
 				<hr/>
-				
-				<p>
-					<strong>
-						<fmt:message key="mapstudy.evaluations.fleisskappa"/>:
-					</strong> 
-					<span id="kappa-members"><fmt:message key="mapstudy.evaluations.fleisskappa.all"/></span> = <span id="kappa-value">${kappa}</span>
-				<p>
-				
-				<p>
-					<strong>
-						<fmt:message key="mapstudy.evaluations.fleisskappa.calculate"/>:
-					</strong>
+				<p><strong><fmt:message key="mapstudy.evaluations.fleisskappa"/>:</strong> 
+				<span id="kappa-members"><fmt:message key="mapstudy.evaluations.fleisskappa.all"/></span> = <span id="kappa-value">${kappa}</span></p>
+				<p><strong><fmt:message key="mapstudy.evaluations.fleisskappa.calculate"/>:</strong>
 					<form id="kappa-form">
 						<input type="hidden" id="mapStudyId" name="mapStudyId" value="${mapStudy.id}" />
 						<c:forEach var="member" items="${members}">
@@ -54,16 +39,12 @@
 						</c:forEach>
 						<a class="btn btn-default pull-left" id="kappa-submit" href="#"><fmt:message key="mapstudy.evaluations.fleisskappa.calculate"/></a>
 					</form>
-<%-- 					<a class="btn btn-default pull-right" href="${linkTo[MapStudyController].showEvaluates(mapStudy.id)}"><fmt:message key="button.back" /></a> --%>
 					<div class="clear-both"></div>
-				<p>
-				 
+				</p>
 			</div>
 		</div>
   		
-		<h4>
-			<fmt:message key="mapstudy.evaluations.all"/>
-		</h4>
+		<h4><fmt:message key="mapstudy.evaluations.all"/></h4>
 		<div class="dataTable_wrapper">
 			<table
 				class="table table-striped table-bordered table-hover personalized-table">

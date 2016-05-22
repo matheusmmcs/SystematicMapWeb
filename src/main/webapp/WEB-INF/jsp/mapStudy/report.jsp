@@ -2,9 +2,14 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <script src="<c:url value="/vendor/highcharts/highcharts.js" />"></script>
-<!-- <script src="https://code.highcharts.com/highcharts-3d.js"></script> -->
-<%-- <script src="<c:url value="/vendor/highcharts/highcharts-3d.js" />"></script> --%>
 <script src="<c:url value="/vendor/highcharts/exporting.js" />"></script>
+<script src="<c:url value="/vendor/dimplejs/d3.v3.min.js" />"></script>
+<script src="<c:url value="/vendor/dimplejs/dimple.v2.1.6.min.js" />"></script>
+
+<style>
+	svg{margin-left:auto; margin-right:auto; display:block;}
+</style>
+
 
 <script type="text/javascript">
 	$(document).ready(function(){
@@ -16,7 +21,7 @@
 		        type: 'GET',
 				data: param,
 		        success: function (data) {
-// 			        console.log(data);
+					//console.log(data);
 			        activeDiv(div, data, questionId);
 		        },
 				error: function(e){
@@ -69,7 +74,33 @@
 		        type: 'GET',
 				data: param,
 		        success: function (data) {
-			        console.log(data);
+			        /*var data = [
+			        	{"q1": "Tipo", "q2": "Plataforma", "Tipo": "Framework", "Plataforma": "Mobile", "qnt": 3},
+			            {"q1": "Tipo", "q2": "Plataforma", "Tipo": "Framework", "Plataforma": "Web", "qnt": 5},
+			            {"q1": "Tipo", "q2": "Plataforma", "Tipo": "Framework", "Plataforma":"Desktop", "qnt": 6 },
+			            {"q1": "Tipo", "q2": "Plataforma", "Tipo": "Ferramenta", "Plataforma": "Mobile", "qnt": 4},
+			            {"q1": "Tipo", "q2": "Plataforma", "Tipo": "Ferramenta", "Plataforma": "Web", "qnt": 9},
+			            {"q1": "Tipo", "q2": "Plataforma", "Tipo": "Ferramenta", "Plataforma":"Desktop", "qnt": 6 }];*/
+			        
+			        if(data && data.length > 0){
+			        	console.log(data);
+			        	data = JSON.parse(data);
+				        $('#bubbleGraph').html('');
+				        var svg = dimple.newSvg("#bubbleGraph", 600, 400);
+				        var myChart = new dimple.chart(svg, data);
+				        myChart.width = 1200;
+				        
+				        myChart.setBounds(95, 25, 475, 335)
+				        myChart.addCategoryAxis("x", data[0].q1);
+				        myChart.addCategoryAxis("y", data[0].q2);
+				        
+				        var z = myChart.addMeasureAxis("z", "qnt");
+				        var s = myChart.addSeries("Plataforma", dimple.plot.bubble);
+				        s.aggregate = dimple.aggregateMethod.max;
+				        
+				        myChart.addLegend(240, 10, 330, 20, "right");
+				        myChart.draw();
+			        }
 		        },
 				error: function(e){
 					console.error(e);
@@ -79,13 +110,11 @@
 		
 		$(document).on('click', '.buttonbubble', function(event){
 			event.preventDefault();
-			
 			var q1 = $('#question_x').val();
 			var q2 = $('#question_y').val();
 			var mapid = $('#mapid').html();
 			
 			console.log(q1, q2, mapid);		
-			
 			bubbleData(mapid, q1, q2);	
 		});
 		
@@ -261,16 +290,17 @@
 	});
 </script>	
 
-<ol class="breadcrumb u-margin-top">
+<ol class="breadcrumb u-margin-top" style="margin-top: 0px;">
   <li><a href="<c:url value="/" />"><fmt:message key="home"/></a></li>
   <li><a href="${linkTo[MapStudyController].show(map.id)}"><fmt:message key="mapstudy.details"/></a></li>
   <li class="active"><fmt:message key="mapstudy.report"/></li>
 </ol>
 
 <h3 class="color-primary">
-	<fmt:message key="mapstudy.report.results"/> - ${map.title}
+	${map.title}
 	<a id="return" class="btn btn-default pull-right" href="${linkTo[MapStudyController].show(map.id)}"><fmt:message key="button.back"/></a>
 </h3>
+<hr/>
 
 <span id="mapid" class="hide">${map.id}</span>
 
@@ -282,10 +312,9 @@
 			</div>
 			<div class="panel-body">
 			
-<!-- 			BUBBLE -->
-			
-<!-- 		<div class="widget widget_tally_box"> -->
-<!--           <div class="x_panel fixed_height_100"> -->
+			<!-- BUBBLE -->
+			<!-- <div class="widget widget_tally_box"> -->
+			<!-- <div class="x_panel fixed_height_100"> -->
 				<div class="x_panel" style="height: auto;">
 				  <div class="x_title">
 				 		<b>Bubble Plot - Questões</b>
@@ -308,7 +337,7 @@
 										</c:forEach>
 									</select>
 									
-									<!-- 						Questão X -->				
+								<!-- Questão X -->				
 								<div id="divquestion_x"></div>		
 									
 								</div>
@@ -322,28 +351,22 @@
 										</c:forEach>
 									</select>
 									
-								<!-- 						Questão Y -->
+								<!-- Questão Y -->
 								<div id="divquestion_y"></div>	
 									
 								</div>
 							</div>										
-						</div>	
-						<div class="form-group row">
-							<div class="col-md-12">	
-								<hr />
-						    	<a href="#" class="btn btn-primary buttonbubble"><i class="fa fa-print"></i> Exibir Gráfico </a>
-						    	<a href="#" class="btn btn-primary"><i class="fa fa-cloud-download"></i> Exportar (.csv)</a>
-						    	<a href="#" class="btn btn-primary"><i class="fa fa-cloud-upload"></i> Importar (.csv)</a>
-				    		</div>
 						</div>
+						<hr/><div id="bubbleGraph" class="col-md-12"></div>
+						<div class="col-md-12 text-right">	
+							<hr/>
+					    	<a href="#" style="width: 140px;" class="btn btn-primary buttonbubble"><i class="fa fa-print"></i> Exibir Gráfico </a>
+			    		</div>
 				    </div>
 				  </div>
 				</div>			
-<!-- 		</div> -->
 
-
-<!-- 			PIE ARTICLES SOURCE -->
-
+			<!-- PIE ARTICLES SOURCE -->
 			<div class="widget widget_tally_box">
 				<div class="x_panel" style="height: auto;" graph="0">
 				  <div class="x_title">

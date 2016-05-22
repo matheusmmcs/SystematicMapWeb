@@ -362,17 +362,18 @@ var messages = function (type, category, text){
 };
 </script>
 
-<ol class="breadcrumb u-margin-top">
+<ol class="breadcrumb u-margin-top" style="margin-top: 0px;">
   <li><a href="<c:url value="/" />"><fmt:message key="home"/></a></li>
   <li><a href="${linkTo[MapStudyController].show(map.id)}"><fmt:message key="mapstudy.details"/></a></li>
   <li class="active"><fmt:message key="mapstudy.extraction"/></li>
 </ol>
 
 <h3 class="color-primary">
-	<fmt:message key="mapstudy.evaluation"/> - ${map.title}
-	<a id="return" class="btn btn-default pull-right" href="${linkTo[MapStudyController].show(map.id)}"><fmt:message key="button.back"/></a>
+	${map.title} <a id="return" class="btn btn-default pull-right" href="${linkTo[MapStudyController].show(map.id)}"><fmt:message key="button.back"/></a>
 </h3>
+<hr/>
 
+<p>Percentual de Trabalhos Avaliados</p>
 <div class="progress">
 	<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="${percentExtracted}" aria-valuemin="0" aria-valuemax="100" style="min-width: 3em; width: ${percentExtracted}%">
 		${percentExtracted}%
@@ -381,129 +382,74 @@ var messages = function (type, category, text){
 <div class="clear-both"></div>
 
 <div class="row">
-<!--   	<div class="col-lg-12"> -->
-  	
+	<div class="col-md-12">
   		<div class="" id="infoarticle">
-  		
-		<h2><fmt:message key="mapstudy.article"/> - <span id="articleReadId">${article.id}</span></h2>
+			<h2><fmt:message key="mapstudy.article"/> - <span id="articleReadId">${article.id}</span></h2>
+			<p><strong><fmt:message key="mapstudy.article.title"/>:
+			</strong> <span id="articleReadTitle">${article.title}</span></p>
+			
+			<p><strong><fmt:message key="mapstudy.article.abstract"/>:
+			</strong><span id="articleReadAbstract">${article.abstrct}</span></p>
 		
-		<p> 
-			<strong>
-				<fmt:message key="mapstudy.article.title"/>:
-			</strong> <span id="articleReadTitle">${article.title}</span>
-		<p>
-		
-		<p> 
-			<strong>
-				<fmt:message key="mapstudy.article.abstract"/>:
-			</strong> <span id="articleReadAbstract">${article.abstrct}</span>
-		<p>
-		
-		<p> 
-			<strong>
-				<fmt:message key="mapstudy.article.key"/>:
-			</strong> <span id="articleReadKeywords">${article.keywords}</span>
-		<p>
-		
-		<p> 
-			<strong>
-				<fmt:message key="mapstudy.article.author"/>:
-			</strong> <span id="articleReadAuthor">${article.author}</span>
-		<p>
-		
-		<p> 
-			<strong>
-				<fmt:message key="mapstudy.article.source"/>:
-			</strong> <span id="articleReadSource">${article.source}</span>
-		<p>
-		
-		<p> 
-			<strong>
-				<fmt:message key="mapstudy.article.year"/>:
-			</strong> <span id="articleReadYear">${article.year}</span>
-		<p>
-		
-		<p> 
-			<strong>
-				<fmt:message key="mapstudy.article.doctype"/>:
-			</strong> <span id="articleReadDocType">${article.docType}</span>
-		<p>
-		
-		<hr/>
-		
+			<p><strong>Palavras-chave:</strong> <span id="articleReadKeywords">${article.keywords}</span></p>
+			<hr/>
 		</div>
+		
 		<div class="panel panel-default">
-		<div class="panel-heading">
-			<b><fmt:message key="mapstudy.form" /></b>
-		</div>
-		<!-- /.panel-heading -->
-		<div class="panel-body">
-			<h4>
-				<fmt:message key="mapstudy.form.evaluate" />
-			</h4>
-		<form action="${linkTo[ExtractionController].evaluateAjax}" method="post" id="#forExtraction">
-				<input type="hidden" name="mapid"  id="mapid" value="${map.id}" />
-				<input type="hidden" name="articleid" id="articleid" value="${article.id}" />
-				<input type="hidden" id="articlesource" name="articlesource" value="${article.sourceView(article.source)}" />
-				<input type="hidden" id="articlescore" name="articlescore" value="${article.score}" />
+			<div class="panel-heading">
+				<b><fmt:message key="mapstudy.form" /></b>
+			</div>
+			<div class="panel-body">
+				<h4><fmt:message key="mapstudy.form.evaluate" /></h4>
+				<form action="${linkTo[ExtractionController].evaluateAjax}" method="post" id="#forExtraction">
+					<input type="hidden" name="mapid"  id="mapid" value="${map.id}" />
+					<input type="hidden" name="articleid" id="articleid" value="${article.id}" />
+					<input type="hidden" id="articlesource" name="articlesource" value="${article.sourceView(article.source)}" />
+					<input type="hidden" id="articlescore" name="articlescore" value="${article.score}" />
 
-<!-- 				<div class="form-group"> -->
-						<c:forEach var="question" items="${form.questions}" varStatus="q">
+					<c:forEach var="question" items="${form.questions}" varStatus="q">
 						<div class="form-group group_question">
-						<input type="hidden" name="questions[${q.index}].id" value="${question.id}" class="group_question_id" id="question_id_${q.index}"/>
-<%-- 						<input type="hidden" name="questions[${q.index}].name" value="${question.name}" /> --%>
-						
-						<div class="padding-left-none">
-							<strong class="group_question_name" id="question_name_${q.index}">${question.name} :</strong>
-						</div>
-						<div class="float-right group_alternative">
-							<c:if test="${question.type == 'LIST'}">
-								<select	data-placeholder="<fmt:message key="mapstudy.form.choose" />" class="form-control select2 group_alternative_id" name="alternatives[${q.index}].id" id="alternative_id_${q.index}" tabindex="2">								
-									<c:forEach var="alt" items="${question.alternatives}">
-										<option value="${alt.id}" data-email="">${alt.value}</option>
-									</c:forEach>
-								</select>
+							<input type="hidden" name="questions[${q.index}].id" value="${question.id}" class="group_question_id" id="question_id_${q.index}"/>
+							<div class="padding-left-none">
+								<strong class="group_question_name" id="question_name_${q.index}">${question.name}:</strong>
+							</div>
+							<div class="float-right group_alternative">
+								<c:if test="${question.type == 'LIST'}">
+									<select	data-placeholder="<fmt:message key="mapstudy.form.choose" />" class="form-control select2 group_alternative_id" name="alternatives[${q.index}].id" id="alternative_id_${q.index}" tabindex="2">								
+										<c:forEach var="alt" items="${question.alternatives}">
+											<option value="${alt.id}" data-email="">${alt.value}</option>
+										</c:forEach>
+									</select>
 								
-								<c:if test="${article.alternative(question, userInfo.user) != null}">
-									<input type="hidden" value="${article.alternative(question, userInfo.user).id}" class="alternative_list_id" id="alternative_list_id_${q.index}"/>
-									<input type="hidden" value="${article.alternative(question, userInfo.user).value}" class="alternative_list_value" id="alternative_list_value_${q.index}"/>
-<%-- 									<option data-email="" selected="selected" value="${article.alternative(question, userInfo.user).id}">${article.alternative(question, userInfo.user).value}</option> --%>
+									<c:if test="${article.alternative(question, userInfo.user) != null}">
+										<input type="hidden" value="${article.alternative(question, userInfo.user).id}" class="alternative_list_id" id="alternative_list_id_${q.index}"/>
+										<input type="hidden" value="${article.alternative(question, userInfo.user).value}" class="alternative_list_value" id="alternative_list_value_${q.index}"/>
+									</c:if>
 								</c:if>
-							</c:if>
-							<c:if test="${question.type == 'SIMPLE'}">
-								<input type="text" class="form-control group_alternative_value" name="alternatives[${q.index}].value" id="alternative_value_${q.index}" value="${article.alternative(question, userInfo.user).value}"/>
-							</c:if>							
-						</div>		
-<!-- 						<p>				 -->
+								<c:if test="${question.type == 'SIMPLE'}">
+									<input type="text" class="form-control group_alternative_value" name="alternatives[${q.index}].value" id="alternative_value_${q.index}" value="${article.alternative(question, userInfo.user).value}"/>
+								</c:if>							
+							</div>		
 						</div>
-						</c:forEach>					
-						<p>
+					</c:forEach>					
 					<button type="submit" id="submit" class="btn btn-large btn-primary buttonextraction">
 						<fmt:message key="salve" />
 					</button>
 					<div class="clear-both"></div>
 				</form>
-				</div>
-				</div>
-		
-<!-- 		</div>  		 -->
+			</div>
+		</div>
 	</div>
-
-<!-- <hr/> -->
+</div>
 
 <div class="row">
-	<div class="panel panel-default">
-			<div class="panel-heading">
-				<b><fmt:message key="mapstudy.articles.list" /></b>
-			</div>
+	<div class="col-md-12">
+		<div class="panel panel-default">
+			<div class="panel-heading"><b><fmt:message key="mapstudy.articles.list" /></b></div>
 			<div class="panel-body">
-			
-				<h4>
-					<fmt:message key="mapstudy.articles.list.toreview"/>
-				</h4>
+				<h4><fmt:message key="mapstudy.articles.list.toreview"/></h4>
 				<div class="dataTable_wrapper">
-					<table
-						class="table table-striped table-bordered table-hover datatable-to-evaluate">
+					<table class="table table-striped table-bordered table-hover datatable-to-evaluate">
 						<thead>
 							<tr>
 								<th class="text-center">ID</th>
@@ -524,15 +470,10 @@ var messages = function (type, category, text){
 						</tbody>
 					</table>
 				</div>
-				
 				<hr/>
-				
-				<h4>
-					<fmt:message key="mapstudy.articles.list.extracted"/>
-				</h4>
+				<h4><fmt:message key="mapstudy.articles.list.extracted"/></h4>
 				<div class="dataTable_wrapper">
-					<table
-						class="table table-striped table-bordered table-hover datatable-evaluated">
+					<table class="table table-striped table-bordered table-hover datatable-evaluated">
 						<thead>
 							<tr>
 								<th class="text-center">ID</th>
@@ -555,4 +496,5 @@ var messages = function (type, category, text){
 				</div>
 			</div>
 		</div>
+	</div>
 </div>

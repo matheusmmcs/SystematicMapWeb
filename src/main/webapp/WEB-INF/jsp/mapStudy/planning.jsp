@@ -508,9 +508,9 @@
 		}
 		
 		function renderLinhaQuestion(id, name, type) {
-			var str = '<tr><td>'+name+'</td><td>'+type+'</td><td class="text-center">';
-			str += '<a class="btn btn-primary subquestions-extraction-edit" data-question-id="'+id+'" href="#"><i class="glyphicon glyphicon-pencil"></i></a>';
-			str += '<a class="btn btn-danger confirmation-modal subquestions-extraction-remove" data-question-id="'+id+'" data-conf-modal-body="<fmt:message key="mapstudy.excluir.message" />" href="#" data-conf-modal-callback="window.removeSubQuestion('+id+')" ><i class="glyphicon glyphicon-remove"></i></a>';
+			var str = '<tr><td>'+name+'</td><td class="text-center">'+type+'</td><td class="text-center">';
+			str += '<a style="width: 48%;" class="btn btn-primary btn-sm subquestions-extraction-edit" data-question-id="'+id+'" href="#"><i class="glyphicon glyphicon-pencil"></i> Editar</a>';
+			str += '<a style="width: 48%;" class="btn btn-danger btn-sm confirmation-modal subquestions-extraction-remove" data-question-id="'+id+'" data-conf-modal-body="<fmt:message key="mapstudy.excluir.message" />" href="#" data-conf-modal-callback="window.removeSubQuestion('+id+')" ><i class="glyphicon glyphicon-remove"></i> Remover</a>';
 			str += '</td></tr>';
 			return str;
 		}
@@ -607,16 +607,18 @@
 })(jQuery);
 </script>
 
-<ol class="breadcrumb u-margin-top">
+<ol class="breadcrumb u-margin-top" style="margin-top: 0px;">
   <li><a href="<c:url value="/" />"><fmt:message key="home"/></a></li>
   <li><a href="${linkTo[MapStudyController].show(map.id)}"><fmt:message key="mapstudy.details"/></a></li>
   <li class="active"><fmt:message key="mapstudy.planning"/></li>
 </ol>
 
 <h3 class="color-primary">
-	<fmt:message key="mapstudy" />	- ${map.title}
+	${map.title}
 	<a id="return" class="btn btn-default pull-right" href="${linkTo[MapStudyController].show(map.id)}"><fmt:message key="button.back"/></a>
 </h3>
+
+<hr/>
 
 <form><input type="hidden" name="mydiv" value="${mydiv}" id="mydiv"/></form>
 <input type="hidden" name="mapid" id="mapid" value="${map.id}" />
@@ -649,24 +651,23 @@
 					<table id="table-subquestions-extraction" class="table table-striped table-bordered table-hover">
 						<thead>
 							<tr>
-								<th style="width: 60%" class="text-center"><fmt:message key="mapstudy.title" /></th>
+								<th style="width: 50%" class="text-left"><fmt:message key="mapstudy.title" /></th>
 								<th style="width: 20%" class="text-center"><fmt:message key="mapstudy.type" /></th>
-								<th style="width: 20%" class="text-center"><fmt:message key="actions" /></th>
+								<th style="width: 30%" class="text-center"><fmt:message key="actions" /></th>
 							</tr>
 						</thead>
 						<tbody>
 							<c:if test="${empty questions}">
-								<tr>
-									<td class="text-center" colspan="3"><fmt:message key="mapstudy.extraction.subquestions.list.empy" /></td>
-								</tr>
+								<tr><td class="text-center" colspan="3"><fmt:message key="mapstudy.extraction.subquestions.list.empy" /></td></tr>
 							</c:if>
+									
 							<c:forEach var="question" items="${questions}" varStatus="s">
 								<tr>
 									<td>${question.name}</td>
-									<td>${question.type.description}</td>
+									<td class="text-center">${question.type.description}</td>
 									<td class="text-center">
-										<a class="btn btn-primary subquestions-extraction-edit" data-question-id="${question.id}" href="#"><i class="glyphicon glyphicon-pencil"></i></a>
-										<a class="btn btn-danger confirmation-modal subquestions-extraction-remove" data-question-id="${question.id}" data-conf-modal-body="<fmt:message key="mapstudy.excluir.message" />" href="#" data-conf-modal-callback="window.removeSubQuestion(${question.id})" ><i class="glyphicon glyphicon-remove"></i></a>
+										<a class="btn btn-primary btn-sm subquestions-extraction-edit" data-question-id="${question.id}" href="#"><i class="glyphicon glyphicon-pencil"></i> Editar</a>
+										<a class="btn btn-danger btn-sm confirmation-modal subquestions-extraction-remove" data-question-id="${question.id}" data-conf-modal-body="<fmt:message key="mapstudy.excluir.message" />" href="#" data-conf-modal-callback="window.removeSubQuestion(${question.id})" ><i class="glyphicon glyphicon-remove"></i> Remover</a>
 									</td>
 								</tr>
 							</c:forEach>
