@@ -526,8 +526,13 @@ public class MapStudyController {
 			}
 		}
 		
-		validator.check((article != null), new SimpleMessage("mapstudy", "mapstudy.evaluate.articles.none"));
-		validator.onErrorRedirectTo(this).show(mapid);
+		if (article == null){
+			result.include("warning", new SimpleMessage("mapstudy", "mapstudy.evaluate.articles.none"));
+			result.redirectTo(this).show(mapid);
+		}
+		
+//		validator.check((article != null), new SimpleMessage("mapstudy", "mapstudy.evaluate.articles.none"));
+//		validator.onErrorRedirectTo(this).show(mapid);
 		
 		Evaluation evaluationDone = evaluationDao.getEvaluation(userInfo.getUser(), mapStudy, article);
 		

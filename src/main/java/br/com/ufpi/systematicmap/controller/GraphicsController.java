@@ -14,9 +14,17 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Result;
+import br.com.caelum.vraptor.view.Results;
 import br.com.ufpi.systematicmap.dao.ArticleDao;
 import br.com.ufpi.systematicmap.dao.EvaluationDao;
 import br.com.ufpi.systematicmap.dao.EvaluationExtractionFinalDao;
@@ -31,11 +39,9 @@ import br.com.ufpi.systematicmap.model.Data;
 import br.com.ufpi.systematicmap.model.MapStudy;
 import br.com.ufpi.systematicmap.model.Pie;
 import br.com.ufpi.systematicmap.model.Question;
-import br.com.ufpi.systematicmap.model.User;
 import br.com.ufpi.systematicmap.model.enums.ArticleSourceEnum;
 import br.com.ufpi.systematicmap.model.enums.ClassificationEnum;
 import br.com.ufpi.systematicmap.model.enums.EvaluationStatusEnum;
-import br.com.ufpi.systematicmap.model.vo.Bubble;
 import br.com.ufpi.systematicmap.model.vo.Column;
 
 /**
@@ -373,37 +379,35 @@ public class GraphicsController {
 		return map;
 	}
 	
-	@Get("/graphics/bubble/")
-	public void bubble(Long mapid, Long q1, Long q2){
-		List<Bubble> bubble = new ArrayList<>();
+	@Get("/graphics/bubble")
+	public void bubble(Long mapid, Long q1, Long q2) throws JSONException{
+		List<JSONObject> data = new ArrayList<JSONObject>();
 		
+		MapStudy mapStudy = mapStudyDao.find(mapid);
 		if (q1 != -1 && q2 != -1){
-			MapStudy mapStudy = mapStudyDao.find(mapid);
-			Question question1 = questionDao.find(q1),  question2 = questionDao.find(q2);
 			
-			System.out.println("Ant for");
+			Question question1 = questionDao.find(q1),  question2 = questionDao.find(q2);
 			
 			HashMap<String, HashMap<String, Long>> map = alternativesHash(mapStudy, question1, question2);
 			
-			System.out.println("For");
-			
 			for(Map.Entry<String, HashMap<String, Long>> m : map.entrySet()){
 				for (Map.Entry<String, Long> v : m.getValue().entrySet()) {
-					Bubble b = new Bubble();
-					b.setQ1(question1.getName());
-					b.setQ2(question2.getName());
+					JSONObject my_obj = new JSONObject();
 					
-					b.setSub_q1(m.getKey());
-					b.setSub_q2(v.getKey());
-					b.setQnt(v.getValue());
+					my_obj.put("q1", question1.getName());
+					my_obj.put("q2", question2.getName());
 					
-					bubble.add(b);
+					my_obj.put(question1.getName(), m.getKey());
+					my_obj.put(question1.getName(), v.getKey());
+					
+					my_obj.put("qnt", v.getValue());
+					
+					data.add(my_obj);
 				}			
 			}	
 		}
-				
-		result.use(json()).indented().withoutRoot().from(bubble).recursive().serialize();		
-				
+		
+		result.use(json()).withoutRoot().from(data.toString()).serialize();
 	}
 	
 	@Get("/graphics/column/year")
