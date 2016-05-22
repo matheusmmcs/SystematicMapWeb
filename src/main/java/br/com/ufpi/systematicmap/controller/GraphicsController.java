@@ -86,7 +86,7 @@ public class GraphicsController {
 
 	@Get("/graphics/pie/sources")
 	public void articlesSources(Long mapid){
-		System.out.println(mapid);
+//		System.out.println(mapid);
 		MapStudy mapStudy = mapStudyDao.find(mapid);
 		mapStudyDao.refresh(mapStudy);
 		
@@ -123,7 +123,7 @@ public class GraphicsController {
 		pie.setName("Artigos");
 		pie.setData(data);		
 		
-		System.out.println("total: " + total + " pie: " + pie);
+//		System.out.println("total: " + total + " pie: " + pie);
 		
 		result.use(json()).indented().withoutRoot().from(pie).recursive().serialize();
 	}
@@ -277,7 +277,7 @@ public class GraphicsController {
 	
 	@Get("/graphics/pie/refine")
 	public void articlesRefine(Long mapid){
-		System.out.println(mapid);
+//		System.out.println(mapid);
 		MapStudy mapStudy = mapStudyDao.find(mapid);
 		mapStudyDao.refresh(mapStudy);
 		
@@ -329,7 +329,7 @@ public class GraphicsController {
 		pie.setName("Artigos");
 		pie.setData(data);		
 		
-		System.out.println("total: " + total + " pie: " + pie);
+//		System.out.println("total: " + total + " pie: " + pie);
 		
 		result.use(json()).indented().withoutRoot().from(pie).recursive().serialize();
 	}
@@ -345,7 +345,7 @@ public class GraphicsController {
 //		List<EvaluationExtractionFinal> extractions = extractionFinalDao.getExtractionsFinal(q1, q2);
 		List<Article> articles = articleDao.getArticlesFinalExtraction(mapStudy);
 		
-		System.out.println("hash : " + articles.size());
+//		System.out.println("hash : " + articles.size());
 		
 		HashMap<String, HashMap<String, Long>> map = new HashMap<String, HashMap<String, Long>>();
 		Set<Alternative> alternativeX = question1.getAlternatives();
@@ -361,7 +361,7 @@ public class GraphicsController {
 					count += a.alternativesCount(x, y);
 				}
 				
-				System.out.println("count: " + count);
+//				System.out.println("count: " + count);
 				
 				map.get(x.getValue()).put(y.getValue(), count);
 			}
@@ -398,11 +398,13 @@ public class GraphicsController {
 					my_obj.put("q2", question2.getName());
 					
 					my_obj.put(question1.getName(), m.getKey());
-					my_obj.put(question1.getName(), v.getKey());
+					my_obj.put(question2.getName(), v.getKey());
 					
 					my_obj.put("qnt", v.getValue());
 					
 					data.add(my_obj);
+					
+//					System.out.println(my_obj);
 				}			
 			}	
 		}
@@ -420,7 +422,7 @@ public class GraphicsController {
 		
 		HashMap<Integer, Double> sources = new HashMap<>();
 		
-		System.out.println(articles +" "+ sources + " " + mapStudy);
+//		System.out.println(articles +" "+ sources + " " + mapStudy);
 		
 		
 		for (Article article : articles) {
@@ -444,7 +446,7 @@ public class GraphicsController {
 		
 		Column column = new Column();
 		
-		System.out.println(column);
+//		System.out.println(column);
 		
 		column.setTitle("Publicações por Ano");
 		column.setSubTitle("Mostra uma visão da quatidade de publicções por anos de acordo com artigos aceitos");
@@ -452,7 +454,7 @@ public class GraphicsController {
 		column.setyAxis("Quantidade de Publicações");
 		
 		for(Map.Entry<Integer, Double> m : sources.entrySet()){
-			System.out.println(m.getKey());
+//			System.out.println(m.getKey());
 			column.getCategories().add(m.getKey().toString());
 			column.getData().add(m.getValue());
 		}

@@ -45,7 +45,7 @@ public class BibtexToArticleUtils {
 		article.setDoi(getAttr(fields, BibTeXEntry.KEY_DOI));
 		article.setYear(Integer.parseInt(getAttr(fields, BibTeXEntry.KEY_YEAR)));
 		
-		System.out.println(Integer.parseInt(getAttr(fields, BibTeXEntry.KEY_YEAR)));
+//		System.out.println(Integer.parseInt(getAttr(fields, BibTeXEntry.KEY_YEAR)));
 		
 		article.setAbstrct(getAttr(fields, new Key("abstract")));
 		

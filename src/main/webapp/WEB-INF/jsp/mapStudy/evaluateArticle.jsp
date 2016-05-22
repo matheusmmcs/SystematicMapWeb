@@ -17,6 +17,22 @@ $(document).ready(function(){
             tableToEvaluate = api;
         }
     });
+	
+	var mySource = function (s){
+		console.log("sss", s);
+		if (s == "SCOPUS"){
+			return "Scopus" 
+		}else if (s == "ENGINEERING_VILLAGE"){
+			return "Engineering Village";
+		}else if (s == "WEB_OF_SCIENCE"){
+			return "Web Of Science";
+		}else if (s == "OTHER"){
+			return "Outros";
+		}else if (s =="MANUALLY"){
+			return "Manual";
+		}	
+	};
+	
 	var tableEvaluated = $('.datatable-evaluated').DataTable();
 // 	{
 //     "scrollY":        "300px",
@@ -31,37 +47,20 @@ $(document).ready(function(){
 		url = url.substr(0, url.lastIndexOf('/')) + '/' + article.id;
 		window.history.pushState("", "", url);
 		//window.location.reload();
-		
-		var mySource = function (s){
-			console.log("sss", s);
-			if (s == "SCOPUS"){
-				return "Scopus" 
-			}else if (s == "ENGINEERING_VILLAGE"){
-				return "Engineering Village";
-			}else if (s == "WEB_OF_SCIENCE"){
-				return "Web Of Science";
-			}else if (s == "OTHER"){
-				return "Outros";
-			}else if (s =="MANUALLY"){
-				return "Manual";
-			}	
-		};
 
 		//alterar dados do artigo
 		$('#articleReadId').html(article.id);
 		$('#articleReadTitle').html(article.title);
 		$('#articleReadAbstract').html(article.abstrct);
 		$('#articleReadKeywords').html(article.keywords);
-		$('#articleReadSource').html(article.source);
+// 		$('#articleReadSource').html(article.source);
 		$('#articleReadAuthor').html(article.author);
 		$('#articleReadDoctype').html(article.docType);
 		$('#articleReadYear').html(article.year);
-		$('#articlesource').val(mySource(article.source));
+		$('#articleReadSource').val(mySource(article.source));
+		$('#articlesource').val(mySource(article.source));		
 		$('#articlescore').val(article.score);
 		
-		console.log($('#articlesource'));
-
-
 		//funcoes auxiliares para evitar repeticao de codigo
 		var changeFormsIds = function(isInclude, article){
 			var str = isInclude ? '#formInclude' : '#formExclude';
@@ -100,15 +99,15 @@ $(document).ready(function(){
 
 		if (evaluation != null) {
 // 			var evaluate = article.evaluations[0];
-			console.log('evaluation: ', evaluation);
+// 			console.log('evaluation: ', evaluation);
 			if (evaluation.exclusionCriterias.length > 0) {
 				markCriterias(evaluation.exclusionCriterias, false);
 				$('#commentExclude').val(evaluation.comment);
-				console.log('possui avaliações exclusion');
+// 				console.log('possui avaliações exclusion');
 			} else if (evaluation.inclusionCriterias.length > 0) {
 				markCriterias(evaluation.inclusionCriterias, true);
 				$('#commentInclude').val(evaluation.comment);
-				console.log('possui avaliações inclusion');
+// 				console.log('possui avaliações inclusion');
 			}
 		}
 	}
@@ -151,6 +150,7 @@ $(document).ready(function(){
 	}
 
 	var actualizeList = function (articleid, isInclusion, source, score){
+		console.log('source in list: ' + source);
 		var $article = $(".tBodyArticlesToEvaluate .readArticle[nextid=\""+articleid+"\"]");
 		var classification = isInclusion ? 'Aceito' : 'Rejeitado';
 		var newhref = $article.attr('href');
@@ -257,7 +257,7 @@ $(document).ready(function(){
 	});
 	
 	var messages = function (type, category, text){
-		console.log(type, category, text);
+// 		console.log(type, category, text);
 		var msg = '';
 	    $("#messages").empty();
 	     
@@ -310,7 +310,7 @@ $(document).ready(function(){
 		<hr/>
 		
 		<div class="row">
-			<div class="col-md-6">
+			<div class="col-md-6" style="min-height: ">
 				<form id="formInclude" action="${linkTo[MapStudyController].includearticle}" method="post">
 					<input type="hidden" id="mapid" name="mapid" value="${map.id}" />
 					<input type="hidden" id="articleid" name="articleid" value="${article.id}" />
@@ -369,10 +369,6 @@ $(document).ready(function(){
 				</form>
 			</div>
 		</div>
-		
-		
-		<hr/>
-			
   		
 	</div>
 </div>
@@ -380,6 +376,7 @@ $(document).ready(function(){
 <hr/>
 
 <div class="row">
+	<div class="col-md-12">
 	<div class="panel panel-default">
 			<div class="panel-heading">
 				<b><fmt:message key="mapstudy.articles.list" /></b>
@@ -445,4 +442,5 @@ $(document).ready(function(){
 				</div>
 			</div>
 		</div>
+	</div>
 </div>

@@ -24,12 +24,12 @@ $(document).ready(function(){
 
 		
 	var actualizeArticle = function(article, extraction){
-		console.log('entra atualiza article', article);
+// 		console.log('entra atualiza article', article);
 		//alterar a url para caso seja realizado F5
 		var url = window.location.href;
 		url = url.substr(0, url.lastIndexOf('/')) + '/' + article.id;
 
-		console.log(url);
+// 		console.log(url);
 		window.history.pushState("", "", url);
 		//window.location.reload();
 
@@ -51,7 +51,7 @@ $(document).ready(function(){
 			if (extraction.length > 0){
 				$.each(extraction, function( index, elemento ) {
 					console.log('set');
-					  console.log(elemento.question.id + " | " + elemento.question.type + " | " + elemento.question.name);
+// 					  console.log(elemento.question.id + " | " + elemento.question.type + " | " + elemento.question.name);
 
 					  if (elemento.question.type == 'LIST'){
 // 						  var alternative_selected = elemento.alternative;
@@ -66,7 +66,7 @@ $(document).ready(function(){
 								test.html(elemento.alternative.value);
 // 								$('select#alternative_id_' + index +' option').eq(index).css('backgroundColor', 'blue');
 							  }
-							  console.log(elemento2.id + " | " + elemento2.value);
+// 							  console.log(elemento2.id + " | " + elemento2.value);
 						  });
 					  }else{
 // 						  $(elem_a).find('.group_alternative_value').val(elemento.alternative.value);
@@ -79,19 +79,19 @@ $(document).ready(function(){
 		}
 
 		var resetQuestions = function (){
-			console.log('entrou reset');
+// 			console.log('entrou reset');
 			$('.group_question').each(function(idx, elem){
 				var $elem = $(elem);				
 				$elem.find('.group_alternative').each(function(idx_a, elem_a) {
-					console.log('reset: ' + idx_a);
+// 					console.log('reset: ' + idx_a);
 					$(elem_a).find('.group_alternative_id').val('');
 					var obj = $('#alternative_id_' + idx + ' option:selected');
-					console.log(obj);
+// 					console.log(obj);
 					obj.remove();
 					var test = $('#select2-alternative_id_' + idx + '-container');
 					test.attr('title', '');
 					test.html('');
-					console.log(obj);
+// 					console.log(obj);
 // 					$(elem_a).find('.group_alternative_id').text('');
 					$(elem_a).find('.group_alternative_value').val('');
 				});
@@ -103,10 +103,10 @@ $(document).ready(function(){
 		resetQuestions();
 		
 		var user = '${userInfo.user}';
-		console.log('user: ', user)
+// 		console.log('user: ', user)
 		
 		if (extraction != null) {
-			console.log('extraction: ', extraction);
+// 			console.log('extraction: ', extraction);
 			// Pegar dados da extração caso exista e adicionar a tela
 			// Fazer uma forma de pegar os dados preenchidos na extração e passar para o formulário carregado na pagina
 // 			if(extraction.length > 0){
@@ -128,8 +128,8 @@ $(document).ready(function(){
 			success: function(data){
 				var article = data['article'];
 				var extraction = data['extraction'];
-				console.log('article read: ', article);
-				console.log('extraction: ', extraction);
+// 				console.log('article read: ', article);
+// 				console.log('extraction: ', extraction);
 				actualizeArticle(article, extraction);
 			},
 			error: function(e){

@@ -322,6 +322,16 @@ public class MapStudy implements Serializable{
 		}
 		return members;
 	}
+	
+	public void removeResearchQuestion(Long id){
+		for (ResearchQuestion rq : researchQuestions) {
+			if (rq.getId().equals(id)){
+				rq.setMapStudy(null);
+				researchQuestions.remove(rq);
+				break;
+			}
+		}
+	}
 
 	/**
 	 * @return the researchQuestions

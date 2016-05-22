@@ -83,7 +83,7 @@
 			            {"q1": "Tipo", "q2": "Plataforma", "Tipo": "Ferramenta", "Plataforma":"Desktop", "qnt": 6 }];*/
 			        
 			        if(data && data.length > 0){
-			        	console.log(data);
+// 			        	console.log(data);
 			        	data = JSON.parse(data);
 				        $('#bubbleGraph').html('');
 				        var svg = dimple.newSvg("#bubbleGraph", 600, 400);
@@ -95,7 +95,7 @@
 				        myChart.addCategoryAxis("y", data[0].q2);
 				        
 				        var z = myChart.addMeasureAxis("z", "qnt");
-				        var s = myChart.addSeries("Plataforma", dimple.plot.bubble);
+				        var s = myChart.addSeries(data[0].q2, dimple.plot.bubble);
 				        s.aggregate = dimple.aggregateMethod.max;
 				        
 				        myChart.addLegend(240, 10, 330, 20, "right");
@@ -114,7 +114,7 @@
 			var q2 = $('#question_y').val();
 			var mapid = $('#mapid').html();
 			
-			console.log(q1, q2, mapid);		
+// 			console.log(q1, q2, mapid);		
 			bubbleData(mapid, q1, q2);	
 		});
 		
@@ -265,11 +265,11 @@
 		                $BOX_PANEL.removeAttr('style');
 		            });
 		            // se possuir gráfico fazer chamada
-		            console.log('chamada de gráfico');
+// 		            console.log('chamada de gráfico');
 		            
 		            var graph = $BOX_PANEL.attr('graph');
 		            
-		            console.log(graph);
+// 		            console.log(graph);
 		            
 		            activeGraph(graph);
 		            

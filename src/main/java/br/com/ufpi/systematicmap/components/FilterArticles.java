@@ -50,7 +50,12 @@ public class FilterArticles {
 	
 	public void filter(){
 		try{
-			System.out.println("Regex: "+regex);
+			if(levenshtein != -1){
+				calcTitleLevenshteinDistance(levenshtein);
+			}
+//			System.out.println("Regex: "+regex);
+//			System.out.println("Probs lenshtein: "+countPapers(ClassificationEnum.REPEAT));
+			
 			String[] termos = regex.split(";");
 			for(String t : termos){
 				if (t.length() > 1){
@@ -59,16 +64,12 @@ public class FilterArticles {
 				}				
 			}
 			
-			System.out.println("Total de artigos: "+papers.size());
-			System.out.println("Probs autores: "+filterAuthors());
-			System.out.println("Patentes: "+filterPatents());
+//			System.out.println("Total de artigos: "+papers.size());
+//			System.out.println("Probs autores: "+filterAuthors());
+//			System.out.println("Patentes: "+filterPatents());
 			filterRegex(limiartitulo, limiarabstract, limiarkeywords, limiartotal);
 			
-			System.out.println("Probs palavras: "+countPapers(ClassificationEnum.WORDS_DONT_MATCH));
-			if(levenshtein != -1){
-				calcTitleLevenshteinDistance(levenshtein);
-			}
-			System.out.println("Probs lenshtein: "+countPapers(ClassificationEnum.REPEAT));
+//			System.out.println("Probs palavras: "+countPapers(ClassificationEnum.WORDS_DONT_MATCH));
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -114,9 +115,9 @@ public class FilterArticles {
 //			System.out.println("Termos: " +termos );
 //			System.out.println("SIze: " +termos.size() );
 //			
-			System.out.println("ABS: " + p.getRegexAbs());
-			System.out.println("KEY: " + p.getRegexKeys());
-			System.out.println("TIT: " + p.getRegexTitle());
+//			System.out.println("ABS: " + p.getRegexAbs());
+//			System.out.println("KEY: " + p.getRegexKeys());
+//			System.out.println("TIT: " + p.getRegexTitle());
 			
 			p.setScore(p.getRegexAbs() + p.getRegexKeys() + p.getRegexTitle());
 			
@@ -151,7 +152,7 @@ public class FilterArticles {
 				}
 			}
 			count++;
-			System.out.println("loading:"+(count/size)*100);
+//			System.out.println("loading:"+(count/size)*100);
 		}
 	}
 	

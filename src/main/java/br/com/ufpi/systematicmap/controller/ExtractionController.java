@@ -140,7 +140,8 @@ public class ExtractionController {
 		Set<Question> questions = new HashSet<>();
 		if (mapStudy != null && mapStudy.getForm() != null) {
 			questions = mapStudy.getForm().getQuestions();
-		}
+		}	
+		
 		result.use(json()).indented().withoutRoot().from(questions).recursive().serialize();
 	}
 	
@@ -384,7 +385,7 @@ public class ExtractionController {
 			nextArticle.setId(-1l);
 		}
 		
-		System.out.println("Next article: " + nextArticle);
+//		System.out.println("Next article: " + nextArticle);
 
 		returns.put("extraction", extraction);
 		returns.put("article", nextArticle);
@@ -460,7 +461,6 @@ public class ExtractionController {
 				ext.put(questionName, aux);				
 			}
 		}
-        
         
         
         validator.check(extractions.size() > 0, new SimpleMessage("mapstudy.articles", "mapstudy.extraction.none"));

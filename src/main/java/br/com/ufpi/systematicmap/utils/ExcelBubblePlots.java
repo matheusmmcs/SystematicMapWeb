@@ -133,20 +133,20 @@ public class ExcelBubblePlots {
 		XSSFSheet mySheet = myWorkBook.getSheetAt(0);
 		XSSFRow rowTitle = mySheet.getRow(rowTitles);
 		
-		System.out.print("\t");
+//		System.out.print("\t");
 		for(int j = 0; j < titles2.length; j++){
 			String cellTitle = rowTitle.getCell(titles2[j]).getStringCellValue();
 			cellTitle = showTitle ? cellTitle : new String(cellTitle.charAt(0) + new Integer(j).toString());
-			System.out.print("|"+compactString(cellTitle) + "\t");
+//			System.out.print("|"+compactString(cellTitle) + "\t");
 		}
-		System.out.println();
+//		System.out.println();
 		
 		FileWriter writer = new FileWriter(file);
 		writer.append("title1;title2;count\n");
 		for(int i = 0; i < titles1.length; i++){
 			String title1 = rowTitle.getCell(titles1[i]).getStringCellValue();
 			title1 = showTitle ? title1 : new String(title1.charAt(0) + new Integer(i).toString());
-			System.out.print(compactString(title1) + "\t");
+//			System.out.print(compactString(title1) + "\t");
 			for(int j = 0; j < titles2.length; j++){
 				String title2 = rowTitle.getCell(titles2[j]).getStringCellValue();
 				int count = 0;
@@ -170,12 +170,12 @@ public class ExcelBubblePlots {
 						}
 					}
 				}
-				System.out.print("|"+count + "\t");
+//				System.out.print("|"+count + "\t");
 				writer.append(title1+";"+title2+";"+count+"\n");
 			}
-			System.out.println();
+//			System.out.println();
 		}
-		System.out.println();
+//		System.out.println();
 		writer.flush();
 	    writer.close();
 	}

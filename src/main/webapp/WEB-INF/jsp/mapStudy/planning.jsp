@@ -13,14 +13,14 @@
 	
 		// activenav deve ser o id do nav
 		var newnavactive = function(activenavId) {
-			console.log('activenavId: ', activenavId);
+// 			console.log('activenavId: ', activenavId);
 			// Tira status ativo do nav
 			var navactualId = $('.mynav.active').attr('id');
-			console.log('navactualId: ', navactualId);
+// 			console.log('navactualId: ', navactualId);
 			
 			if (navactualId == undefined) {
 				navactualId = $('#mydiv').val().substr(3);
-				console.log('ficou indefinido: ', navactualId);
+// 				console.log('ficou indefinido: ', navactualId);
 			}
 	
 			$('#' + navactualId).removeClass('active');
@@ -29,7 +29,7 @@
 			var divatual = '#div' + navactualId.replace('#', '');
 			$(divatual).addClass('hide');
 			
-			console.log('divatual: ', divatual);
+// 			console.log('divatual: ', divatual);
 	
 			// Muda status do nav selecionado para ativo
 			$(activenavId).addClass('active'); // adiciona classe active no nav selecionado 
@@ -40,7 +40,7 @@
 			$('#mydiv').val(divnovo);
 			$('#' + divnovo).removeClass('hide');
 			
-			console.log('divnovo: ', divnovo);
+// 			console.log('divnovo: ', divnovo);
 		};
 				
 		var mydivid = '#' + $('#mydiv').val().substr(3);
@@ -192,7 +192,7 @@
 		// Captura seleção de tipo
 		$(document).on('change', '.selectiontype', function() {
 			isLogado();
-			console.log('type: ', $(this).val());
+// 			console.log('type: ', $(this).val());
 			if ($(this).val() == 'SIMPLE') {
 				// se existir alternatives remover todas
 				var myid = $(this).attr('id');
@@ -213,7 +213,7 @@
 				if ($(objId).children('.group_alternative').length == 0) {
 					addAlternative($(objId), true, myid);
 				} else {
-					console.log('ja existe alternative');
+// 					console.log('ja existe alternative');
 				}
 			}
 		});
@@ -259,7 +259,7 @@
 				"questionVO" : questionVO
 			};
 			
-			console.log(param);
+// 			console.log(param);
 			
 			/*
 			$.ajax({
@@ -270,7 +270,7 @@
 				traditional : true,
 				data : JSON.stringify(param),
 				success : function(data) {
-					console.log(data);
+// 					console.log(data);
 				},
 				error : function(e) {
 					console.error(e);
@@ -370,6 +370,17 @@
 				}
 			});
 		});
+		
+		var viewType = function(type){
+			console.log(type);
+			if (type == "SIMPLE"){
+				return "Texto";
+			}else if (type == "LIST"){
+				return "Listagem";
+			}else if (type == "LIST"){
+				return "Multiplas opções";
+			}
+		}
 
 		function loadAllQuestions(callback) {
 			showPreloader();
@@ -385,7 +396,7 @@
 					var html = '', count = 0;
 					for (var i in data) {
 						var q = data[i];
-						html += renderLinhaQuestion(q.id, q.name, q.type);
+						html += renderLinhaQuestion(q.id, q.name, viewType(q.type));
 						count++;
 					}
 					if (count == 0) {
@@ -508,6 +519,7 @@
 		}
 		
 		function renderLinhaQuestion(id, name, type) {
+			console.log(type);
 			var str = '<tr><td>'+name+'</td><td class="text-center">'+type+'</td><td class="text-center">';
 			str += '<a style="width: 48%;" class="btn btn-primary btn-sm subquestions-extraction-edit" data-question-id="'+id+'" href="#"><i class="glyphicon glyphicon-pencil"></i> Editar</a>';
 			str += '<a style="width: 48%;" class="btn btn-danger btn-sm confirmation-modal subquestions-extraction-remove" data-question-id="'+id+'" data-conf-modal-body="<fmt:message key="mapstudy.excluir.message" />" href="#" data-conf-modal-callback="window.removeSubQuestion('+id+')" ><i class="glyphicon glyphicon-remove"></i> Remover</a>';
@@ -550,7 +562,7 @@
             $.each(listSearch, function() {
             	var searchDesc = "" + $(this).html();
             	$(this).html(conectors(searchDesc));	
-            	console.log($(this).html());
+//             	console.log($(this).html());
             });
 		 };
 		 
@@ -800,8 +812,8 @@
 								<tr>
 									<td>${quest.description}</td>
 									<td class="text-center">
-										<a class="btn btn-danger" href="${linkTo[MapStudyController].removequestion(map.id, quest.id)}"><i class="glyphicon glyphicon-remove"></i></a>
-										<a class="btn btn-primary" href="${linkTo[MapStudyController].editquestion(map.id, quest.id)}"><i class="glyphicon glyphicon-edit"></i></a>
+										<a class="btn btn-danger btn-sm confirmation-modal" data-conf-modal-body="<fmt:message key="mapstudy.research.question.excluir.message" />" style="width: 90%" href="${linkTo[MapStudyController].removequestion(map.id, quest.id)}"><i class="glyphicon glyphicon-remove"></i> Remover</a>
+<%-- 										<a class="btn btn-primary" href="${linkTo[MapStudyController].editquestion(map.id, quest.id)}"><i class="glyphicon glyphicon-edit"></i></a> --%>
 									</td>
 								</tr>								
 							</c:forEach>
@@ -869,7 +881,7 @@
 								  <div class="clearfix"></div>
 								</div>
 								<div class="x_content" style="display: none;">	
-									<p class="text-justify search-description">	
+									<p class="search-description" style="text-align: justify !important;">	
 										${search.description} 
 									</p>
 								</div>
@@ -905,8 +917,8 @@
 					<table class="table table-striped table-bordered table-hover">
 						<thead>
 							<tr>
-								<th><fmt:message key="mapstudy.criteria.description" /></th>
-								<th><fmt:message key="remove" /></th>
+								<th style="width: 80%"><fmt:message key="mapstudy.criteria.description" /></th>
+								<th style="width: 20%" class="text-center"><fmt:message key="actions" /></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -915,8 +927,8 @@
 								<tr>
 									<td>${criteria.description}</td>
 									<td class="text-center">
-										<a class="btn btn-danger" href="${linkTo[MapStudyController].removeinclusioncriteriapage(map.id, criteria.id)}"><i class="glyphicon glyphicon-remove"></i></a>
-										<a class="btn btn-primary" href="${linkTo[MapStudyController].editinclusioncriteria(map.id, criteria.id)}"><i class="glyphicon glyphicon-edit"></i></a>
+										<a class="btn btn-danger btn-sm" style="width: 90%;" href="${linkTo[MapStudyController].removeinclusioncriteriapage(map.id, criteria.id)}"><i class="glyphicon glyphicon-remove"></i> Remover</a>
+<%-- 										<a class="btn btn-primary" href="${linkTo[MapStudyController].editinclusioncriteria(map.id, criteria.id)}"><i class="glyphicon glyphicon-edit"></i></a> --%>
 									</td>
 								
 								</tr>								
@@ -955,8 +967,8 @@
 					<table class="table table-striped table-bordered table-hover">
 						<thead>
 							<tr>
-								<th><fmt:message key="mapstudy.criteria.description" /></th>
-								<th><fmt:message key="remove" /></th>
+								<th style="width: 80%"><fmt:message key="mapstudy.criteria.description" /></th>
+								<th style="width: 20%" class="text-center"><fmt:message key="actions" /></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -965,8 +977,8 @@
 								<tr>
 									<td>${criteria.description}</td>
 									<td class="text-center">
-										<a class="btn btn-danger" href="${linkTo[MapStudyController].removeexclusioncriteriapage(map.id, criteria.id)}"><i class="glyphicon glyphicon-remove"></i></a>
-										<a class="btn btn-primary" href="${linkTo[MapStudyController].editexclusioncriteria(map.id, criteria.id)}"><i class="glyphicon glyphicon-edit"></i></a>
+										<a class="btn btn-danger btn-sm" style="width: 90%;" href="${linkTo[MapStudyController].removeexclusioncriteriapage(map.id, criteria.id)}"><i class="glyphicon glyphicon-remove"></i> Remover</a>
+<%-- 										<a class="btn btn-primary" href="${linkTo[MapStudyController].editexclusioncriteria(map.id, criteria.id)}"><i class="glyphicon glyphicon-edit"></i></a> --%>
 									</td>
 								</tr>
 							</c:forEach>

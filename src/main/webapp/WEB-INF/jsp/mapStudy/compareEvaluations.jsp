@@ -177,9 +177,11 @@
 				e.preventDefault();
 				
 				var ids = "";
+				var count= 0;
 			    $('#kappa-form :checked').each(function() {
-			       console.log($(this).val());
+// 			       console.log($(this).val());
 			       ids += $(this).val() + ";";
+			       count ++;
 			    });
 
 			    if (ids == null || ids === ""){
@@ -192,21 +194,24 @@
 					mapStudyId : $('#mapStudyId').val()
 				}
 			    
-				$.ajax({
-					data: formData,
-					url: "/SystematicMap/maps/kappa",
-					method: "POST",
-					success: function(data){
-						console.log(data);
-						if(data.hashMap){
-							$('#kappa-members').html(data.hashMap.members);
-							$('#kappa-value').html(data.hashMap.kappa);
+			    if (count > 1){
+					$.ajax({
+						data: formData,
+						url: "/SystematicMap/maps/kappa",
+						method: "POST",
+						success: function(data){
+	// 						console.log(data);
+							if(data.hashMap){
+								$('#kappa-members').html(data.hashMap.members);
+								$('#kappa-value').html(data.hashMap.kappa);
+							}
+						},
+						error: function(err){
+	// 						console.log(err);
 						}
-					},
-					error: function(err){
-						console.log(err);
-					}
-				});
+					});			    	
+			    }
+			    
 			});
 			
 			$(document).on('click', '.article-to-read', function(e){
@@ -217,7 +222,7 @@
 					url: "/SystematicMap/maps/article/"+id+"/details",
 					method: "GET",
 					success: function(data){
-						console.log(data);
+// 						console.log(data);
 						if(data.hashMap){
 							var x = data.hashMap;
 							$('#article-id').html(x.id);
@@ -249,7 +254,7 @@
 						}
 					},
 					error: function(err){
-						console.log(err);
+// 						console.log(err);
 					}
 				});
 			});

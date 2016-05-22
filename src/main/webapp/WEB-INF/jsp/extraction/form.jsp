@@ -7,7 +7,7 @@
 
 		//Remove um campo
 		var removeField = function (obj){
-			console.log('remove');
+// 			console.log('remove');
 			$(obj).remove();
 		};
 
@@ -80,7 +80,7 @@
 		// Adiciona questão
 		$(document).on('click', '.buttonquestionadd', function(event){
 			event.preventDefault();
-			console.log('addquestion');
+// 			console.log('addquestion');
 
 			divObj = $('#' + 'allquestions');
 			addQuestion(divObj);				
@@ -90,14 +90,14 @@
 		$(document).on('click', '.buttonquestionremove', function(event){
 			event.preventDefault();
 			var id = $(this).attr('idquest');
-			console.log('idquest: ', id);
+// 			console.log('idquest: ', id);
 			removeField($('#' + id));
 		});
 
 		// Adiciona ALternativa
 		$(document).on('click', '.buttonalternativeadd', function(event){
 			event.preventDefault();
-			console.log('addalternative');
+// 			console.log('addalternative');
 			var myid = $(this).attr('questassociation');
 			//myid = myid.substring(myid.lastIndexOf('_') + 1);//, myid.length);
 			addAlternative($('#group_question_' + myid), false, myid);
@@ -106,11 +106,11 @@
 		// Remove ALternativa
 		$(document).on('click', '.buttonalternativeremove', function(event){
 			event.preventDefault();
-			console.log('addalternative');
+// 			console.log('addalternative');
 
 			event.preventDefault();
 			var id = $(this).attr('alternativeid');
-			console.log('alternativeid: ', id);
+// 			console.log('alternativeid: ', id);
 
 			removeField($('#' + id));			
 		});
@@ -119,7 +119,7 @@
 
 		// Captura seleção de tipo
 		$(document).on('change', '.selectiontype', function(){
-			console.log('type: ', $(this).val());
+// 			console.log('type: ', $(this).val());
 			if ($(this).val() == 'SIMPLE'){
 				// se existir alternatives remover todas
 				var myid = $(this).attr('id');
@@ -141,7 +141,7 @@
 				if ($(objId).children('.group_alternative').length == 0){
 					addAlternative($(objId), true, myid);
 				}else{
-					console.log('ja existe alternative');
+// 					console.log('ja existe alternative');
 				}
 	
 			}
@@ -151,7 +151,7 @@
 		//Salvar Formulário
 		$(document).on('click', '.buttonextraction', function(event){
 			event.preventDefault();
-			console.log('buttonextraction');
+// 			console.log('buttonextraction');
 
 			var questions = [];
 			$('.group_question').each(function(idx, elem){
@@ -162,7 +162,7 @@
 				question.type = $elem.find('.group_question_type').val();
 				question.alternatives = [];
 
-				console.log(question);
+// 				console.log(question);
 				
 				$elem.find('.group_alternative').each(function(idx_a, elem_a) {
 					var alternative = {};
@@ -170,7 +170,7 @@
 					alternative.value = $(elem_a).find('.group_alternative_name').val();
 					if (alternative.value != null && alternative.value != ""){
 						question.alternatives.push(alternative);
-						console.log(alternative);
+// 						console.log(alternative);
 					}					
 				});
 
@@ -178,7 +178,7 @@
 					questions.push(question);
 				}			
 
-				console.log('tam: ' + questions.length);	
+// 				console.log('tam: ' + questions.length);	
 			});
 			
 			var address = "${linkTo[ExtractionController].formAjax}";
@@ -195,9 +195,9 @@
 
 			param = { "questionVO" : questionVO};
 
-			console.log('param: ', param);
-			console.log('JSON: ', JSON.stringify(param));
-			console.log('JQ' + jQuery.parseJSON(JSON.stringify(param)));
+// 			console.log('param: ', param);
+// 			console.log('JSON: ', JSON.stringify(param));
+// 			console.log('JQ' + jQuery.parseJSON(JSON.stringify(param)));
 
 			$.ajax({
 		        url: address,
@@ -207,7 +207,7 @@
 		        traditional: true,
 				data: JSON.stringify(param),
 		        success: function (data) {
-			        console.log(data);
+// 			        console.log(data);
 		        },
 				error: function(e){
 					console.error(e);

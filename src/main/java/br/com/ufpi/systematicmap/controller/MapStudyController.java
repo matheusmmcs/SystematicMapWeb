@@ -1233,7 +1233,7 @@ public class MapStudyController {
 	public void addquestion(Long id, String description) {
 		validator.onErrorRedirectTo(this).planning(id, "divquestion");
 		
-		System.out.println("id: " + id + " desc: " + description);
+//		System.out.println("id: " + id + " desc: " + description);
 			
 		MapStudy mapStudy = mapStudyDao.find(id);
 		
@@ -1293,9 +1293,17 @@ public class MapStudyController {
 	public void removestring(Long id, String string){
 	}
 	
-	@Get("/maps/removequestion/{questid}")
+	@Get("/maps/{mapid}/removequestion/{questid}")
 	public void removequestion(Long mapid, Long questid){
+		System.out.println(mapid + " - " + questid);
+		MapStudy mapStudy = mapStudyDao.find(mapid);
 		
+		mapStudy.removeResearchQuestion(questid);
+		
+		mapStudyDao.update(mapStudy);
+		
+		result.include("notice", new SimpleMessage("mapstudy", "mapstudy.research.question.remove.success"));
+	    result.redirectTo(this).planning(mapid, "divquestion");
 	}
 	
 	@Get("/maps/editquestion/{questid}")

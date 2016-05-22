@@ -7,7 +7,7 @@ $(document).ready(function(){
 
 	var selectAlternative = function(){
 		$('.alternative_list_id').each(function(idx){
-			console.log('ele ', $(this));
+// 			console.log('ele ', $(this));
 			var qid = $(this).attr('id');
 			var i = qid.lastIndexOf('_');
 			qid = qid.slice(i + 1, qid.length);			
@@ -45,7 +45,7 @@ $(document).ready(function(){
 
 			
 	var actualizeArticle = function(article, extraction){
-		console.log('entra atualiza article', article.source);
+// 		console.log('entra atualiza article', article.source);
 		//alterar a url para caso seja realizado F5
 		var url = window.location.href;
 		url = url.substr(0, url.lastIndexOf('/')) + '/' + article.id;
@@ -55,7 +55,7 @@ $(document).ready(function(){
 		//window.location.reload();
 		
 		var mySource = function (s){
-			console.log("sss: ", s);
+// 			console.log("sss: ", s);
 			if (s == "SCOPUS"){
 				return "Scopus" 
 			}else if (s == "ENGINEERING_VILLAGE"){
@@ -81,7 +81,7 @@ $(document).ready(function(){
 		$('#articlesource').val(mySource(article.source));
 		$('#articlescore').val(article.score);
 		
-		console.log('source encontrado', $('#articlesource'));
+// 		console.log('source encontrado', $('#articlesource'));
 
 
 		//funcoes auxiliares para evitar repeticao de codigo
@@ -220,8 +220,8 @@ $(document).ready(function(){
 	}
 
 	var actualizeList = function (articleid, source, score){
-		console.log('atualiza list entrou: score' +score);
-		console.log('Source: ' + source);
+// 		console.log('atualiza list entrou: score' +score);
+// 		console.log('Source: ' + source);
 		var $article = $(".tBodyArticlesToEvaluate .readArticle[nextid=\""+articleid+"\"]");
 		var newhref = $article.attr('href');
 		if (newhref == undefined){
@@ -265,8 +265,8 @@ $(document).ready(function(){
 		var score = $('#articlescore').val();
 		var id = null;
 		
-		console.log($('#articlesource'));
-		console.log('Source eval: ', source)
+// 		console.log($('#articlesource'));
+// 		console.log('Source eval: ', source)
 		
 		// assim ele vai pegar os readArticle "filhos" de tBodyArticlesToEvaluate
 		$(".tBodyArticlesToEvaluate .readArticle").each(function (index) {
@@ -343,7 +343,7 @@ $(document).ready(function(){
 });
 					
 var messages = function (type, category, text){
-	console.log(type, category, text);
+// 	console.log(type, category, text);
 	var msg = '';
     $("#messages").empty();
      

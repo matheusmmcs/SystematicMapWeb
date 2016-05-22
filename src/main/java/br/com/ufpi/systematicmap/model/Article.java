@@ -556,12 +556,12 @@ public class Article implements Serializable {
 	}
 
 	public Long alternativesCount(Alternative x, Alternative y) {
-		System.out.println("entrou count");
+//		System.out.println("entrou count");
 		Long c=0l;
 		for (EvaluationExtractionFinal ee : getEvaluationExtractionsFinal()) {
-			System.out.println(ee);
+//			System.out.println(ee);
 			if (ee.getAlternative().equals(x) || ee.getAlternative().equals(y)){
-				System.out.println("c: " +c);
+//				System.out.println("c: " +c);
 				c++;
 				if (c == 2) return 1l;
 			}
