@@ -59,7 +59,7 @@ public class HomeController {
 		userInfo.login(currentUser);
 		
 		result.include("notice", new SimpleMessage("user.login", "mapstudy.login.success"));		
-		result.redirectTo(MapStudyController.class).list();
+		result.redirectTo(MapStudyController.class).home();
 	}
 
 	public void logout() {
