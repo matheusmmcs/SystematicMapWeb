@@ -84,6 +84,7 @@
 			        
 			        if(data && data.length > 0){
 			        	console.log(data);
+			        	data = JSON.parse(data);
 				        $('#bubbleGraph').html('');
 				        var svg = dimple.newSvg("#bubbleGraph", 600, 400);
 				        var myChart = new dimple.chart(svg, data);

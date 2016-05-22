@@ -15,7 +15,7 @@
     <meta name="description" content="TheEnd">
 	
 	<title>Systematic Map</title>
-	<link rel="shortcut icon" href="/images/books.png" type="image/png">
+	<link rel="shortcut icon" href="../images/books.png" type="image/png">
 	
 	<decorator:head/>
 	
@@ -303,6 +303,9 @@
 		    $('.select2').select2({
 		    	 allowClear: true,
 		    	 templateResult: formatState
+			});
+		    $('.select2-alternative-compare').select2({
+		    	templateResult: formatState
 			});
 
 		    $('.select2-alternative').select2();
