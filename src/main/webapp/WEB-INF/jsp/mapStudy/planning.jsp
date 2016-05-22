@@ -520,7 +520,7 @@
 			id = id ? id : '';
 			var result = '<div class="form-group subquestion-alternative"><div class="row"><div class="col-sm-10">';
 			result += '<input class="subquestion-alternative-id" type="hidden" value="' + id + '"/>';
-			result += '<input type="text" class="form-control subquestion-alternative-title" placeholder="Alternativa" value="' + val + '"/>'; 
+			result += '<input type="text" name="avalue" class="form-control subquestion-alternative-title" placeholder="Alternativa" value="' + val + '"/>'; 
 			result += '</div><div class="col-sm-2"><a class="btn btn-danger subquestion-alternative-rmv" href="#"><i class="glyphicon glyphicon-remove"></i> <fmt:message key="remove"/></a></div></div></div>';
 			return result;
 		}
@@ -535,6 +535,69 @@
 			showListSubQuesiton();
 		});
 		
+		 var conectors = function (text){
+		    	saida = "";
+		    	re = /OR/g;
+		    	re2 = /AND/g;
+		    	saida = text.replace(re, "OR".bold());
+		    	saida = saida.replace(re2, "AND".bold());
+		    	return saida;
+		 };
+		
+		$('.collapse-link').on('click', function() {
+	        var $BOX_PANEL = $(this).closest('.x_panel'),
+	            $ICON = $(this).find('i'),
+	            $BOX_CONTENT = $BOX_PANEL.find('.x_content');
+	        
+	        
+	        // fix for some div with hardcoded fix class
+	        if ($BOX_PANEL.attr('style')) {
+	            $BOX_CONTENT.slideToggle(200, function(){
+	                $BOX_PANEL.removeAttr('style');
+	            });
+	            
+	            var listSearch = $(".search-description");
+	            
+	            $.each(listSearch, function() {
+	            	var searchDesc = "" + $(this).html();
+	            	$(this).html(conectors(searchDesc));	            	
+	            });
+	            
+	        } else {
+	            $BOX_CONTENT.slideToggle(200); 
+	            $BOX_PANEL.css('height', 'auto');  
+	        }
+
+	        $ICON.toggleClass('fa-chevron-up fa-chevron-down');
+	    });
+
+	    $('.close-link').click(function () {
+	        var $BOX_PANEL = $(this).closest('.x_panel');
+
+	        $BOX_PANEL.remove();
+	    });
+	    
+	    $("#form-add-subquestion-extraction").validate({ 
+            rules: {
+           	 'name': { 
+               	 required : true,
+               	 minlength : 1
+                },
+                'avalue': {
+                    required: true,
+                    minlength : 1
+                }
+             }, messages: {
+           	  'name': {
+                     required: '<fmt:message key="required" />',
+                     minlength: '<fmt:message key="question.name.min" />'
+                 },
+                 'avalue': {
+                     required: '<fmt:message key="required" />',
+                     minlength: '<fmt:message key="alternative.value.min" />'
+                 }
+             }
+		});
 		
 	});
 })(jQuery);
@@ -787,8 +850,26 @@
  				<div class="col-md-12">
 					<h4><fmt:message key="mapstudy.search.string.list"/></h4><hr/>
 					<c:forEach var="search" items="${map.searchString}" varStatus="s">
-						<p><strong><fmt:message key="mapstudy.search.string.source"/>:</strong> <span>${search.source.description}</span></p>
-						<p><strong><fmt:message key="mapstudy.search.string"/>:</strong> <span>${search.description}</span></p><hr/>
+<%-- 						<p><strong><fmt:message key="mapstudy.search.string.source"/>:</strong> <span>${search.source.description}</span></p> --%>
+<%-- 						<p><strong><fmt:message key="mapstudy.search.string"/>:</strong> <span>${search.description}</span></p><hr/> --%>
+<!-- 						Exibir as strings -->
+						<div class="widget widget_tally_box">
+							<div class="x_panel" style="height: auto;" graph="0">
+								<div class="x_title">
+									<b>${search.source.description}</b>
+									  <ul class="nav navbar-right panel_toolbox">
+									    <li><a class="collapse-link"><i class="fa fa-chevron-down"></i></a></li>
+									    <li><a class="close-link"><i class="fa fa-close"></i></a></li>
+									  </ul>
+								  <div class="clearfix"></div>
+								</div>
+								<div class="x_content" style="display: none;">	
+									<p class="text-justify search-description">	
+										${search.description} 
+									</p>
+								</div>
+							</div>			
+						</div>					
 					</c:forEach>
 				</div>
 			</div>

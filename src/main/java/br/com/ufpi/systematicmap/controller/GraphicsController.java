@@ -241,7 +241,7 @@ public class GraphicsController {
 		}
 		
 		for (Article article : articles) {
-			String evaluation = article.getFinalEvaluation().toString();
+			String evaluation = article.getFinalEvaluation().toString(); // revisar 
 			Double value = sources.get(evaluation);
 			++value;
 			sources.put(evaluation, value);

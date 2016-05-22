@@ -41,7 +41,7 @@ public class HomeController {
 	@Get("/")
 	public void home() {
 		if(userInfo != null && userInfo.getUser() != null){
-			result.redirectTo(MapStudyController.class).list();
+			result.redirectTo(MapStudyController.class).home();
 		}
 		else{
 			result.redirectTo(this).login();

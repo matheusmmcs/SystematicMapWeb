@@ -126,7 +126,7 @@ $(document).ready(function(){
 						<button type="submit" id="submit" class="btn btn-large btn-primary" style="width: 130px;">
 							<fmt:message key="mapstudy.article.refine" />
 						</button>
-						<a style="width: 130px; margin-left: 5px;" class="btn btn-large btn-danger" href="">Desfazer Refino</a>
+						<a style="width: 130px; margin-left: 5px;" class="btn btn-large btn-danger" href="${linkTo[MapStudyController].unrefinearticles(map.id)}">Desfazer Refino</a>
 					</div>
 					<!-- <form action="${linkTo[MapStudyController].unrefinearticles}" method="post">
 						<input type="hidden" name="id" value="${map.id}" />

@@ -163,15 +163,15 @@
 	                            <table class="table" style="margin-bottom: 0px;">
 	                                <tr><td style="border-top-width: 0px; padding: 10px 8px;">
                                         <span class="glyphicon glyphicon-home text-info marginRight10"></span>
-                                        <a href="">Home</a>
+                                        <a href="${linkTo[MapStudyController].home}">Home</a>
 	                                </td></tr>
 	                                <tr><td style="padding: 10px 8px;">
                                         <span class="glyphicon glyphicon-list text-info marginRight10"></span>
-                                        <a href="">Listar Mapeamentos</a>
+                                        <a href="${linkTo[MapStudyController].list}">Listar Mapeamentos</a>
 	                                </td></tr>
 	                                <tr><td style="padding: 10px 8px;">
 	                                	<span class="glyphicon glyphicon-plus text-info marginRight10"></span>
-	                                	<a href="">Novo Mapeamento</a>
+	                                	<a href="${linkTo[MapStudyController].create}">Novo Mapeamento</a>
 	                                </td></tr>
 	                            </table>
 	                        </div>
@@ -190,11 +190,11 @@
 	                            <table class="table" style="margin-bottom: 0px;">
 	                                <tr><td style="border-top-width: 0px; padding: 10px 8px;">
 	                                	<span class="glyphicon glyphicon-user text-info marginRight10"></span>
-	                                	<a href="">Perfil</a>
+	                                	<a href="${linkTo[UsersController].profile(userInfo.user.id)}">Perfil</a>
 	                                </td></tr>
 	                                <tr><td style="padding: 10px 8px;">
 	                                	<span class="glyphicon glyphicon-off text-info marginRight10"></span>
-	                                	<a href="">Logout</a>
+	                                	<a href="${linkTo[HomeController].logout}">Logout</a>
 	                                </td></tr>
 	                            </table>
 	                        </div>
@@ -235,10 +235,11 @@
     </div>
 
 	<!-- Footer -->
-<!-- 	<footer> -->
-<!--         <div class="container text-center" style="margin-top: 8px;"> -->
+<!--     <footer> -->
+<!--         <div class="container text-center"> -->
+<!-- <!--             <p>Copyright &copy; Your Website 2014</p> --> -->
 <!--             <p>© 2015-2016. Todos os direitos reservados.</p> -->
-<!--             <p><a href="http://easii.ufpi.br">EaSII</a> - Laborat&oacute;rio de Engenharia de Software e Inform&aacute;tica Industrial</p> -->
+<!--             <p><a href="http://easii.ufpi.br">EASII</a> - Laborat&oacute;rio de Engenharia de Software e Inform&aacute;tica Industrial</p> -->
 <!--         </div> -->
 <!--     </footer> -->
 	

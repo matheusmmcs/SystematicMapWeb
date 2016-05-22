@@ -31,6 +31,21 @@ $(document).ready(function(){
 		url = url.substr(0, url.lastIndexOf('/')) + '/' + article.id;
 		window.history.pushState("", "", url);
 		//window.location.reload();
+		
+		var mySource = function (s){
+			console.log("sss", s);
+			if (s == "SCOPUS"){
+				return "Scopus" 
+			}else if (s == "ENGINEERING_VILLAGE"){
+				return "Engineering Village";
+			}else if (s == "WEB_OF_SCIENCE"){
+				return "Web Of Science";
+			}else if (s == "OTHER"){
+				return "Outros";
+			}else if (s =="MANUALLY"){
+				return "Manual";
+			}	
+		};
 
 		//alterar dados do artigo
 		$('#articleReadId').html(article.id);
@@ -41,6 +56,10 @@ $(document).ready(function(){
 		$('#articleReadAuthor').html(article.author);
 		$('#articleReadDoctype').html(article.docType);
 		$('#articleReadYear').html(article.year);
+		$('#articlesource').val(mySource(article.source));
+		$('#articlescore').val(article.score);
+		
+		console.log($('#articlesource'));
 
 
 		//funcoes auxiliares para evitar repeticao de codigo
@@ -202,10 +221,10 @@ $(document).ready(function(){
 						//console.log('article: ', article);
 // 						console.log('eval: ', evaluation);
 
-						messages('info', 'Artigo '+articleid, 'Avalia&ccedil;&atilde;o do artigo realizada com sucesso');
+						messages('info', 'Artigo '+articleid, 'Avalia&ccedil;&atilde;o do artigo realizada com sucesso.');
 						
 						if (article.id == articleid){
-							messages('warning', 'Artigo', 'Todos os artigos j&aacute; foram avaliados');
+							messages('warning', 'Artigo', 'Todos os artigos j&aacute; foram avaliados.');
 // 							alert('Sem mais artigos para avaliar!');
 // 							window.location.reload();
 						}//else {
@@ -224,7 +243,7 @@ $(document).ready(function(){
 			
 		} else {
 			//apresentar mensagem para o usuario -> ao menos um criterio deve ser selecionado
-			messages('warning', 'Crit&eacute;rios', 'Selecione pelo menos um crit&eacute;rio');
+			messages('warning', 'Crit&eacute;rios', 'Selecione pelo menos um crit&eacute;rio.');
 // 			alert('Nenhum criterio foi selecionado !');
 		}		
 	};
@@ -330,7 +349,7 @@ $(document).ready(function(){
 		<form id="formInclude" action="${linkTo[MapStudyController].includearticle}" method="post">
 			<input type="hidden" id="mapid" name="mapid" value="${map.id}" />
 			<input type="hidden" id="articleid" name="articleid" value="${article.id}" />
-			<input type="hidden" id="articlesource" name="articlesource" value="${artivle.sourceView(article.source)}" />
+			<input type="hidden" id="articlesource" name="articlesource" value="${article.sourceView(article.source)}" />
 			<input type="hidden" id="articlescore" name="articlescore" value="${article.score}" />
 			
 			<p> 

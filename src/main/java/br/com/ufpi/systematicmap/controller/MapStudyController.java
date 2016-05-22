@@ -128,7 +128,7 @@ public class MapStudyController {
 
 	@Post("/maps")
 	public void add(final @NotNull @Valid MapStudy mapstudy) {
-		validator.onErrorForwardTo(this).list();
+		validator.onErrorForwardTo(this).create();
 		
 		User user = userInfo.getUser();
 		userDao.refresh(user);
@@ -452,7 +452,7 @@ public class MapStudyController {
 		result.redirectTo(this).identification(id);
 	}
 	
-	@Post("/maps/unrefinearticles")
+	@Get("/maps/{id}/unrefinearticles")
 	public void unrefinearticles(Long id){
 		MapStudy mapStudy = mapStudyDao.find(id);
 		
@@ -1323,6 +1323,16 @@ public class MapStudyController {
 		result.include("questions", questions);
 		result.include("eixos", eixos);
 		result.include("map", map);
+	}
+	
+	@Get("/map")
+	public void create(){
+		
+	}
+	
+	@Get("/home")
+	public void home(){
+		
 	}
 		
 }
