@@ -3,6 +3,7 @@
 
 <ol class="breadcrumb u-margin-top">
   <li><a href="<c:url value="/" />"><fmt:message key="home"/></a></li>
+  <li><a href="${linkTo[MapStudyController].list}"><fmt:message key="mapstudy.short.list"/></a></li>
   <li><a href="${linkTo[MapStudyController].show(criteria.mapStudy.id)}"><fmt:message key="mapstudy.details"/></a></li>
   <li><a href="${linkTo[MapStudyController].planning(criteria.mapStudy.id)}"><fmt:message key="mapstudy.planning"/></a></li>
   <li class="active"><fmt:message key="mapstudy.inclusion.criteria.remove"/></li>

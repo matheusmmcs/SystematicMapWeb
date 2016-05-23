@@ -50,11 +50,7 @@ public class FilterArticles {
 	
 	public void filter(){
 		try{
-			if(levenshtein != -1){
-				calcTitleLevenshteinDistance(levenshtein);
-			}
-//			System.out.println("Regex: "+regex);
-//			System.out.println("Probs lenshtein: "+countPapers(ClassificationEnum.REPEAT));
+			System.out.println("Regex: "+regex);
 			
 			String[] termos = regex.split(";");
 			for(String t : termos){
@@ -64,12 +60,16 @@ public class FilterArticles {
 				}				
 			}
 			
-//			System.out.println("Total de artigos: "+papers.size());
-//			System.out.println("Probs autores: "+filterAuthors());
-//			System.out.println("Patentes: "+filterPatents());
+			System.out.println("Total de artigos: "+papers.size());
+			System.out.println("Probs autores: "+filterAuthors());
+			System.out.println("Patentes: "+filterPatents());
 			filterRegex(limiartitulo, limiarabstract, limiarkeywords, limiartotal);
 			
-//			System.out.println("Probs palavras: "+countPapers(ClassificationEnum.WORDS_DONT_MATCH));
+			if(levenshtein != -1){
+				calcTitleLevenshteinDistance(levenshtein);
+			}
+			System.out.println("Probs lenshtein: "+countPapers(ClassificationEnum.REPEAT));
+			System.out.println("Probs palavras: "+countPapers(ClassificationEnum.WORDS_DONT_MATCH));
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -104,11 +104,7 @@ public class FilterArticles {
 			Set<String> termos = new HashSet<String>();
 			
 			termos = countRegex(p, FieldEnum.TITLE, limiarTitle, termos);
-//			System.out.println("Termos: " +termos );
-//			System.out.println("SIze: " +termos.size() );
 			termos = countRegex(p, FieldEnum.ABS, limiarAbs, termos);
-//			System.out.println("Termos: " +termos );
-//			System.out.println("SIze: " +termos.size() );
 			termos = countRegex(p, FieldEnum.KEYS, limiarKeys, termos);
 			
 			
@@ -152,7 +148,7 @@ public class FilterArticles {
 				}
 			}
 			count++;
-//			System.out.println("loading:"+(count/size)*100);
+			System.out.println("loading:"+(count/size)*100);
 		}
 	}
 	

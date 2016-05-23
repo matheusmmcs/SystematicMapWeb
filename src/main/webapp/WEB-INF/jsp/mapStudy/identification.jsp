@@ -14,6 +14,7 @@ $(document).ready(function(){
 
 <ol class="breadcrumb u-margin-top" style="margin-top: 0px;">
   <li><a href="<c:url value="/" />"><fmt:message key="home"/></a></li>
+  <li><a href="${linkTo[MapStudyController].list}"><fmt:message key="mapstudy.short.list"/></a></li>
   <li><a href="${linkTo[MapStudyController].show(map.id)}"><fmt:message key="mapstudy.details"/></a></li>
   <li class="active"><fmt:message key="mapstudy.searching"/></li>
 </ol>
@@ -94,7 +95,9 @@ $(document).ready(function(){
 						</div>
 						<div class="form-group">
 							<label for="regex">Regex (termo:regex;...)</label>
-							<textarea class="form-control" id="regexterm" name="regex" rows="5" cols=""	data-toggle="popover" data-trigger="hover" data-placement="left" data‐container="body" data-content='<fmt:message key="mapstudy.article.refine.regexterm" />' data-title='<fmt:message key="mapstudy.article.refine.information" />'>automatico:(automat.*|semiautomati.*|semi-automati.*);web:(web|website|internet|www);usabilidade:(usability|usable);tecnica:(evalu.*|assess.*|measur.*|experiment.*|stud.*|test.*|method.*|techni.*|approach.*)</textarea>
+							<textarea class="form-control" id="regexterm" name="regex" rows="5" cols=""	data-toggle="popover" data-trigger="hover" data-placement="left" data‐container="body" data-content='<fmt:message key="mapstudy.article.refine.regexterm" />' data-title='<fmt:message key="mapstudy.article.refine.information" />'>IC:(computational\sintelligence|artificial\sintelligence|soft\scomputing|metaheuristic);Ferramenta:(framework|tool|service|library|api)
+							</textarea>
+<!-- 							automatico:(automat.*|semiautomati.*|semi-automati.*);web:(web|website|internet|www);usabilidade:(usability|usable);tecnica:(evalu.*|assess.*|measur.*|experiment.*|stud.*|test.*|method.*|techni.*|approach.*) -->
 						</div>
 						<div class="form-group">
 							<label for="limiartitulo">Limiar T&iacute;tulo</label>

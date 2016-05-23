@@ -12,11 +12,12 @@ $(document).ready(function(){
 
 <ol class="breadcrumb u-margin-top" style="margin-top: 0px;">
   <li><a href="<c:url value="/" />"><fmt:message key="home"/></a></li>
+  <li><a href="${linkTo[MapStudyController].list}"><fmt:message key="mapstudy.short.list"/></a></li>
   <li class="active"><fmt:message key="mapstudy.details"/></li>
 </ol>
 
 <h3 class="color-primary">
-	${map.title} <a id="return" class="btn btn-default pull-right" href="<c:url value="/" />"><fmt:message key="button.back"/></a>
+	${map.title} <a id="return" class="btn btn-default pull-right" href="${linkTo[MapStudyController].list}"><fmt:message key="button.back"/></a>
 </h3>
 <hr/>
 

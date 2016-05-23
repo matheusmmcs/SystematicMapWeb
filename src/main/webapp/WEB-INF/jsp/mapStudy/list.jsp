@@ -1,6 +1,11 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+<ol class="breadcrumb u-margin-top" style="margin-top: 0px;">
+  <li><a href="<c:url value="/" />"><fmt:message key="home"/></a></li>
+  <li class="active"><fmt:message key="mapstudy.short.list"/></li>
+</ol>
+
 <h3 class="color-primary" style="margin-top: 0px;"><fmt:message key="mapstudy.my"/></h3>
 <hr/>
 

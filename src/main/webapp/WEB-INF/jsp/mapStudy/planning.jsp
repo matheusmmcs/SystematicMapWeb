@@ -5,6 +5,24 @@
 	(function($) {
 		$(document).ready(function() {
 			
+			var messages = function (type, category, text){
+				var msg = '';
+			    $("#messages").empty();
+			     
+			    msg =	'<div class="alert alert-'+type+' alert-dismissible" role="alert" id="'+type+'">' +
+					'<button type="button" class="close" data-dismiss="alert" data-hide="alert">&times;</button>' +
+					'<b>' + category + '</b> - '+ text + '<br />' +
+				'</div>';
+				
+			    $("#messages").append(msg);
+			    
+			    $('html, body').animate({ scrollTop: 0 }, 'slow');
+
+			    $(".alert").click(function() {
+			    	$(".alert").hide();
+			    });
+			};	
+			
 		var isLogado = function() {
 			if ('${userInfo.user}' == null) {
 				window.location.reload();
@@ -411,7 +429,8 @@
 				},
 				error : function(e) {
 					hidePreloader();
-					alert('Ops, ocorreu um problema ao carregar a lista de questões. Tente novamente');
+// 					alert('Ops, ocorreu um problema ao carregar a lista de questões. Tente novamente');
+					messages('danger', 'Quest&otilde;es', 'Ops, ocorreu um problema ao carregar a lista de questões. Tente novamente.');
 					console.log(e);
 				}
 			});
@@ -436,7 +455,8 @@
 				},
 				error : function(e) {
 					hidePreloader();
-					alert('Ops, ocorreu um problema ao carregar a questão. Tente novamente');
+// 					alert('Ops, ocorreu um problema ao carregar a questão. Tente novamente');
+					messages('danger', 'Quest&otilde;es', 'Ops, ocorreu um problema ao carregar a questão. Tente novamente.');
 					if(callbackError && typeof(callbackError) === "function") {
 						callbackError(e);
 			        }
@@ -461,10 +481,14 @@
 					loadAllQuestions(function(){
 						showListSubQuesiton();
 					});
+					//TODO
+					messages('info', question.name, 'Foi salva com sucesso !');
 				},
 				error : function(e) {
 					hidePreloader();
-					alert('Ops, ocorreu um problema ao salvar a questão. Tente novamente');
+// 					alert('Ops, ocorreu um problema ao salvar a questão. Tente novamente');
+					messages('danger', 'Quest&otilde;es', 'Ops, ocorreu um problema ao salvar a quest&atilde;o. Tente novamente.');
+
 					console.error(e);
 				}
 			});
@@ -488,7 +512,8 @@
 				},
 				error : function(e) {
 					hidePreloader();
-					alert('Ops, ocorreu um problema ao remover a questão. Tente novamente');
+// 					alert('Ops, ocorreu um problema ao remover a questão. Tente novamente');
+					messages('danger', 'Quest&otilde;es', 'Ops, ocorreu um problema ao remover a questão. Tente novamente.');
 					console.error(questionid, e);
 				}
 			});
@@ -532,7 +557,7 @@
 			id = id ? id : '';
 			var result = '<div class="form-group subquestion-alternative"><div class="row"><div class="col-sm-10">';
 			result += '<input class="subquestion-alternative-id" type="hidden" value="' + id + '"/>';
-			result += '<input type="text" name="avalue" class="form-control subquestion-alternative-title" placeholder="Alternativa" value="' + val + '"/>'; 
+			result += '<input required type="text" name="avalue" class="form-control subquestion-alternative-title" placeholder="Alternativa" value="' + val + '"/>'; 
 			result += '</div><div class="col-sm-2"><a class="btn btn-danger subquestion-alternative-rmv" href="#"><i class="glyphicon glyphicon-remove"></i> <fmt:message key="remove"/></a></div></div></div>';
 			return result;
 		}
@@ -593,27 +618,27 @@
 	        $BOX_PANEL.remove();
 	    });
 	    
-	    $("#form-add-subquestion-extraction").validate({ 
-            rules: {
-           	 'name': { 
-               	 required : true,
-               	 minlength : 1
-                },
-                'avalue': {
-                    required: true,
-                    minlength : 1
-                }
-             }, messages: {
-           	  'name': {
-                     required: '<fmt:message key="required" />',
-                     minlength: '<fmt:message key="question.name.min" />'
-                 },
-                 'avalue': {
-                     required: '<fmt:message key="required" />',
-                     minlength: '<fmt:message key="alternative.value.min" />'
-                 }
-             }
-		});
+// 	    $("#form-add-subquestion-extraction").validate({ 
+//             rules: {
+//            	 'name': { 
+//                	 required : true,
+//                	 minlength : 1
+//                 },
+//                 'avalue': {
+//                     required: true,
+//                     minlength : 1
+//                 }
+//              }, messages: {
+//            	  'name': {
+//                      required: '<fmt:message key="required" />',
+//                      minlength: '<fmt:message key="question.name.min" />'
+//                  },
+//                  'avalue': {
+//                      required: '<fmt:message key="required" />',
+//                      minlength: '<fmt:message key="alternative.value.min" />'
+//                  }
+//              }
+// 		});
 		
 	});
 })(jQuery);
@@ -621,6 +646,7 @@
 
 <ol class="breadcrumb u-margin-top" style="margin-top: 0px;">
   <li><a href="<c:url value="/" />"><fmt:message key="home"/></a></li>
+  <li><a href="${linkTo[MapStudyController].list}"><fmt:message key="mapstudy.short.list"/></a></li>
   <li><a href="${linkTo[MapStudyController].show(map.id)}"><fmt:message key="mapstudy.details"/></a></li>
   <li class="active"><fmt:message key="mapstudy.planning"/></li>
 </ol>
@@ -640,8 +666,8 @@
   <li role="presentation" class="mynav" id="goals"><a href="#"><fmt:message key="mapstudy.goals" /> <!--  <span class="glyphicon glyphicon-ok"></span>--></a></li>
   <li role="presentation" class="mynav" id="question"><a href="#" ><fmt:message key="mapstudy.research.question" /></a></li>
   <li role="presentation" class="mynav" id="string"><a href="#" ><fmt:message key="mapstudy.search.string" /></a></li>
-  <li role="presentation" class="mynav" id="extraction"><a href="#" ><fmt:message key="mapstudy.form" /></a></li>
   <li role="presentation" class="mynav" id="criterias"><a href="#" ><fmt:message key="mapstudy.inclusion.and.exclusion.criterias" /></a></li>
+  <li role="presentation" class="mynav" id="extraction"><a href="#" ><fmt:message key="mapstudy.form" /></a></li>
 </ul>
 
 <p>
