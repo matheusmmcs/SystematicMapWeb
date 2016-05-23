@@ -237,7 +237,7 @@
 	<!-- Footer -->
 <!--     <footer> -->
 <!--         <div class="container text-center"> -->
-<!-- <!--             <p>Copyright &copy; Your Website 2014</p> --> -->
+<!--             <p>Copyright &copy; Your Website 2014</p> -->
 <!--             <p>© 2015-2016. Todos os direitos reservados.</p> -->
 <!--             <p><a href="http://easii.ufpi.br">EASII</a> - Laborat&oacute;rio de Engenharia de Software e Inform&aacute;tica Industrial</p> -->
 <!--         </div> -->
