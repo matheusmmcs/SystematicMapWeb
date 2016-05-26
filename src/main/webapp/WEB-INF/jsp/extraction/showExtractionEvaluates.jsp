@@ -155,7 +155,7 @@ $(document).ready(function(){
 
 <div class="row">
 	<div class="col-md-12">
-		<div class="panel panel-primary">
+		<div class="panel panel-default">
 			<div class="panel-heading"><b><fmt:message key="mapstudy.details"/></b></div>
 			<div class="panel-body">
 				<dl class="dl-horizontal">
@@ -184,7 +184,7 @@ $(document).ready(function(){
 		
 		<!-- Exibir questões e alternativas selecionadas		 -->
 
-		<div class="panel panel-primary">
+		<div class="panel panel-default">
 			<div class="panel-heading"><b><fmt:message key="mapstudy.extractions.user"/></b></div>
 			<div class="panel-body">
 				<c:forEach var="ext" items="${extractions}" varStatus="a">

@@ -104,14 +104,18 @@ public class UsersController {
 				.exclude("email", "login", "password").serialize();
 	}
 	
-	@Path("/users/profile/{id}")
+	@Path("/user/profile/{id}")
 	@Get
 	@Public
 	public void profile(Long id) {
+		System.out.println(id);
 		User user = userDao.find(id);
-		result.include("user", user);
-		result.include("notice", new SimpleMessage("user.profile", "user.profile.sucess"));
 		
+		validator.check(user != null, new SimpleMessage("user", "user.non-existent"));
+        validator.onErrorRedirectTo(HomeController.class).home();
+		
+		result.include("user", user);
+		result.include("notice", new SimpleMessage("user.profile", "user.profile.sucess"));		
 	}
 	
 	/*

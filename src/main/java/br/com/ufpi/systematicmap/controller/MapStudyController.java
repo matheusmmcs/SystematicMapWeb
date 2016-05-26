@@ -922,7 +922,9 @@ public class MapStudyController {
 	private Download generateFile(MapStudy mapStudy, List<Article> articles) throws IOException {
 		
 		//create file
-		String filename = mapStudy.getTitle().replaceAll(" ", "_")+ ".csv";
+//		String filename = mapStudy.getTitle().replaceAll(" ", "_")+ ".csv";
+		Long time = System.currentTimeMillis();
+		String filename =  "Evaluations_" + mapStudy.getId() +"_"+time+ ".csv";
 		File file = new File(filename);
 		String encoding = "ISO-8859-1";
 		FileWriterWithEncoding writer = new FileWriterWithEncoding(file, encoding, false);

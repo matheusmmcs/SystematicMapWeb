@@ -4,7 +4,7 @@
 
 	<groupId>br.com.caelum</groupId>
 	<artifactId>SystematicMap</artifactId>
-	<version>2.0</version>
+	<version>2.0.2</version>
 	<packaging>war</packaging>
 
 	<description>Example application to use with VRaptor 4</description>

@@ -43,18 +43,29 @@ public class UserDao extends Dao<User> {
 	}
 
 	public User find(String login) {
-		User user = entityManager
-				.createQuery("select u from User u where u.login = :login", User.class)
+		User user = null;
+		
+		try{
+			user = entityManager.createQuery("select u from User u where u.login = :login", User.class)
 					.setParameter("login", login)
-					.getSingleResult();
+					.getSingleResult();			
+		}catch(Exception e){
+		}
+		
 		return user;
 	}
 	
 	public boolean containsUserWithLogin(String login) {
-		Long count = entityManager
-				.createQuery("select count(u) from User u where u.login = :login", Long.class)
-				.setParameter("login", login)
-				.getSingleResult();
+		Long count = -1l;
+		
+		try{
+			count = entityManager
+					.createQuery("select count(u) from User u where u.login = :login", Long.class)
+					.setParameter("login", login)
+					.getSingleResult();			
+		}catch(Exception e){
+			
+		}
 		return count > 0;
 	}
 	
@@ -106,16 +117,30 @@ public class UserDao extends Dao<User> {
 	}
 
 	public boolean containsUserWithEMail(String email) {
-		Long count = entityManager
-				.createQuery("select count(u) from User u where u.email = :email", Long.class)
-				.setParameter("email", email)
-				.getSingleResult();
+		Long count = -1l;
+		
+		try{
+			count = entityManager
+					.createQuery("select count(u) from User u where u.email = :email", Long.class)
+					.setParameter("email", email)
+					.getSingleResult();			
+		}catch(Exception e){
+			
+		}
+		
 		return count > 0;
 	}
 	
 	@Override
 	public User find(Long id) {
-		User user = entityManager.createQuery("select u from User u where u.id =:id and u.removed = false", User.class).setParameter("id", id).getSingleResult();
+		User user = null;
+		
+		try{
+			user = entityManager.createQuery("select u from User u where u.id =:id and u.removed = false", User.class).setParameter("id", id).getSingleResult();
+		}catch(Exception e){
+			
+		}
+		
 		return user;
 	}
 

@@ -1,8 +1,6 @@
 package br.com.ufpi.systematicmap.dao;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Set;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -13,7 +11,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import br.com.ufpi.systematicmap.model.Article;
-import br.com.ufpi.systematicmap.model.EvaluationExtraction;
 import br.com.ufpi.systematicmap.model.MapStudy;
 import br.com.ufpi.systematicmap.model.User;
 import br.com.ufpi.systematicmap.model.enums.EvaluationStatusEnum;
@@ -90,11 +87,17 @@ public class ArticleDao extends Dao<Article> {
 	}
 	
 	public Long countArticlesFinalAccepted(MapStudy mapStudy){
-		Long count = entityManager
-			.createQuery("select count(1) from Article a where a.finalEvaluation = :finalEvaluation and a.mapStudy = :mapStudy", Long.class)
+		Long count = -1l;
+		
+		try {
+			count = entityManager
+				.createQuery("select count(1) from Article a where a.finalEvaluation = :finalEvaluation and a.mapStudy = :mapStudy", Long.class)
 				.setParameter("mapStudy", mapStudy)
 				.setParameter("finalEvaluation", EvaluationStatusEnum.ACCEPTED)
 				.getSingleResult();
+		}catch(Exception e){
+		}
+		
 		return count;
 	}
 	
@@ -105,19 +108,31 @@ public class ArticleDao extends Dao<Article> {
 	 * @return
 	 */
 	public Long countArticlesFinalEvaluation(MapStudy mapStudy){
-		Long count = entityManager
-			.createQuery("select count(1) from Article a where a.classification = null and a.finalEvaluation = null and a.mapStudy = :mapStudy", Long.class)
-				.setParameter("mapStudy", mapStudy)
-				.getSingleResult();
+		Long count = -1l;
+		
+		try{
+			count = entityManager.createQuery("select count(1) from Article a where a.classification = null and a.finalEvaluation = null and a.mapStudy = :mapStudy", Long.class)
+						 .setParameter("mapStudy", mapStudy)
+						 .getSingleResult();
+		}catch(Exception e){
+		}		
+		
 		return count;
 	}
 	
 	public Long countArticleToEvaluate(User user, MapStudy mapStudy){
-		Long count = entityManager
-		.createQuery("select count(1) from Article a where a.classification = null and a.mapStudy = :mapStudy and a.id not in (select e.article.id from Evaluation e where e.user = :user and e.mapStudy = :mapStudy)", Long.class)
-			.setParameter("user", user)
-			.setParameter("mapStudy", mapStudy)
-			.getSingleResult();
+		Long count = -1l;
+		
+		try{
+			count = entityManager
+					.createQuery("select count(1) from Article a where a.classification = null and a.mapStudy = :mapStudy and a.id not in (select e.article.id from Evaluation e where e.user = :user and e.mapStudy = :mapStudy)", Long.class)
+					.setParameter("user", user)
+					.setParameter("mapStudy", mapStudy)
+					.getSingleResult();			
+		}catch(Exception e){
+			
+		}
+		
 		return count;
 	}
 	
@@ -131,12 +146,19 @@ public class ArticleDao extends Dao<Article> {
 //	}	
 	
 	public Long countArticleToEvaluateExtraction(User user, MapStudy mapStudy){
-		Long count = entityManager
-		.createQuery("select count(1) from Article a where a.finalEvaluation = :finalEvaluation and a.mapStudy = :mapStudy and a.id not in (select e.article.id from EvaluationExtraction e where e.user = :user)", Long.class)
-			.setParameter("user", user)
-			.setParameter("mapStudy", mapStudy)
-			.setParameter("finalEvaluation", EvaluationStatusEnum.ACCEPTED)
-			.getSingleResult();
+		Long count = -1l;
+		
+		try{
+			count = entityManager
+					.createQuery("select count(1) from Article a where a.finalEvaluation = :finalEvaluation and a.mapStudy = :mapStudy and a.id not in (select e.article.id from EvaluationExtraction e where e.user = :user)", Long.class)
+					.setParameter("user", user)
+					.setParameter("mapStudy", mapStudy)
+					.setParameter("finalEvaluation", EvaluationStatusEnum.ACCEPTED)
+					.getSingleResult();			
+		}catch(Exception e){
+			
+		}
+		
 		return count;
 	}
 	
@@ -152,7 +174,15 @@ public class ArticleDao extends Dao<Article> {
         p = qb.and(qb.equal(root.get("mapStudy"), mapStudy), qb.isNull(root.get("classification")));
 		cq.where(p);
 		
-		return entityManager.createQuery(cq).getSingleResult();
+		Long count = -1l;
+		
+		try{
+			count = entityManager.createQuery(cq).getSingleResult();
+		}catch(Exception e){
+			
+		}
+		
+		return count;
 	}
 
 	public List<Article> getArticlesToExtraction(User user, MapStudy mapStudy) {

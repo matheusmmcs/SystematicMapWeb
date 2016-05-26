@@ -627,7 +627,9 @@ public class ExtractionController {
 	
 	private Download generateFile(MapStudy mapStudy, List<Article> articles, boolean all) throws IOException {
 		//create file
-		String filename = "Extractions_" + mapStudy.getTitle().replaceAll(" ", "_")+ ".csv";
+//		String filename = "Extractions_" + mapStudy.getTitle().replaceAll(" ", "_")+ ".csv";
+		Long time = System.currentTimeMillis();
+		String filename =  "Extractions_" + mapStudy.getId() +"_"+time+ ".csv";
 		File file = new File(filename);
 		String encoding = "ISO-8859-1";
 		FileWriterWithEncoding writer = new FileWriterWithEncoding(file, encoding, false);

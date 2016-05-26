@@ -3,15 +3,10 @@
  */
 package br.com.ufpi.systematicmap.dao;
 
-import java.util.List;
-
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 
 import br.com.ufpi.systematicmap.model.Alternative;
-import br.com.ufpi.systematicmap.model.Article;
-import br.com.ufpi.systematicmap.model.MapStudy;
-import br.com.ufpi.systematicmap.model.Question;
 
 /**
  * @author Gleison Andrade

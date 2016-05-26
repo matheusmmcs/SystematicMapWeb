@@ -47,8 +47,7 @@
   		
 		<h4><fmt:message key="mapstudy.evaluations.all"/></h4>
 		<div class="dataTable_wrapper">
-			<table
-				class="table table-striped table-bordered table-hover personalized-table">
+			<table class="table table-striped table-bordered table-hover personalized-table">
 				<thead>
 					<tr>
 						<th class="text-center">ID</th>
@@ -195,20 +194,22 @@
 					mapStudyId : $('#mapStudyId').val()
 				}
 			    
+			    var url = "${linkTo[MapStudyController].calcKappa}";
+			    
 			    if (count > 1){
 					$.ajax({
 						data: formData,
-						url: "/SystematicMap/maps/kappa",
+						url: url,
 						method: "POST",
 						success: function(data){
-	// 						console.log(data);
+							console.log(data);
 							if(data.hashMap){
 								$('#kappa-members').html(data.hashMap.members);
 								$('#kappa-value').html(data.hashMap.kappa);
 							}
 						},
 						error: function(err){
-	// 						console.log(err);
+							console.log(err);
 						}
 					});			    	
 			    }
@@ -218,9 +219,11 @@
 			$(document).on('click', '.article-to-read', function(e){
 				e.preventDefault();
 				var id = $(this).children('.article-id').html();
+				var url = "${linkTo[MapStudyController].articleDetail(id)}";
+				url = url.replace("id", id);
 				
 				$.ajax({
-					url: "/SystematicMap/maps/article/"+id+"/details",
+					url: url,
 					method: "GET",
 					success: function(data){
 // 						console.log(data);

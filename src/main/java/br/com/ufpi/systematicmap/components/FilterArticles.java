@@ -63,11 +63,13 @@ public class FilterArticles {
 			System.out.println("Total de artigos: "+papers.size());
 			System.out.println("Probs autores: "+filterAuthors());
 			System.out.println("Patentes: "+filterPatents());
+			
 			filterRegex(limiartitulo, limiarabstract, limiarkeywords, limiartotal);
 			
 			if(levenshtein != -1){
 				calcTitleLevenshteinDistance(levenshtein);
 			}
+			
 			System.out.println("Probs lenshtein: "+countPapers(ClassificationEnum.REPEAT));
 			System.out.println("Probs palavras: "+countPapers(ClassificationEnum.WORDS_DONT_MATCH));
 		}catch(Exception e){
@@ -115,7 +117,8 @@ public class FilterArticles {
 //			System.out.println("KEY: " + p.getRegexKeys());
 //			System.out.println("TIT: " + p.getRegexTitle());
 			
-			p.setScore(p.getRegexAbs() + p.getRegexKeys() + p.getRegexTitle());
+//			p.setScore(p.getRegexAbs() + p.getRegexKeys() + p.getRegexTitle());
+			p.setScore(termos.size());
 			
 			if(termos.size() < limiarTotal){
 				p.setClassification(ClassificationEnum.WORDS_DONT_MATCH);

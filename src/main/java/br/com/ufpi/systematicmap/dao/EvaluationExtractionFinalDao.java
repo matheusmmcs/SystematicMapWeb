@@ -21,7 +21,6 @@ import javax.persistence.EntityManager;
 import br.com.ufpi.systematicmap.model.Article;
 import br.com.ufpi.systematicmap.model.EvaluationExtractionFinal;
 import br.com.ufpi.systematicmap.model.MapStudy;
-import br.com.ufpi.systematicmap.model.Question;
 
 public class EvaluationExtractionFinalDao extends Dao<EvaluationExtractionFinal> {
 		

@@ -42,6 +42,7 @@ public class MapStudy implements Serializable{
 
 	@NotNull(message = "required")
     @Size(min = 3, message="mapstudy.min.description")
+	@Lob
 	private String description;
     
     private boolean removed;

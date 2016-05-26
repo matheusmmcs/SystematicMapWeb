@@ -14,7 +14,7 @@
 	<a id="return" class="btn btn-default pull-right" href="${linkTo[MapStudyController].identification(map.id)}"><fmt:message key="button.back"/></a>
 </h3>
 
-</br>
+<br />
 
 <c:if test="${not empty articles}">
 
@@ -46,8 +46,6 @@
 	</tbody>
 </table>
 		<input type="hidden" name="mapId" id="mapId" value="${map.id}"/>	
-		
-		</br>
 		
 		<button type="submit" class="btn btn-danger pull-rigth"><i class="glyphicon glyphicon-remove"></i> <fmt:message key="remove"/></button>
 	</form>

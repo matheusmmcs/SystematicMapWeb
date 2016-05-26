@@ -15,7 +15,7 @@ import br.com.ufpi.systematicmap.model.SearchString;
  */
 @RequestScoped
 public class SearchStringDao extends Dao<SearchString>{
-	private final EntityManager entityManager;
+	private EntityManager entityManager;
 
 	/**
 	 * @deprecated CDI eyes only

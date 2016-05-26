@@ -28,14 +28,16 @@ public class EvaluationExtrationDao extends Dao<EvaluationExtraction>{
 		super(entityManager);
 	}
 
-	public void removeAlternative(Alternative alternative) {
+	public int removeAlternative(Alternative alternative) {
 		 Query query = entityManager.createQuery("DELETE FROM EvaluationExtraction ee WHERE ee.alternative = :alternative");
 		 int deletedCount = query.setParameter("alternative", alternative).executeUpdate();
+		 return deletedCount;
 	}
 
-	public void removeQuestion(Question question) {
+	public int removeQuestion(Question question) {
 		Query query = entityManager.createQuery("DELETE FROM EvaluationExtraction ee WHERE ee.question = :question");
 		int deletedCount = query.setParameter("question", question).executeUpdate();
+		return deletedCount;
 	}
 
 }

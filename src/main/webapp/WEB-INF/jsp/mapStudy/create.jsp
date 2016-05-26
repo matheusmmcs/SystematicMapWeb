@@ -8,20 +8,24 @@
                  rules: {
                 	 'mapstudy.title': { 
                     	 required : true,
-                    	 minlength : 3
+                    	 minlength : 3,
+                    	 maxlength: 255
                      },
                      'mapstudy.description': {
                          required: true,
-                         minlength : 3
+                         minlength : 3,
+                         maxlength: 255
                      }
                   }, messages: {
                 	  'mapstudy.title': {
                           required: '<fmt:message key="required" />',
-                          minlength: '<fmt:message key="mapstudy.min.title" />'
+                          minlength: '<fmt:message key="mapstudy.min.title" />',
+                          maxlength: '<fmt:message key="mapstudy.max.title" />'
                       },
                       'mapstudy.description': {
                           required: '<fmt:message key="required" />',
-                          minlength: '<fmt:message key="mapstudy.min.description" />'
+                          minlength: '<fmt:message key="mapstudy.min.description" />',
+                          maxlength: '<fmt:message key="mapstudy.max.description" />'
                       }
                   }
 			});
