@@ -925,7 +925,11 @@ public class MapStudyController {
 //		String filename = mapStudy.getTitle().replaceAll(" ", "_")+ ".csv";
 		Long time = System.currentTimeMillis();
 		String filename =  "Evaluations_" + mapStudy.getId() +"_"+time+ ".csv";
-		File file = new File(filename);
+		
+		String temp = System.getProperty("java.io.tmpdir");
+//		System.out.println("FILE TEMP: " + temp);
+		
+		File file = new File(temp + filename);
 		String encoding = "ISO-8859-1";
 		FileWriterWithEncoding writer = new FileWriterWithEncoding(file, encoding, false);
 		

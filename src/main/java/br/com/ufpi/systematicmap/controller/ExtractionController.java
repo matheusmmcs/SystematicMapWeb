@@ -630,7 +630,11 @@ public class ExtractionController {
 //		String filename = "Extractions_" + mapStudy.getTitle().replaceAll(" ", "_")+ ".csv";
 		Long time = System.currentTimeMillis();
 		String filename =  "Extractions_" + mapStudy.getId() +"_"+time+ ".csv";
-		File file = new File(filename);
+		String temp = System.getProperty("java.io.tmpdir");
+//		System.out.println("FILE TEMP: " + temp);
+		
+		File file = new File(temp + filename);
+		
 		String encoding = "ISO-8859-1";
 		FileWriterWithEncoding writer = new FileWriterWithEncoding(file, encoding, false);
 //		FileWriter writer = new FileWriter(file, false);
