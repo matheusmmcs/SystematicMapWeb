@@ -442,6 +442,16 @@ public class MapStudyController {
 	public void refinearticles(Long id, Integer levenshtein, String regex, Integer limiartitulo, Integer limiarabstract, Integer limiarkeywords, Integer limiartotal){
 		MapStudy mapStudy = mapStudyDao.find(id);
 		
+//		List<Article> articles = articleDao.getArticles(mapStudy);
+//		
+//		Collections.sort(articles, new Comparator<Article>() {
+//			@Override
+//			public int compare(Article a1, Article a2){
+//				int c = a1.getId().compareTo(a2.getId());
+//				return c;
+//			}
+//		});
+		
 		FilterArticles filter = new FilterArticles(mapStudy.getArticles(), levenshtein, regex.trim(), limiartitulo, limiarabstract, limiarkeywords, limiartotal);
 		filter.filter();
 		

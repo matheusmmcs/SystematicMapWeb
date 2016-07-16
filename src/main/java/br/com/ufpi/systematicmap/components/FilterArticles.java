@@ -131,12 +131,14 @@ public class FilterArticles {
 		for(Article p : papers){
 			if(p.getClassification() == null){
 				for(Article p2 : papers){
-					if(p.getId() != p2.getId() &&
-							p2.getClassification() == null){
+					if(p.getId() != p2.getId() && p2.getClassification() == null){
 						
 						int dist = Utils.getLevenshteinDistance(p.getTitle().toLowerCase(), p2.getTitle().toLowerCase());
 						
 						if(dist <= limiar){
+							
+							System.out.println("p1:" + p + " p2: " +p2);
+							
 							p2.setClassification(ClassificationEnum.REPEAT);
 							String comment = p.getComments() != null ? p.getComments() : "";
 							p2.setComments(comment + " " + ClassificationEnum.REPEAT.toString());

@@ -161,7 +161,11 @@ $(document).ready(function(){
 		event.preventDefault();
 		var actualid = $(this).attr("actualid");
 		var url = "${linkTo[ExtractionController].loadArticleAjax(0, 1)}";
+		var mapid = $('#mapid').val();
 		url = url.replace("1", actualid);
+// 		url = url.replace("0", mapid);
+		
+		console.log("URL: " + mapid);
 
 		$.ajax({ 
 			url: url,
@@ -293,6 +297,9 @@ $(document).ready(function(){
 					};
 
 	param = {"questionVO" : questionVO};
+	
+	console.log(address);
+	console.log(param);
 
 // 	console.log('JSON: ', JSON.stringify(param));
 // 	console.log('JQ' + jQuery.parseJSON(JSON.stringify(param)));
@@ -305,12 +312,13 @@ $(document).ready(function(){
 		traditional : true,
 		data : JSON.stringify(param),
 		success : function(data) {
+			console.log("sucesso!");
 			// atualiza listagens de artigos e carrega proximo artigo na tela
 			var article = data['article'];
 			var percent = data['percent'];
 			var extraction = data['extraction'];
-// 			console.log('article post: ', article);
-// 			console.log('extraction post: ', extraction);
+			console.log('article post: ', article);
+			console.log('extraction post: ', extraction);
 
 			messages('info', 'Artigo '+articleid, 'Extra&ccedil;&atilde;o do artigo realizada com sucesso');
 			
@@ -329,6 +337,7 @@ $(document).ready(function(){
 			}
 		},
 		error : function(e) {
+			console.log("erro!");
 			console.error(e);
 		}
 	});

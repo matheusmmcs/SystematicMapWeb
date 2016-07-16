@@ -118,7 +118,11 @@ $(document).ready(function(){
 		event.preventDefault();
 		var actualid = $(this).attr("actualid");
 		var url = "${linkTo[MapStudyController].loadArticle(0, 1)}";
+		var mapid = $('#mapid').val();
 		url = url.replace("1", actualid);
+// 		url = url.replace("0", mapid);
+		
+		console.log("URL: " + mapid);
 
 		$.ajax({ 
 			url: url,
@@ -209,6 +213,10 @@ $(document).ready(function(){
 				"isInclusion": isInclusion,
 				"nextArticleId" : id
 			};
+			
+			console.log(address);
+			console.log(params);
+			
 
 			$.ajax({
 		        url: address,

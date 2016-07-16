@@ -114,13 +114,14 @@ public class Question implements Serializable{
 	public void setType(QuestionType type) {
 		this.type = type;
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		return "Question [id=" + id + ", name=" + name + ", type=" + type + "]";
+		return "Question [id=" + id + ", name=" + name + ", type=" + type
+				+ ", alternatives=" + alternatives + "]";
 	}
 
 	/* (non-Javadoc)

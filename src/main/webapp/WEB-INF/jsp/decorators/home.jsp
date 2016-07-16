@@ -14,7 +14,7 @@
     <meta name="description" content="TheEnd">
 	
 	<title>Systematic Map</title>
-	<link rel="shortcut icon" href="../images/books.png" type="image/png">
+	<link rel="shortcut icon" href="<c:url value="/images/books.png" />" type="image/png">
 	
 	<decorator:head/>
 	

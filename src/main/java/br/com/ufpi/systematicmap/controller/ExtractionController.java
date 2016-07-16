@@ -95,6 +95,7 @@ public class ExtractionController {
 	@Path("/extraction/form")
 	@Consumes("application/json")
 	public void formAjax(QuestionVO questionVO){
+//		System.out.println(questionVO);
 		Form form = new Form();		
 		MapStudy mapStudy = mapStudyDao.find(questionVO.getMapid());
 		Set<Question> backQuestions = new HashSet<>();
@@ -138,6 +139,7 @@ public class ExtractionController {
 	public void loadQuestions(Long mapid){
 		MapStudy mapStudy = mapStudyDao.find(mapid);
 		Set<Question> questions = new HashSet<>();
+		
 		if (mapStudy != null && mapStudy.getForm() != null) {
 			questions = mapStudy.getForm().getQuestions();
 		}	
@@ -329,8 +331,12 @@ public class ExtractionController {
 	@Post("/maps/extraction")
 	@Consumes("application/json")
 	public void evaluateAjax(QuestionVO questionVO){
+//		System.out.println("|evaluateAjax|" + questionVO);
 		User user = userInfo.getUser();
 		Article article = articleDao.find(questionVO.getArticleid());
+		
+//		System.out.println(article);
+		
 		MapStudy mapStudy = mapStudyDao.find(questionVO.getMapid());
 		
 		validator.check(article != null, new SimpleMessage("mapstudy", "mapstudy.extraction.articles.none"));
@@ -338,38 +344,68 @@ public class ExtractionController {
 
 		int numberQuestions = questionVO.getQuestions().size();
 		
+//		System.out.println(numberQuestions);
+		
 		for (int i = 0; i < numberQuestions; i++) {
 			Set<Alternative> auxList = questionVO.getQuestions().get(i).getAlternatives();
 			
+//			System.out.println(auxList);
+			
 			if (auxList != null && auxList.size() > 0){
 				Alternative alternative = questionVO.getQuestions().get(i).getAlternatives().iterator().next();
+				
+//				System.out.println(alternative);
 			
 				EvaluationExtraction evaluationExtraction = new EvaluationExtraction();
 			
 				if (alternative.getId() == null){
+//					System.out.println("Questões MapId = " + mapStudy.getId() + "\n" + mapStudy.getForm().getQuestions());
+					
 					Alternative aux = alternativeDao.find(questionVO.getQuestions().get(i).getId(), alternative.getValue());
+					
+//					System.out.println(aux);
 					
 					if (aux == null){
 						alternativeDao.insert(alternative);
-						questionMapStudy(mapStudy, questionVO.getQuestions().get(i).getId()).addAlternative(alternative);
+						
+						Question q = questionMapStudy(mapStudy, questionVO.getQuestions().get(i).getId());
+						
+//						System.out.println("Q1: " + q);
+						
+						q.addAlternative(alternative);
+						
+//						System.out.println("Q2: " + q);
+						
 					}else{
+//						System.out.println("aux not null");
 						alternative = aux;
 					}
 				}else{
+//					System.out.println("alt com id");
 					if(alternative.getQuestion() == null){
-						alternative.setQuestion(questionMapStudy(mapStudy, questionVO.getQuestions().get(i).getId()));
+//						System.out.println("alt sem question");
+						Question q = questionMapStudy(mapStudy, questionVO.getQuestions().get(i).getId());
+						alternative.setQuestion(q);
+						
+//						System.out.println("Q3: " + q);
 					}
 				}
-			
+				
+//				System.out.println("gerando xtraction ...");
+				
 				evaluationExtraction.setAlternative(alternative);
 				evaluationExtraction.setArticle(article);
 				evaluationExtraction.setUser(user);
 				evaluationExtraction.setQuestion(alternative.getQuestion());
+				
+//				System.out.println("|evaluateAjax|" + evaluationExtraction);
 	
 				//TODO ao adicionar seria melhor verificar aqui ? se a alternativa alternativa então deveria só atualizar
 				article.AddEvaluationExtractions(evaluationExtraction);
 			}
 		}
+		
+//		System.out.println("P1");
 		
 		Double percentExtractedDouble = mapStudy.percentExtractedDouble(articleDao, userInfo.getUser());
 
@@ -392,7 +428,7 @@ public class ExtractionController {
 		returns.put("percent", mapStudy.percentEvaluated(percentExtractedDouble));
 
 		result.use(Results.json()).indented().withoutRoot().from(returns).recursive().serialize();
-
+//		System.out.println("deu update ?");
 		articleDao.update(article);
 	}
 	
@@ -400,6 +436,7 @@ public class ExtractionController {
 	@Get
 	@Path("/extraction/article/{articleid}/load")
 	public void loadArticleAjax(Long mapid, Long articleid){
+//		System.out.println("LoadAjax: " + mapid + "|" + articleid);
 		Article article = articleDao.find(articleid);
 		
 		// se o artigo não existir
@@ -443,7 +480,13 @@ public class ExtractionController {
         
         for (Article article : extractions) {
 			for (EvaluationExtraction ee : article.getEvaluationExtraction(user)) {
-				String questionName = ee.getQuestion().getName();
+				String questionName = "";
+				if (ee.getQuestion() != null){
+					questionName = ee.getQuestion().getName();
+				}else{
+					System.out.println("Problema com nome da questão!");
+				}
+				
 				HashMap<String, Long> aux = new HashMap<String, Long>();
 				
 				if (ext.containsKey(questionName)){					
@@ -476,10 +519,16 @@ public class ExtractionController {
 	}
 	
 	private Question questionMapStudy(MapStudy mapStudy, Long questid){
+		System.out.println("Question Id: " + questid);
+		int i = 0;
 		for (Question q : mapStudy.getForm().getQuestions()) {
-			if (q.getId() == questid){
+//			System.out.println("Q["+i+"]" + q);
+			if (q.getId().equals(questid)){
+//				System.out.println("questionMapStudy find: " + q);
 				return q;
 			}
+			
+			i++;
 		}
 		
 		return null;

@@ -568,4 +568,14 @@ public class Article implements Serializable {
 		}
 		return 0l;
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "Article [id=" + id + "]";
+	}
+	
+	
 }
