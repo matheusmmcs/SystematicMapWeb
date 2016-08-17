@@ -64,7 +64,9 @@ public class Article implements Serializable {
 	@NotNull(message="article.title.required")
 	@Size(max=2000, message="article.title.maxlength")
 	private String title;
+	
 	@SkipSerialization
+	@Size(max=2000, message="article.journal.maxlength")
 	private String journal;
 	@SkipSerialization
 	private Integer year;

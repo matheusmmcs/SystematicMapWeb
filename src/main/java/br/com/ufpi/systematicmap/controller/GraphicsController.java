@@ -7,10 +7,18 @@ import static br.com.caelum.vraptor.view.Results.json;
 import static java.util.Arrays.asList;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
+import java.util.SortedMap;
 
 import javax.inject.Inject;
 
@@ -420,13 +428,13 @@ public class GraphicsController {
 		
 		List<Article> articles = articleDao.getArticlesToEvaluate(mapStudy);
 		
-		HashMap<Integer, Double> sources = new HashMap<>();
-		
-//		System.out.println(articles +" "+ sources + " " + mapStudy);
-		
+		HashMap<Integer, Double> sources = new HashMap<>();		
+//		Random rand = new Random();
 		
 		for (Article article : articles) {
+//		for (int i = 0; i < 10; i++) {
 			Integer year = article.getYear();
+//			Integer year = rand.nextInt(1000);
 			
 			if (year == null){
 				year = -1;
@@ -442,19 +450,23 @@ public class GraphicsController {
 			sources.put(year, value);
 		}	
 		
-//		int total = articles.size();
-		
 		Column column = new Column();
-		
-//		System.out.println(column);
-		
 		column.setTitle("Publicações por Ano");
-		column.setSubTitle("Mostra uma visão da quatidade de publicções por anos de acordo com artigos aceitos");
+		column.setSubTitle("Mostra uma visão da quatidade de publicações por anos de acordo com artigos aceitos");
 		column.setName("Artigos");
 		column.setyAxis("Quantidade de Publicações");
 		
-		for(Map.Entry<Integer, Double> m : sources.entrySet()){
-//			System.out.println(m.getKey());
+		List<Entry<Integer, Double>> entries = new ArrayList<Entry<Integer, Double>>(sources.entrySet());
+				Collections.sort(entries, new Comparator<Map.Entry<Integer, Double>>() {
+				  public int compare(Map.Entry<Integer, Double> a, Map.Entry<Integer, Double> b){
+				    return a.getKey().compareTo(b.getKey());
+				  }
+				});
+				
+				Set<Entry<Integer, Double>> sortedMap = new LinkedHashSet<Entry<Integer, Double>>(entries);
+
+		
+		for(Map.Entry<Integer, Double> m : sortedMap){
 			column.getCategories().add(m.getKey().toString());
 			column.getData().add(m.getValue());
 		}
