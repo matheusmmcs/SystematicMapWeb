@@ -20,7 +20,7 @@ $(document).ready(function(){
     });
 	
 	var mySource = function (s){
-		console.log("sss", s);
+// 		console.log("sss", s);
 		if (s == "SCOPUS"){
 			return "Scopus" 
 		}else if (s == "ENGINEERING_VILLAGE"){
@@ -122,7 +122,7 @@ $(document).ready(function(){
 		url = url.replace("1", actualid);
 // 		url = url.replace("0", mapid);
 		
-		console.log("URL: " + mapid);
+// 		console.log("URL: " + mapid);
 
 		$.ajax({ 
 			url: url,
@@ -155,7 +155,7 @@ $(document).ready(function(){
 	}
 
 	var actualizeList = function (articleid, isInclusion, source, score){
-		console.log('source in list: ' + source);
+// 		console.log('source in list: ' + source);
 		var $article = $(".tBodyArticlesToEvaluate .readArticle[nextid=\""+articleid+"\"]");
 		var classification = isInclusion ? 'Aceito' : 'Rejeitado';
 		var newhref = $article.attr('href');
@@ -214,8 +214,8 @@ $(document).ready(function(){
 				"nextArticleId" : id
 			};
 			
-			console.log(address);
-			console.log(params);
+// 			console.log(address);
+// 			console.log(params);
 			
 
 			$.ajax({

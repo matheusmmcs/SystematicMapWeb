@@ -7,32 +7,23 @@ import static br.com.caelum.vraptor.view.Results.json;
 import static java.util.Arrays.asList;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Random;
 import java.util.Set;
-import java.util.SortedMap;
 
 import javax.inject.Inject;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
 import br.com.caelum.vraptor.Controller;
 import br.com.caelum.vraptor.Get;
 import br.com.caelum.vraptor.Result;
-import br.com.caelum.vraptor.view.Results;
 import br.com.ufpi.systematicmap.dao.ArticleDao;
 import br.com.ufpi.systematicmap.dao.EvaluationDao;
 import br.com.ufpi.systematicmap.dao.EvaluationExtractionFinalDao;
@@ -112,6 +103,7 @@ public class GraphicsController {
 			++value;
 			sources.put(article.getSource().toString(), value);
 		}	
+		
 		int total = articles.size();
 		
 		Pie pie = new Pie();
@@ -126,7 +118,7 @@ public class GraphicsController {
 			data.add(d);
 		}		
 		
-		pie.setTitle("Artigos por base de busca");
+		pie.setTitle("Artigos obtidos por base de busca");
 		pie.setColorByPoint(true);
 		pie.setName("Artigos");
 		pie.setData(data);		
@@ -275,7 +267,7 @@ public class GraphicsController {
 			data.add(d);
 		}		
 		
-		pie.setTitle("Artigos por base de busca");
+		pie.setTitle("Avaliação final dos artigos");
 		pie.setColorByPoint(true);
 		pie.setName("Artigos");
 		pie.setData(data);		
@@ -426,7 +418,7 @@ public class GraphicsController {
 		mapStudyDao.refresh(mapStudy);
 //		User user = userInfo.getUser();
 		
-		List<Article> articles = articleDao.getArticlesToEvaluate(mapStudy);
+		List<Article> articles = articleDao.getArticlesFinalExtraction(mapStudy);
 		
 		HashMap<Integer, Double> sources = new HashMap<>();		
 //		Random rand = new Random();
@@ -451,8 +443,8 @@ public class GraphicsController {
 		}	
 		
 		Column column = new Column();
-		column.setTitle("Publicações por Ano");
-		column.setSubTitle("Mostra uma visão da quatidade de publicações por anos de acordo com artigos aceitos");
+		column.setTitle("Publicações por ano");
+		column.setSubTitle("Mostra uma visão da quantidade de publicações por ano de acordo com artigos que foram para extração final");
 		column.setName("Artigos");
 		column.setyAxis("Quantidade de Publicações");
 		

@@ -136,7 +136,7 @@
 // 	            },
 		tooltip: {
             headerFormat: '<span style="font-size:11px">{series.name}</span><br>',
-            pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.percent:.2f}%</b> of total<br/>'
+            pointFormat: '<span style="color:{point.color}">{point.name}</span>: <b>{point.percent:.2f}%</b> do total<br/>'
         },
 	            plotOptions: {
 	            	pie: {

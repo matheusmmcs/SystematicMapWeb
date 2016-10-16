@@ -45,15 +45,25 @@
 				</thead>
 				<tbody>
 					<c:forEach var="ext" items="${article.extractions}" varStatus="s">
-					<input type="hidden" name="questions[${s.index}]" value="${ext.question.id}"/>
+					<input type="hidden" name="questions[${s.index}].questionId" value="${ext.question.id}"/>
 						<tr class="${s.index % 2 == 0 ? 'even' : 'odd'} gradeA article-to-read">
 							<td class="question-name">${ext.question.name}</td>
 							<td class="alternatives-values">
-								<select data-placeholder="<fmt:message key="mapstudy.alternatives.choose" />" class="form-control select2-alternative-compare" name="alternatives[${s.index}]" tabindex="2">
-									<c:forEach var="alt" items="${ext.userAndAlternatives}" varStatus="myAlt">
-										<option value="${alt.alternative.id}" data-email="${alt.user.name}">${alt.alternative.value}</option>
+								<c:if test="${ext.question.type == 'MULT'}">
+									<c:forEach var="alt" items="${ext.userAndAlternatives}" varStatus="a">
+										<div class="checkbox">
+											<input class="questionMult" name="questions[${s.index}].alternatives[${a.index}]" type="checkbox" value="${alt.alternative.id}" checked="checked" alt-value="${alt.alternative.value}" />${alt.alternative.value} 
+										</div>
 									</c:forEach>
-								</select>							
+								</c:if>
+							
+								<c:if test="${ext.question.type != 'MULT'}">
+									<select data-placeholder="<fmt:message key="mapstudy.alternatives.choose" />" class="form-control select2-alternative-compare" name="questions[${s.index}].alternatives[0]" tabindex="2">
+										<c:forEach var="alt" items="${ext.userAndAlternatives}" varStatus="myAlt">
+											<option value="${alt.alternative.id}" data-email="${alt.user.name}">${alt.alternative.value}</option>
+										</c:forEach>
+									</select>							
+								</c:if>							
 							</td>						
 						</tr>
 					</c:forEach>

@@ -9,7 +9,7 @@ import br.com.ufpi.systematicmap.model.enums.EvaluationStatusEnum;
 import br.com.ufpi.systematicmap.model.vo.ArticleCompareVO;
 
 public class FleissKappa {
-	public static final boolean DEBUG = true ;
+	public static final boolean DEBUG = false ;
 	 
     /**
      * Example on this Wikipedia article data set 
@@ -78,7 +78,7 @@ public class FleissKappa {
     		mat[idx][0] = countacc;
     		mat[idx][1] = countrej;
     		mat[idx][2] = countnoteval;
-    		System.out.println(idx + " [" + countacc + " ," + countrej + " ," + countnoteval + "];");
+//    		System.out.println(idx + " [" + countacc + " ," + countrej + " ," + countnoteval + "];");
     		idx++;
     	}
     	

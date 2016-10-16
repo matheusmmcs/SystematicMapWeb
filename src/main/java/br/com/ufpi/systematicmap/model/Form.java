@@ -168,6 +168,10 @@ public class Form implements Serializable{
 		
 	}
 
+	/**
+	 * Pega o questionVO e converte para questão e adiciona a lista de questões de formulário
+	 * @param questionVO
+	 */
 	public void addQuestionVO(QuestionVO questionVO) {
 		for (int i = 0; i < questionVO.getQuestions().size(); i++){
 			Question question = new Question();

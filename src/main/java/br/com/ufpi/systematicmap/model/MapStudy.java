@@ -54,7 +54,7 @@ public class MapStudy implements Serializable{
     
     @OneToMany(mappedBy="mapStudy")
     @SkipSerialization
-    @OrderBy
+    @OrderBy("id ASC")
 	private Set<Article> articles = new HashSet<>();
     
     @OneToMany(mappedBy="mapStudy")
@@ -392,6 +392,10 @@ public class MapStudy implements Serializable{
 		this.form = form;
 	}
 
+	/**
+	 * Adiicona formulário ao mapeamento
+	 * @param form
+	 */
 	public void addForm(Form form) {
 		if (this.form != null){
 //			form.setId(this.form.getId());

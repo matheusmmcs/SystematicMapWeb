@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <script type="text/javascript">
 $(document).ready(function(){
+	// atualiza percentual já extraído
 	var percent = $('.progress-bar').attr("style");
 	$('.progress-bar').attr('style', percent.replace(",", "."));
 
@@ -53,7 +54,7 @@ $(document).ready(function(){
 // 		console.log(url);
 		window.history.pushState("", "", url);
 		//window.location.reload();
-		
+		//TODO vai mudar quando poder cadastrar bases
 		var mySource = function (s){
 // 			console.log("sss: ", s);
 			if (s == "SCOPUS"){
@@ -92,28 +93,48 @@ $(document).ready(function(){
 // 			$(str+' [name="nextArticleId"]').val(0);
 		}
 
+		// questõ que foi extraida, alternativa selecionada, index é a posiçõa da questão no formulário inici EM 0
+		var updateQuestions = function(question, alternative, index){
+			if (question.type == 'LIST'){
+				$("#alternative_id_" + index).val(alternative.id);	
+				var test = $('#select2-alternative_id_' + index + '-container');
+				test.attr('title', alternative.value);
+				test.html(alternative.value);
+// 			    console.log('LIST', alternative.id + " | " + alternative.value);
+			  }else if (question.type == 'MULT'){
+			  	  // setar check box
+				  $('.questionMult').each(function() {
+					if ($(this).val() == alternative.id) {
+						$(this).prop('checked', true);
+					}
+// 						console.log('MULT',$(this).val());
+				  });
+			  }else{
+				$('#alternative_value_' + index).val(alternative.value);
+// 				console.log('SIMPLES',alternative.id + " | " + alternative.value);
+			  }
+// 			  console.log('alternativa selecionada: ' + alternative.value);
+// 			  console.log('-------');
+		};
+
 		var setQuestions = function (extraction){
 			if (extraction.length > 0){
-				$.each(extraction, function( index, elemento ) {
-// 					console.log('set');
-// 					console.log(elemento.question.id + " | " + elemento.question.type + " | " + elemento.question.name);
+				$('.group_question').each(function(idx, elem){
+					var $elem = $(elem);
+					var id = $elem.find('.group_question_id').val();
+					var question_id = (id == undefined ? null : id);
 
-					  if (elemento.question.type == 'LIST'){
-						  $.each(elemento.question.alternatives, function( index2, elemento2 ) {
-							  if (elemento2.value == elemento.alternative.value){
-// 								  console.log('alternativa selecionada: ' + elemento.alternative.value);
-								$("#alternative_id_" + index).val(elemento.alternative.id);	
-								var test = $('#select2-alternative_id_' + index + '-container');
-								test.attr('title', elemento.alternative.value);
-								test.html(elemento.alternative.value);
-							  }
-// 							  console.log(elemento2.id + " | " + elemento2.value);
-						  });
-					  }else{
-							$('#alternative_value_' + index).val(elemento.alternative.value);
-					  }
-// 					  console.log('alternativa selecionada: ' + elemento.alternative.value);
-// 					  console.log('alternativas da questão: ');
+// 					console.log('index : ' + idx + ' question_id:' + question_id);
+					
+					$.each(extraction, function( index, elemento ) {
+// 						console.log('QUestion: ' + elemento.question.id);
+						if (elemento.question.id == question_id){
+// 							console.log('alternative: ' + elemento.alternative);
+							updateQuestions(elemento.question, elemento.alternative, idx);
+							if (elemento.question.type != 'MULT')
+								return false;
+						}
+	  				});
 				});
 			}
 		}
@@ -137,6 +158,10 @@ $(document).ready(function(){
 				});
 
 			});
+
+			$('.questionMult').each(function() {
+					$(this).prop('checked', false);
+			 });
 		}
 
 		changeFormsIds('#forExtraction', article);
@@ -163,9 +188,9 @@ $(document).ready(function(){
 		var url = "${linkTo[ExtractionController].loadArticleAjax(0, 1)}";
 		var mapid = $('#mapid').val();
 		url = url.replace("1", actualid);
-// 		url = url.replace("0", mapid);
+		url = url.replace("0", mapid);
 		
-		console.log("URL: " + mapid);
+// 		console.log("URL: " + mapid);
 
 		$.ajax({ 
 			url: url,
@@ -188,38 +213,71 @@ $(document).ready(function(){
 	var obtainQuestions = function(){
 		
 		var questions = [];
+		
 		$('.group_question').each(function(idx, elem){
 			var $elem = $(elem);
 			var question = {};
+			
 			var id  = $elem.find('.group_question_id').val();
 			question.id = (id == undefined ? null : id);
+			
 			var name = $elem.find('.group_question_name').val()
 			question.name = (name == undefined ? null : name);
+			
 // 			question.type = $elem.find('.group_question_type').val();
 			question.alternatives = [];
 			
-// 			console.log(question);
+// 			console.log('Question: ', question);
 			
 			$elem.find('.group_alternative').each(function(idx_a, elem_a) {
+// 				console.log("S/L");
 				var alternative = {};
 				var id_a  = $(elem_a).find('.group_alternative_id').val();
 				alternative.id = (id_a == undefined ? null : id_a);
+
+// 				console.log('ID: ', alternative.id);
+				
 				var value = $(elem_a).find('.group_alternative_value').val();
 				alternative.value = (value == undefined ? null : value);
+
+// 				console.log('VALUE: ', alternative.value);
 				
-				if ((alternative.value != null && alternative.value != "") || (alternative.id != null && alternative.id != "")){
+				if ((alternative.value != null && alternative.value != "") || 
+					(alternative.id != null && alternative.id != "")){
 					question.alternatives.push(alternative);
-// 					console.log(alternative);
-				}					
+// 					console.log('Alternative: ', alternative);
+				}	
+								
 			});
+
+			var $check = $elem.find('.questionMult');
+
+// 			console.log("M");
+
+			$check.each(function() {
+				var isChecked = $(this).prop('checked');
+				var alternative = {};
+// 				console.log('C: ', $(this).val(), 'cheked', isChecked);
+				if (isChecked) {
+					alternative.id = $(this).val();
+					alternative.value = $(this).attr('alt-value');
+// 					console.log('ID: ', alternative.id);
+// 					console.log('VALUE: ', alternative.value);
+					question.alternatives.push(alternative);
+// 					console.log('Alternative: ', alternative);
+				}
+			});
+
+// 			console.log('Question: ', question);
 
 			if (question.id != null && question.id != ""){
 				questions.push(question);
 			}			
-
 // 			console.log('tam: ' + questions.length);	
 		});
 
+// 		console.log('Lista de questões: ', questions);
+		
 		return questions;
 	}
 
@@ -296,12 +354,13 @@ $(document).ready(function(){
 					  "nextArticle" : id
 					};
 
-	param = {"questionVO" : questionVO};
+// 	param = {"questionVO" : questionVO};
 	
-	console.log(address);
-	console.log(param);
+// 	console.log('Endereço: ', address);
+// 	console.log('Parametros: ', param);
 
-// 	console.log('JSON: ', JSON.stringify(param));
+// 	console.log('JSON: ', JSON.stringify(questionVO));
+// 	console.log("NORMAL", questionVO);
 // 	console.log('JQ' + jQuery.parseJSON(JSON.stringify(param)));
 
 	$.ajax({ 
@@ -310,15 +369,16 @@ $(document).ready(function(){
 		contentType : 'application/json; charset=utf-8',
 		type : 'POST',
 		traditional : true,
-		data : JSON.stringify(param),
+		data : JSON.stringify(questionVO),
 		success : function(data) {
-			console.log("sucesso!");
+// 			console.log("sucesso!");
 			// atualiza listagens de artigos e carrega proximo artigo na tela
 			var article = data['article'];
 			var percent = data['percent'];
 			var extraction = data['extraction'];
-			console.log('article post: ', article);
-			console.log('extraction post: ', extraction);
+			
+// 			console.log('article que veio do sistema: ', article);
+// 			console.log('extraction que veio do artigo do sistema: ', extraction);
 
 			messages('info', 'Artigo '+articleid, 'Extra&ccedil;&atilde;o do artigo realizada com sucesso');
 			
@@ -331,7 +391,9 @@ $(document).ready(function(){
 				actualizeArticle(article, extraction);
 				
 			}
+			
 			actualizePercent(percent);
+			
 			if(extraction == null || extraction.length == 0){
 				actualizeList(articleid, source, score);
 			}
@@ -344,6 +406,7 @@ $(document).ready(function(){
 
 };
 
+	// Captura o click no botão de avaliar
 	$(document).on('click', '.buttonextraction', function(event) {
 		evaluate(event);
 	});
@@ -393,6 +456,7 @@ var messages = function (type, category, text){
 
 <div class="row">
 	<div class="col-md-12">
+	 <!-- Depois colocar todos os dados assim como na seleção e por o feito de spoiler -->
   		<div class="" id="infoarticle">
 			<h2><fmt:message key="mapstudy.article"/> - <span id="articleReadId">${article.id}</span></h2>
 			<p><strong><fmt:message key="mapstudy.article.title"/>:
@@ -418,12 +482,32 @@ var messages = function (type, category, text){
 					<input type="hidden" id="articlescore" name="articlescore" value="${article.score}" />
 
 					<c:forEach var="question" items="${form.questions}" varStatus="q">
-						<div class="form-group group_question">
+					
+<%-- 						<c:set var="actualQuestionAlternatives" value="${article.alternative(question, userInfo.user)" /> --%>
+						
+						<div class="group_question">
 							<input type="hidden" name="questions[${q.index}].id" value="${question.id}" class="group_question_id" id="question_id_${q.index}"/>
 							<div class="padding-left-none">
 								<strong class="group_question_name" id="question_name_${q.index}">${question.name}:</strong>
 							</div>
-							<div class="float-right group_alternative">
+							<div class="group_alternative form-group">
+							
+								<c:if test="${question.type == 'MULT'}">
+
+									<c:forEach items="${question.alternatives}" var="alt" varStatus="c">
+										<c:set var="containsExc" value="false" />
+										<c:forEach var="done" items="${article.alternative(question, userInfo.user)}">
+											<c:if test="${alt.id eq done.id}">
+												<c:set var="containsExc" value="true" />
+											</c:if>
+										</c:forEach>
+
+										<div class="checkbox">
+											<input class="questionMult" type="checkbox" value="${alt.id}" ${containsExc ? 'checked="checked"' : '' } alt-value="${alt.value}" />${alt.value} 
+										</div>
+									</c:forEach>
+								</c:if>
+								
 								<c:if test="${question.type == 'LIST'}">
 									<select	data-placeholder="<fmt:message key="mapstudy.form.choose" />" class="form-control select2 group_alternative_id" name="alternatives[${q.index}].id" id="alternative_id_${q.index}" tabindex="2">								
 										<c:forEach var="alt" items="${question.alternatives}">
@@ -431,20 +515,24 @@ var messages = function (type, category, text){
 										</c:forEach>
 									</select>
 								
-									<c:if test="${article.alternative(question, userInfo.user) != null}">
-										<input type="hidden" value="${article.alternative(question, userInfo.user).id}" class="alternative_list_id" id="alternative_list_id_${q.index}"/>
-										<input type="hidden" value="${article.alternative(question, userInfo.user).value}" class="alternative_list_value" id="alternative_list_value_${q.index}"/>
+									<c:if test="${not empty article.alternative(question, userInfo.user)}">
+										<input type="hidden" value="${article.alternative(question, userInfo.user).get(0).id}" class="alternative_list_id" id="alternative_list_id_${q.index}"/>
+										<input type="hidden" value="${article.alternative(question, userInfo.user).get(0).value}" class="alternative_list_value" id="alternative_list_value_${q.index}"/>
 									</c:if>
 								</c:if>
+								
+								
 								<c:if test="${question.type == 'SIMPLE'}">
-									<input type="text" class="form-control group_alternative_value" name="alternatives[${q.index}].value" id="alternative_value_${q.index}" value="${article.alternative(question, userInfo.user).value}"/>
+									<input type="text" class="form-control group_alternative_value" name="alternatives[${q.index}].value" id="alternative_value_${q.index}" value="${article.alternative(question, userInfo.user).size() > 0 ? article.alternative(question, userInfo.user).get(0).value : ''}"/>
 								</c:if>							
 							</div>		
-						</div>
-					</c:forEach>					
+ 						</div> 
+					</c:forEach>		
+								
 					<button type="submit" id="submit" class="btn btn-large btn-primary buttonextraction">
 						<fmt:message key="salve" />
 					</button>
+					
 					<div class="clear-both"></div>
 				</form>
 			</div>

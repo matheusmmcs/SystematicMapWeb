@@ -183,8 +183,8 @@ public class EvaluationExtraction implements Serializable{
 	@Override
 	public String toString() {
 		return "EvaluationExtraction [id=" + id + ", user=" + user.getId()
-				+ ", article=" + article.getId() + ", alternative=" + alternative
-				+ ", question=" + question + "]";
+				+ ", article=" + article.getId() + ", alternative=" + alternative.getValue()
+				+ ", question=" + question.getName() + "]";
 	}
 	
 	

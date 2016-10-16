@@ -34,6 +34,12 @@ public class EvaluationExtrationDao extends Dao<EvaluationExtraction>{
 		 return deletedCount;
 	}
 
+	
+	/**
+	 * Remove todas as extrações da questão que foi removida
+	 * @param question
+	 * @return quantidade de extrações com a qustão removida
+	 */
 	public int removeQuestion(Question question) {
 		Query query = entityManager.createQuery("DELETE FROM EvaluationExtraction ee WHERE ee.question = :question");
 		int deletedCount = query.setParameter("question", question).executeUpdate();

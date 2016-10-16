@@ -26,6 +26,8 @@ public class FilterArticles {
 	private Integer limiarabstract; 
 	private Integer limiarkeywords; 
 	private Integer limiartotal;
+	private boolean filterAuthor;
+	private boolean filterAbstract;
 	
 	/*
 	 * {{
@@ -36,8 +38,7 @@ public class FilterArticles {
 	}}
 	 */
 	
-	public FilterArticles(Set<Article> set, Integer levenshtein, String regex, 
-			Integer limiartitulo, Integer limiarabstract, Integer limiarkeywords, Integer limiartotal){
+	public FilterArticles(Set<Article> set, Integer levenshtein, String regex, Integer limiartitulo, Integer limiarabstract, Integer limiarkeywords, Integer limiartotal, boolean filterAuthor, boolean filterAbstract){
 		super();
 		this.papers = set;
 		this.levenshtein = levenshtein;
@@ -46,11 +47,13 @@ public class FilterArticles {
 		this.limiarabstract = limiarabstract;
 		this.limiarkeywords = limiarkeywords;
 		this.limiartotal = limiartotal;
+		this.filterAbstract = filterAbstract;
+		this.filterAuthor = filterAuthor;
 	}
 	
 	public void filter(){
 		try{
-			System.out.println("Regex: "+regex);
+//			System.out.println("Regex: "+regex);
 			
 			String[] termos = regex.split(";");
 			for(String t : termos){
@@ -60,9 +63,16 @@ public class FilterArticles {
 				}				
 			}
 			
-			System.out.println("Total de artigos: "+papers.size());
-			System.out.println("Probs autores: "+filterAuthors());
-			System.out.println("Patentes: "+filterPatents());
+//			System.out.println("Total de artigos: "+papers.size());
+//			System.out.println("Probs autores: "+filterAuthors());
+			if (filterAuthor){
+				filterAuthors();				
+			}
+//			System.out.println("Patentes: "+filterPatents());
+			
+			if (filterAbstract){
+				filterPatents();				
+			}
 			
 			filterRegex(limiartitulo, limiarabstract, limiarkeywords, limiartotal);
 			
@@ -70,8 +80,8 @@ public class FilterArticles {
 				calcTitleLevenshteinDistance(levenshtein);
 			}
 			
-			System.out.println("Probs lenshtein: "+countPapers(ClassificationEnum.REPEAT));
-			System.out.println("Probs palavras: "+countPapers(ClassificationEnum.WORDS_DONT_MATCH));
+//			System.out.println("Probs lenshtein: "+countPapers(ClassificationEnum.REPEAT));
+//			System.out.println("Probs palavras: "+countPapers(ClassificationEnum.WORDS_DONT_MATCH));
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -106,8 +116,11 @@ public class FilterArticles {
 			Set<String> termos = new HashSet<String>();
 			
 			termos = countRegex(p, FieldEnum.TITLE, limiarTitle, termos);
+//			System.out.println("Termos[T]: " + termos.size());
 			termos = countRegex(p, FieldEnum.ABS, limiarAbs, termos);
+//			System.out.println("Termos[A]: " + termos.size());
 			termos = countRegex(p, FieldEnum.KEYS, limiarKeys, termos);
+//			System.out.println("Termos[K]: " + termos.size());
 			
 			
 //			System.out.println("Termos: " +termos );
@@ -117,8 +130,11 @@ public class FilterArticles {
 //			System.out.println("KEY: " + p.getRegexKeys());
 //			System.out.println("TIT: " + p.getRegexTitle());
 			
-//			p.setScore(p.getRegexAbs() + p.getRegexKeys() + p.getRegexTitle());
-			p.setScore(termos.size());
+//			p.setScore(p.getRegexAbs() + p.getRegexKeys() + p.getRegexTitle())
+			
+			if ((limiarAbs + limiarKeys + limiarTitle + limiarTotal) > 0){
+				p.setScore(termos.size());				
+			}
 			
 			if(termos.size() < limiarTotal){
 				p.setClassification(ClassificationEnum.WORDS_DONT_MATCH);
@@ -137,7 +153,7 @@ public class FilterArticles {
 						
 						if(dist <= limiar){
 							
-							System.out.println("p1:" + p + " p2: " +p2);
+//							System.out.println("p1:" + p + " p2: " +p2);
 							
 							p2.setClassification(ClassificationEnum.REPEAT);
 							String comment = p.getComments() != null ? p.getComments() : "";
@@ -153,7 +169,7 @@ public class FilterArticles {
 				}
 			}
 			count++;
-			System.out.println("loading:"+(count/size)*100);
+//			System.out.println("loading:"+(count/size)*100);
 		}
 	}
 	

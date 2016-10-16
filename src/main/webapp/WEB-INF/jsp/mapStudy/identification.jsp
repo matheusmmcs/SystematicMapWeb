@@ -9,6 +9,8 @@ $(document).ready(function(){
 	$('#limiarabstract').popover();	
 	$('#limiarkeywords').popover();	
 	$('#limiartotal').popover();	
+	$('#filterAuthor').popover();	
+	$('#filterAbstract').popover();	
 }); 
 </script>
 
@@ -91,34 +93,56 @@ $(document).ready(function(){
 						<div class="form-group">
 							<label for="levenshtein">Levenshtein (similaridade de títulos)</label>
 							<input type="text" value="0" class="form-control" id="levenshtein" name="levenshtein" placeholder="Levenshtein" 
-							data-toggle="popover" data-trigger="hover" data-placement="left" dataâ€container="body" data-content='<fmt:message key="mapstudy.article.refine.levenshtein" />' data-title='<fmt:message key="mapstudy.article.refine.information" />'/>
+							data-toggle="popover" data-trigger="hover" data-placement="left" data€container="body" data-content='<fmt:message key="mapstudy.article.refine.levenshtein" />' data-title='<fmt:message key="mapstudy.article.refine.information" />'/>
 						</div>
 						<div class="form-group">
 							<label for="regex">Regex (termo:regex;...)</label>
-							<textarea class="form-control" id="regexterm" name="regex" rows="5" cols=""	data-toggle="popover" data-trigger="hover" data-placement="left" dataâ€container="body" data-content='<fmt:message key="mapstudy.article.refine.regexterm" />' data-title='<fmt:message key="mapstudy.article.refine.information" />'>IC:(computational\sintelligence|artificial\sintelligence|soft\scomputing|metaheuristic);Ferramenta:(framework|tool|service|library|api)
+							<textarea class="form-control" id="regexterm" name="regex" rows="5" cols=""	data-toggle="popover" data-trigger="hover" data-placement="left" data€container="body" data-content='<fmt:message key="mapstudy.article.refine.regexterm" />' data-title='<fmt:message key="mapstudy.article.refine.information" />'>
+automatico:(automat.*|semiautomati.*|semi-automati.*);
+web:(web|website|internet|www);
+usabilidade:(usability|usable);
+tecnica:(evalu.*|assess.*|measur.*|experiment.*|stud.*|test.*|method.*|techni.*|approach.*)
 							</textarea>
-<!-- 							automatico:(automat.*|semiautomati.*|semi-automati.*);web:(web|website|internet|www);usabilidade:(usability|usable);tecnica:(evalu.*|assess.*|measur.*|experiment.*|stud.*|test.*|method.*|techni.*|approach.*) -->
+							
+							<!-- 							IC:(computational\sintelligence|artificial\sintelligence|soft\scomputing|metaheuristic);Ferramenta:(framework|tool|service|library|api) -->
+
 						</div>
 						<div class="form-group">
 							<label for="limiartitulo">Limiar T&iacute;tulo</label>
 							<input type="text" value="0" class="form-control" id="limiartitulo" name="limiartitulo" placeholder="Limiar T&iacute;tulo" 
-							data-toggle="popover" data-trigger="hover" data-placement="left" dataâ€container="body" data-content='<fmt:message key="mapstudy.article.refine.limiartitulo" />' data-title='<fmt:message key="mapstudy.article.refine.information" />'/>
+							data-toggle="popover" data-trigger="hover" data-placement="left" data€container="body" data-content='<fmt:message key="mapstudy.article.refine.limiartitulo" />' data-title='<fmt:message key="mapstudy.article.refine.information" />'/>
 						</div>
 						<div class="form-group">
 							<label for="limiarabstract">Limiar Abstract</label>
 							<input type="text"  value="0" class="form-control" id="limiarabstract" name="limiarabstract" placeholder="Limiar Abstract" 
-							data-toggle="popover" data-trigger="hover" data-placement="left" dataâ€container="body" data-content='<fmt:message key="mapstudy.article.refine.limiarabstract" />' data-title='<fmt:message key="mapstudy.article.refine.information" />'/>
+							data-toggle="popover" data-trigger="hover" data-placement="left" data€container="body" data-content='<fmt:message key="mapstudy.article.refine.limiarabstract" />' data-title='<fmt:message key="mapstudy.article.refine.information" />'/>
 						</div>
 						<div class="form-group">
 							<label for="limiarkeywords">Limiar Keywords</label>
 							<input type="text"  value="0" class="form-control" id="limiarkeywords" name="limiarkeywords" placeholder="Limiar Keywords" 
-							data-toggle="popover" data-trigger="hover" data-placement="left" dataâ€container="body" data-content='<fmt:message key="mapstudy.article.refine.limiarkeywords" />' data-title='<fmt:message key="mapstudy.article.refine.information" />'/>
+							data-toggle="popover" data-trigger="hover" data-placement="left" data€container="body" data-content='<fmt:message key="mapstudy.article.refine.limiarkeywords" />' data-title='<fmt:message key="mapstudy.article.refine.information" />'/>
 						</div>
 						<div class="form-group">
 							<label for="limiartotal">Limiar Total</label>
 							<input type="text"  value="0" class="form-control" id="limiartotal" name="limiartotal" placeholder="Limiar Total" 
-							data-toggle="popover" data-trigger="hover" data-placement="left" dataâ€container="body" data-content='<fmt:message key="mapstudy.article.refine.limiartotal" />' data-title='<fmt:message key="mapstudy.article.refine.information" />'/>
+							data-toggle="popover" data-trigger="hover" data-placement="left" datacontainer="body" data-content='<fmt:message key="mapstudy.article.refine.limiartotal" />' data-title='<fmt:message key="mapstudy.article.refine.information" />'/>
 						</div>
+						
+						<hr/>
+						<h4><fmt:message key="mapstudy.article.filters.active" /></h4>			
+						
+						<div class="form-group">
+							<label class="checkbox-inline">
+								<input type="checkbox" name="filterAuthor" id="filterAuthor" data-toggle="popover" data-trigger="hover" data-placement="left" datacontainer="body" data-content='<fmt:message key="mapstudy.article.refine.filterauthor" />' data-title='<fmt:message key="mapstudy.article.refine.information" />'> Filtro autores
+							</label>
+							
+							<label class="checkbox-inline">
+								<input type="checkbox" name="filterAbstract" id="filterAbstract" data-toggle="popover" data-trigger="hover" data-placement="left" datacontainer="body" data-content='<fmt:message key="mapstudy.article.refine.filterabstrat" />' data-title='<fmt:message key="mapstudy.article.refine.information" />'> Filtro abstract
+							</label>
+						</div>
+						
+						
+						
 						<div class="form-group text-right">
 							<button type="submit" id="submit" class="btn btn-large btn-primary" style="width: 130px;">
 								<fmt:message key="mapstudy.article.refine" />

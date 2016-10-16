@@ -29,8 +29,18 @@ $(document).ready(function(){
 			</div>
 			<!-- /.panel-heading -->
 			<div class="panel-body">
-				<p><strong><fmt:message key="mapstudy.title"/>:</strong> ${map.title}</p>
-				<p><strong><fmt:message key="mapstudy.description"/>:</strong> ${map.description}</p>
+			<div class="row">
+				<div class="col-md-10">
+					<p><strong><fmt:message key="mapstudy.title"/>:</strong> ${map.title}</p>
+					<p><strong><fmt:message key="mapstudy.description"/>:</strong> ${map.description}</p>
+				</div>
+				
+				<div class="col-md-2">
+					<a class="btn btn-primary pull-right" href="${linkTo[MapStudyController].edit(map.id)}" ><i class="glyphicon glyphicon-pencil"></i> <fmt:message key="edit" /></a> 
+				</div>
+			</div>
+				<hr />
+				
 				<div class="row">
 					<div class="col-md-6">
 						<p><strong><fmt:message key="mapstudy.evaluation.selection.rate" />:</strong></p>
@@ -85,7 +95,7 @@ $(document).ready(function(){
 						</a>
 						<span class="glyphicon glyphicon-arrow-right"></span>
 						<a style="width: 22.9%;" class="btn btn-default" href="${linkTo[MapStudyController].report(map.id)}">
-							<span class="glyphicon glyphicon-tasks"></span>
+							<span class="fa fa-pie-chart"></span>
 							<fmt:message key="mapstudy.report" />
 						</a>
 					</div>
@@ -94,6 +104,7 @@ $(document).ready(function(){
 		</div>
 	</div>
 </div>
+
 <div class="row">
 	<div class="col-md-12">
 		<div class="panel panel-default">
@@ -109,26 +120,23 @@ $(document).ready(function(){
 					<input type="hidden" name="id" value="${map.id}" />
 	
 					<div class="form-group">
-						<div class="col-lg-9 padding-left-none">
+						<div class="col-md-8 padding-left-none">
 							<select data-placeholder="<fmt:message key="mapstudy.members.choose" />" class="form-control select2" name="userId" tabindex="2">
 								<c:forEach var="member" items="${mapStudyArentUsers}">
 									<option value="${member.id}" data-email="${member.email}">${member.name}</option>
 								</c:forEach>
 							</select>
 						</div>
-						<button type="submit" id="submit"
-							class="btn btn-large btn-primary col-lg-3 float-right">
-							<fmt:message key="add" />
+						<button type="submit" id="submit" class="btn btn-large btn-primary col-md-4 float-right">
+							<i class="glyphicon glyphicon-user"></i> <fmt:message key="add" />
 						</button>
 						<div class="clear-both"></div>
 					</div>
 					<div class="checkbox">
-						<label> <input type="checkbox" name="notify"> <fmt:message
-								key="notify.member" />
+						<label> <input type="checkbox" name="notify"> <fmt:message key="notify.member" />
 						</label>
 					</div>
 				</form>
-	
 	
 				<div class="table-responsive">
 					<table class="table table-striped table-bordered table-hover">
@@ -138,10 +146,16 @@ $(document).ready(function(){
 								<th>Participante</th>
 								<th class="text-center"><fmt:message key="mapstudy.evaluations.percentconclusion" /></th>
 								<th class="text-center"><fmt:message key="mapstudy.extraction.percentconclusion" /></th>
-								<c:if test="${map.isCreator(userInfo.user)}">
-									<th class="text-center"><fmt:message key="remove" /></th>
-								</c:if>
-	
+								
+								<c:choose>
+									<c:when test="${map.isCreator(userInfo.user)}">
+										<th class="text-center"><fmt:message key="remove" /></th>
+									</c:when>
+									<c:otherwise>
+										<th class="text-center"><fmt:message key="exit" /></th>
+									</c:otherwise>
+								</c:choose>
+								
 							</tr>
 						</thead>
 						<tbody>
@@ -151,18 +165,35 @@ $(document).ready(function(){
 									<td>${member.key.name}</td>
 									<td class="text-center">${member.value.selection}</td>
 									<td class="text-center">${member.value.extraction}</td>
-									<c:if test="${map.isCreator(userInfo.user)}">
 										<c:choose>
-											<c:when test="${!map.isCreator(member.key)}">
-												<td class="text-center"><a class="btn btn-danger confirmation-modal" data-conf-modal-body="<fmt:message key="member.excluir.message" />"
-													href="${linkTo[MapStudyController].removemember(map.id, member.key.id)}"><i
-														class="glyphicon glyphicon-remove"></i></a></td>
+											<c:when test="${map.isCreator(userInfo.user)}">
+												<c:choose>
+													<c:when test="${!map.isCreator(member.key)}">
+														<td class="text-center"><a class="btn btn-danger confirmation-modal" data-conf-modal-body="<fmt:message key="member.excluir.message" />"
+															href="${linkTo[MapStudyController].removemember(map.id, member.key.id)}"><i
+																class="glyphicon glyphicon-remove"></i></a></td>
+													</c:when>
+													<c:otherwise>
+														<td></td>
+													</c:otherwise>
+												</c:choose>
 											</c:when>
 											<c:otherwise>
-												<td></td>
+											
+												<c:choose>
+													<c:when test="${member.key.id eq userInfo.user.id}">
+														<td class="text-center"><a class="btn btn-danger confirmation-modal" data-conf-modal-body="<fmt:message key="member.excluir.message" />"
+															href="${linkTo[MapStudyController].exit(map.id, member.key.id)}"><i
+																class="glyphicon glyphicon-remove"></i></a></td>
+													</c:when>
+													<c:otherwise>
+														<td></td>
+													</c:otherwise>
+												</c:choose>
+											
 											</c:otherwise>
 										</c:choose>
-									</c:if>
+										
 								</tr>
 							</c:forEach>
 						</tbody>

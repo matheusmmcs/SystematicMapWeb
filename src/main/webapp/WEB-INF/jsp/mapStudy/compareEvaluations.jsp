@@ -3,9 +3,9 @@
 
 <ol class="breadcrumb u-margin-top" style="margin-top: 0px;">
   <li><a href="<c:url value="/" />"><fmt:message key="home"/></a></li>
-  <li><a href="${linkTo[MapStudyController].show(mapStudy.id)}"><fmt:message key="mapstudy.details"/></a></li>
   <li><a href="${linkTo[MapStudyController].list}"><fmt:message key="mapstudy.short.list"/></a></li>
-  <li><a href="${linkTo[MapStudyController].showEvaluates(mapStudy.id)}"><fmt:message key="mapstudy.details"/></a></li>
+  <li><a href="${linkTo[MapStudyController].show(mapStudy.id)}"><fmt:message key="mapstudy.details"/></a></li>
+  <li><a href="${linkTo[MapStudyController].showEvaluates(mapStudy.id)}"><fmt:message key="mapstudy.viewarticles"/></a></li>
   <li class="active"><fmt:message key="mapstudy.evaluations.compare"/></li>
 </ol>
 
@@ -38,8 +38,11 @@
 							  </label>
 							</div>
 						</c:forEach>
-						<a class="btn btn-default pull-left" id="kappa-submit" href="#"><fmt:message key="mapstudy.evaluations.fleisskappa.calculate"/></a>
+						<div class="btn-group">
+						<a class="btn btn-default" id="kappa-submit" href="#"><fmt:message key="mapstudy.evaluations.fleisskappa.calculate"/></a>
+						</div>
 					</form>
+					
 					<div class="clear-both"></div>
 				</p>
 			</div>
@@ -72,6 +75,15 @@
 				</tbody>
 			</table>
 		</div>
+		
+		<p>
+		
+		<form action="${linkTo[MapStudyController].equalSelections}" method="post">
+			<input type="hidden" name="mapStudyId" value="${mapStudy.id}" />
+			<button type="submit" id="submit" class="btn btn-primary float-right">
+				<fmt:message key="mapstudy.articles.equalselections"/>
+			</button>
+		</form>
 		
 		<hr/>
 		
@@ -202,7 +214,7 @@
 						url: url,
 						method: "POST",
 						success: function(data){
-							console.log(data);
+// 							console.log(data);
 							if(data.hashMap){
 								$('#kappa-members').html(data.hashMap.members);
 								$('#kappa-value').html(data.hashMap.kappa);
@@ -219,8 +231,11 @@
 			$(document).on('click', '.article-to-read', function(e){
 				e.preventDefault();
 				var id = $(this).children('.article-id').html();
-				var url = "${linkTo[MapStudyController].articleDetail(id)}";
-				url = url.replace("id", id);
+// 				console.log('ID: ', id);
+				var url = "${linkTo[MapStudyController].articleDetail(1)}";
+				url = url.replace("1", id);
+
+// 				console.log('URL: ', url);
 				
 				$.ajax({
 					url: url,
@@ -258,7 +273,7 @@
 						}
 					},
 					error: function(err){
-// 						console.log(err);
+						console.log(err);
 					}
 				});
 			});

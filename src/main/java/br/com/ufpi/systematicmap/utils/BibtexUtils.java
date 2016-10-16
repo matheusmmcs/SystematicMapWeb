@@ -18,7 +18,7 @@ import org.jbibtex.ParseException;
 
 public class BibtexUtils {
 	
-	static public BibTeXDatabase parseBibTeX(File file) throws IOException, ParseException {
+	public BibTeXDatabase parseBibTeX(File file) throws IOException, ParseException {
 		Reader reader = new FileReader(file);
 
 		try {
@@ -47,7 +47,7 @@ public class BibtexUtils {
 		}
 	}
 
-	static public void formatBibTeX(BibTeXDatabase database, File file) throws IOException {
+	public void formatBibTeX(BibTeXDatabase database, File file) throws IOException {
 		Writer writer = (file != null ? new FileWriter(file) : new OutputStreamWriter(System.out));
 
 		try {

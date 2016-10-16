@@ -6,7 +6,6 @@ package br.com.ufpi.systematicmap.controller;
 import static br.com.caelum.vraptor.view.Results.json;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,6 +19,8 @@ import java.util.TreeSet;
 import javax.inject.Inject;
 
 import org.apache.commons.io.output.FileWriterWithEncoding;
+
+import com.google.gson.Gson;
 
 import br.com.caelum.vraptor.Consumes;
 import br.com.caelum.vraptor.Controller;
@@ -49,8 +50,11 @@ import br.com.ufpi.systematicmap.model.Form;
 import br.com.ufpi.systematicmap.model.MapStudy;
 import br.com.ufpi.systematicmap.model.Question;
 import br.com.ufpi.systematicmap.model.User;
+import br.com.ufpi.systematicmap.model.enums.QuestionType;
 import br.com.ufpi.systematicmap.model.enums.ReturnStatusEnum;
 import br.com.ufpi.systematicmap.model.vo.ExtractionCompareVO;
+import br.com.ufpi.systematicmap.model.vo.ExtractionFinalVO;
+import br.com.ufpi.systematicmap.model.vo.QuestionAndAlternativeCSV;
 import br.com.ufpi.systematicmap.model.vo.QuestionVO;
 import br.com.ufpi.systematicmap.model.vo.ReturnVO;
 
@@ -101,13 +105,16 @@ public class ExtractionController {
 		Set<Question> backQuestions = new HashSet<>();
 		Set<Question> removeQuestions = new HashSet<>();
 		
+		// se o mapeamento possui um formulário
 		if (mapStudy.getForm() != null) {
-			backQuestions = mapStudy.getForm().getQuestions();
-			removeQuestions = new HashSet<>();
+			backQuestions = mapStudy.getForm().getQuestions(); // backup das questões atuais do formulário
+			removeQuestions = new HashSet<>(); // lista de questões que serão removidas
 
-			for (Question q : backQuestions) {
-				if (!questionVO.getQuestions().contains(q)) {
-					removeQuestions.add(q);
+			
+			// adicionando questões a lista das que serão removidas
+			for (Question q : backQuestions) { // percorre a lista atual de questões
+				if (!questionVO.getQuestions().contains(q)) { // aquelas que estiverem na lista mas não estão na lista que veio da visão serão adicionadas a lista de removidas
+					removeQuestions.add(q); // adiciona a lista de questões removidas
 				}
 			}
 			
@@ -120,16 +127,16 @@ public class ExtractionController {
 		
 		for (Question q : removeQuestions) {
 			for (Alternative a : q.getAlternatives()){
-				alternativeDao.delete(a);
+				alternativeDao.delete(a); // remove as alternativas das questões que foram excluidas
 //				evaluationExtrationDao.removeAlternative(a);
 			}
-			q.getAlternatives().clear();
-			questionDao.delete(q);	
-			evaluationExtrationDao.removeQuestion(q);
-			mapStudy.getForm().getQuestions().remove(q);
+			q.getAlternatives().clear(); // limpa a lista de alternativas da questão
+			questionDao.delete(q);	 // deleta a questão
+			evaluationExtrationDao.removeQuestion(q); // remove todas as extrações que tem a questão
+			mapStudy.getForm().getQuestions().remove(q); // remove a questão do formulário
 		}
 		
-		mapStudyDao.update(mapStudy);
+		mapStudyDao.update(mapStudy); // atualiza o mapeamento
 
 		result.use(json()).indented().withoutRoot().from(mapStudy).recursive().serialize();
 	}
@@ -248,7 +255,7 @@ public class ExtractionController {
 		validator.check(mapStudy != null, new SimpleMessage("mapstudy", "mapstudy.is.not.exist"));
 		validator.onErrorRedirectTo(MapStudyController.class).list();
 		
-		validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.is.not.mapstudy"));
+		validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.does.not.have.access"));
 		validator.onErrorRedirectTo(MapStudyController.class).list();
 		
 		validator.check(mapStudy.getForm() != null, new SimpleMessage("mapstudy", "mapstudy.is.not.form"));
@@ -257,11 +264,14 @@ public class ExtractionController {
 		validator.check(mapStudy.getForm().getQuestions() != null && mapStudy.getForm().getQuestions().size() > 0, new SimpleMessage("mapstudy", "mapstudy.is.not.form"));
 		validator.onErrorRedirectTo(MapStudyController.class).show(mapid);
 		
-		Long countArticlesToExtraction = articleDao.countArticleToEvaluateExtraction(user, mapStudy);
+		Double percentExtractedDouble = mapStudy.percentExtractedDouble(articleDao, userInfo.getUser()); //TODO da um update nele depois, verificar se falta questão
 		
-		//se existe artigos para realizar extração entra
-		validator.check(countArticlesToExtraction > 0l, new SimpleMessage("mapstudy", "mapstudy.is.not.article.to.extraction"));
-		validator.onErrorRedirectTo(MapStudyController.class).show(mapid);
+		if (!percentExtractedDouble.equals((Double) 100.0)){
+			Long countArticlesToExtraction = articleDao.countArticleToEvaluateExtraction(user, mapStudy);
+			//se existe artigos para realizar extração entra
+			validator.check(countArticlesToExtraction > 0l, new SimpleMessage("mapstudy", "mapstudy.is.not.article.to.extraction"));
+			validator.onErrorRedirectTo(MapStudyController.class).show(mapid);			
+		}		
 		
 		result.redirectTo(this).evaluateExtraction(mapid, 0l);
 	}
@@ -297,12 +307,18 @@ public class ExtractionController {
 			}
 		}
 		
-		validator.check((article != null), new SimpleMessage("mapstudy", "mapstudy.extraction.articles.none"));
-		validator.onErrorRedirectTo(MapStudyController.class).show(mapid);
+		if (article == null){
+			article = extractions.get(0);
+			result.include("warning", new SimpleMessage("mapstudy", "mapstudy.extraction.articles.none"));
+//			result.redirectTo(this).show(mapid);
+		}
+		
+//		validator.check((article != null), new SimpleMessage("mapstudy", "mapstudy.extraction.articles.none"));
+//		validator.onErrorRedirectTo(MapStudyController.class).show(mapid);
 		
 //		EvaluationExtraction extractionDone = article.getEvaluationExtractions(userInfo.getUser());
 		
-		Double percentExtractedDouble = mapStudy.percentExtractedDouble(articleDao, userInfo.getUser());
+		Double percentExtractedDouble = mapStudy.percentExtractedDouble(articleDao, userInfo.getUser()); //TODO da um update nele depois, verificar se falta questão
 		
 		result.include("map", mapStudy);		
 		result.include("article", article);
@@ -331,7 +347,14 @@ public class ExtractionController {
 	@Post("/maps/extraction")
 	@Consumes("application/json")
 	public void evaluateAjax(QuestionVO questionVO){
-//		System.out.println("|evaluateAjax|" + questionVO);
+//	public void evaluateAjax(Long mapid, Long articleid, List<Question> questions, Long nextArticle){
+//		System.out.println(mapid + "|" + articleid+ "|" + questions+ "|" +nextArticle);
+//		Gson gson = new Gson();
+//		QuestionVO q = gson.fromJson(questionVO, QuestionVO.class);
+		
+//		System.out.println("|JSON|" + questionVO);
+//		System.out.println("|OBJETO|" + q);
+		
 		User user = userInfo.getUser();
 		Article article = articleDao.find(questionVO.getArticleid());
 		
@@ -349,60 +372,62 @@ public class ExtractionController {
 		for (int i = 0; i < numberQuestions; i++) {
 			Set<Alternative> auxList = questionVO.getQuestions().get(i).getAlternatives();
 			
-//			System.out.println(auxList);
+//			System.out.println("AUXLIST " + auxList);
 			
-			if (auxList != null && auxList.size() > 0){
-				Alternative alternative = questionVO.getQuestions().get(i).getAlternatives().iterator().next();
+//			if (auxList != null && auxList.size() > 0){
+				for (Alternative alternative : auxList) {
+//					System.out.println("ALTERNATIVES " + alternative);
+					
+					EvaluationExtraction evaluationExtraction = new EvaluationExtraction();
 				
-//				System.out.println(alternative);
-			
-				EvaluationExtraction evaluationExtraction = new EvaluationExtraction();
-			
-				if (alternative.getId() == null){
-//					System.out.println("Questões MapId = " + mapStudy.getId() + "\n" + mapStudy.getForm().getQuestions());
-					
-					Alternative aux = alternativeDao.find(questionVO.getQuestions().get(i).getId(), alternative.getValue());
-					
-//					System.out.println(aux);
-					
-					if (aux == null){
-						alternativeDao.insert(alternative);
+					if (alternative.getId() == null){
+//						System.out.println("Questões MapId = " + mapStudy.getId() + "\n" + mapStudy.getForm().getQuestions());
 						
-						Question q = questionMapStudy(mapStudy, questionVO.getQuestions().get(i).getId());
+						Alternative aux = alternativeDao.find(questionVO.getQuestions().get(i).getId(), alternative.getValue());
 						
-//						System.out.println("Q1: " + q);
+//						System.out.println("AUX " + aux);
 						
-						q.addAlternative(alternative);
-						
-//						System.out.println("Q2: " + q);
-						
+						if (aux == null){
+							alternativeDao.insert(alternative);
+							
+							Question question = questionMapStudy(mapStudy, questionVO.getQuestions().get(i).getId());
+							
+//							System.out.println("Q1: " + q);
+							
+							question.addAlternative(alternative);
+							
+//							System.out.println("Q2: " + q);
+							
+						}else{
+//							System.out.println("aux not null");
+							alternative = aux;
+						}
 					}else{
-//						System.out.println("aux not null");
-						alternative = aux;
+//						System.out.println("alt com id");
+						if(alternative.getQuestion() == null){
+//							System.out.println("alt sem question");
+							Question question = questionMapStudy(mapStudy, questionVO.getQuestions().get(i).getId());
+							alternative.setQuestion(question);
+							
+//							System.out.println("Q3: " + q);
+						}
 					}
-				}else{
-//					System.out.println("alt com id");
-					if(alternative.getQuestion() == null){
-//						System.out.println("alt sem question");
-						Question q = questionMapStudy(mapStudy, questionVO.getQuestions().get(i).getId());
-						alternative.setQuestion(q);
-						
-//						System.out.println("Q3: " + q);
-					}
+					
+//					System.out.println("gerando xtraction ...");
+					
+					evaluationExtraction.setAlternative(alternative);
+					evaluationExtraction.setArticle(article);
+					evaluationExtraction.setUser(user);
+					evaluationExtraction.setQuestion(alternative.getQuestion());
+					
+//					System.out.println("|evaluateAjax|" + evaluationExtraction);
+		
+					//TODO ao adicionar seria melhor verificar aqui ? se a alternativa alternativa então deveria só atualizar
+					article.AddEvaluationExtractions(evaluationExtraction);
 				}
+				// questionVO.getQuestions().get(i).getAlternatives()
+//				Alternative alternative = auxList.iterator().next(); //TODO pode ter mais de uma
 				
-//				System.out.println("gerando xtraction ...");
-				
-				evaluationExtraction.setAlternative(alternative);
-				evaluationExtraction.setArticle(article);
-				evaluationExtraction.setUser(user);
-				evaluationExtraction.setQuestion(alternative.getQuestion());
-				
-//				System.out.println("|evaluateAjax|" + evaluationExtraction);
-	
-				//TODO ao adicionar seria melhor verificar aqui ? se a alternativa alternativa então deveria só atualizar
-				article.AddEvaluationExtractions(evaluationExtraction);
-			}
 		}
 		
 //		System.out.println("P1");
@@ -410,21 +435,21 @@ public class ExtractionController {
 		Double percentExtractedDouble = mapStudy.percentExtractedDouble(articleDao, userInfo.getUser());
 
 		HashMap<String, Object> returns = new HashMap<>();
-		Article nextArticle = null;
+		Article nextArticleL = null;
 		List<EvaluationExtraction> extraction = new ArrayList<>();
 
-		if (questionVO.getNextArticle() != null) {
-			nextArticle = articleDao.find(questionVO.getNextArticle());
-			extraction = nextArticle.getEvaluationExtraction(userInfo.getUser());
+		if ( questionVO.getNextArticle() != null) {
+			nextArticleL = articleDao.find(questionVO.getNextArticle());
+			extraction = nextArticleL.getEvaluationExtraction(userInfo.getUser());
 		} else {
-			nextArticle = new Article();
-			nextArticle.setId(-1l);
+			nextArticleL = new Article();
+			nextArticleL.setId(-1l);
 		}
 		
 //		System.out.println("Next article: " + nextArticle);
 
 		returns.put("extraction", extraction);
-		returns.put("article", nextArticle);
+		returns.put("article", nextArticleL);
 		returns.put("percent", mapStudy.percentEvaluated(percentExtractedDouble));
 
 		result.use(Results.json()).indented().withoutRoot().from(returns).recursive().serialize();
@@ -450,6 +475,8 @@ public class ExtractionController {
 			extraction = article.getEvaluationExtraction(userInfo.getUser());
 		}		
 		
+//		System.out.println("Extraction: " + extraction);
+		
 		TreeSet<EvaluationExtraction> extractionOrdered = new TreeSet<EvaluationExtraction>(new Comparator<EvaluationExtraction>(){
 		    public int compare(EvaluationExtraction a, EvaluationExtraction b){
 		        return a.getQuestion().getName().compareTo(b.getQuestion().getName());
@@ -457,7 +484,9 @@ public class ExtractionController {
 		});
 		extractionOrdered.addAll(extraction);
 		
-		returns.put("extraction", extractionOrdered);
+//		System.out.println(extractionOrdered.size());
+		
+		returns.put("extraction", extraction);
 		returns.put("article", article);
 		
 		result.use(Results.json()).indented().withoutRoot().from(returns).recursive().serialize();		
@@ -471,7 +500,7 @@ public class ExtractionController {
         validator.check(mapStudy != null, new SimpleMessage("mapstudy", "mapstudy.is.not.exist"));
         validator.onErrorRedirectTo(MapStudyController.class).list();
         
-        validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.is.not.mapstudy"));
+        validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.does.not.have.access"));
         validator.onErrorRedirectTo(MapStudyController.class).list();
         
         List<Article> extractions = this.articleDao.getExtractions(this.userInfo.getUser(), mapStudy);
@@ -483,9 +512,10 @@ public class ExtractionController {
 				String questionName = "";
 				if (ee.getQuestion() != null){
 					questionName = ee.getQuestion().getName();
-				}else{
-					System.out.println("Problema com nome da questão!");
 				}
+//				else{
+//					System.out.println("Problema com nome da questão!");
+//				}
 				
 				HashMap<String, Long> aux = new HashMap<String, Long>();
 				
@@ -519,7 +549,7 @@ public class ExtractionController {
 	}
 	
 	private Question questionMapStudy(MapStudy mapStudy, Long questid){
-		System.out.println("Question Id: " + questid);
+//		System.out.println("Question Id: " + questid);
 		int i = 0;
 		for (Question q : mapStudy.getForm().getQuestions()) {
 //			System.out.println("Q["+i+"]" + q);
@@ -542,7 +572,7 @@ public class ExtractionController {
 		validator.check(mapStudy != null, new SimpleMessage("mapstudy", "mapstudy.is.not.exist"));
 		validator.onErrorRedirectTo(MapStudyController.class).list();
 		
-		validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.is.not.mapstudy"));
+		validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.does.not.have.access"));
 		validator.onErrorRedirectTo(MapStudyController.class).list();
 		
 		Double percentEvaluatedDouble = mapStudy.percentExtractedDouble(articleDao, user);
@@ -594,7 +624,7 @@ public class ExtractionController {
 		Collections.sort(members, new Comparator<User>() {
 			@Override
 			public int compare(User u1, User u2){
-				return u1.getLogin().compareTo(u2.getLogin());
+				return u1.getName().compareTo(u2.getName());
 			}
 		});
 		
@@ -619,9 +649,13 @@ public class ExtractionController {
 	}
 	
 	@Post
-	public void finalExtraction(Long mapid, Long articleid, List<Long> questions, List<Long> alternatives){
+	public void finalExtraction(Long mapid, Long articleid, List<ExtractionFinalVO> questions){
+//	public void finalExtraction(Long mapid, Long articleid, List<Long> questions, List<Long> alternatives){
+//	public void finalExtraction(Long mapid, Long articleid, List<Long> questions, List<Long[]> alternatives){
 //		System.out.println("mapid: " + mapid + " articleid: " + articleid + " questions: " + questions + " alternatives: " + alternatives);
 		EvaluationExtractionFinal eef = null;
+		
+//		System.out.println(questions);
 		
 		MapStudy mapStudy = mapStudyDao.find(mapid);
 		Article article = articleDao.find(articleid);
@@ -633,13 +667,19 @@ public class ExtractionController {
 			eef.setMapStudy(mapStudy);
 			eef.setArticle(article);		
 			
-			Question question = questionDao.find(questions.get(i));
-			Alternative alternative = alternativeDao.find(alternatives.get(i));
+			Question question = questionDao.find(questions.get(i).getQuestionId());
 			
-			eef.setQuestion(question);
-			eef.setAlternative(alternative);
-			
-			article.getEvaluationExtractionsFinal().add(eef);
+			for (Long alt : questions.get(i).getAlternatives()) { 
+				Long alternative_id = alt;
+				if(!alternative_id.equals(0)){
+					Alternative alternative = alternativeDao.find(alternative_id);
+					
+					eef.setQuestion(question);
+					eef.setAlternative(alternative);
+					
+					article.getEvaluationExtractionsFinal().add(eef);					
+				}
+			}
 		}
 		
 		articleDao.update(article);
@@ -709,25 +749,45 @@ public class ExtractionController {
 //	    writer.append("Source"+delimiter);
 		
 		data += "Id"+delimiter;
-		data += "Author"+delimiter;
 		data += "Title"+delimiter;
+		data += "Author"+delimiter;
 		data += "Journal"+delimiter;
 		data += "Year"+delimiter;
 		data += "DocType"+delimiter;
 		data += "Source"+delimiter;
 	    
-	    String[] head = questionsName(mapStudy);
+		QuestionAndAlternativeCSV[] head = questionsName(mapStudy);
+		
 	    //create head name questions	    
-	    for (String s : head) {
+	    for (QuestionAndAlternativeCSV s : head) {
 //	    	 writer.append(s + delimiter);
-	    	data += (s + delimiter);
+	    	int count = s.getAlternatives().size();
+	    	data += (s.getQuestionName() + newCol(count == 0 ? 1 : count));
 		}
 	    
 	    
 //	    writer.append('\n');
+	    data += "\n;;;;;;;";
+	    
+	    // tem que adicionar o nome das alternativas nessa linha saltando 7 colunas
+	    
+	    //create head name questions	    
+	    for (QuestionAndAlternativeCSV s : head) {
+	    	boolean simple = true;
+
+			for (String alt : s.getAlternatives()) {
+				data += alt + ";";
+				simple = false;
+			}
+			
+			if (simple){
+				data += ";";
+			}
+		}
+	    
 	    data += "\n";
 	    
-	    HashMap<String, String> questionsAndAlternative = new HashMap<String, String>();
+	    HashMap<String, List<String>> questionsAndAlternative = new HashMap<String, List<String>>();
 	
 		for(Article a : articles){
 //			writer.append(a.getId() + delimiter);
@@ -739,23 +799,45 @@ public class ExtractionController {
 //		    writer.append(a.getSource() + delimiter);
 			
 			data += a.getId() + delimiter;
-			data += a.getAuthor() + delimiter;
 			data += a.getTitle() + delimiter;
+			data += a.getAuthor() + delimiter;
 			data += (a.getJournal() != null ? a.getJournal() : "Dado não extraído") + delimiter;
 			data += (a.getYear() != null ? a.getYear() : "Dado não extraído") +delimiter;
 			data += (a.getDocType() != null && !a.getDocType().equals("") ? a.getDocType() : "Dado não extraído") + delimiter;
 			data += a.sourceView(a.getSource()) + delimiter;
 		    
 		    if (all){
-		    	questionsAndAlternative = a.getEvaluateFinalExtractionAlternative();
+		    	questionsAndAlternative = a.getEvaluateFinalExtractionAlternatives();
 		    }else{
-		    	questionsAndAlternative = a.getEvaluateFinalExtractionAlternative(userInfo.getUser());
+		    	questionsAndAlternative = a.getEvaluateFinalExtractionAlternatives(userInfo.getUser());
 		    }
 		    
-		    for (String s : head) {
+		    for (QuestionAndAlternativeCSV headRead : head) {
 //		    	 writer.append((questionsAndAlternative.get(s) != null ? questionsAndAlternative.get(s) : "Dado não extraído") + delimiter);
-		    	String v = questionsAndAlternative.get(s); 
-		    	data = data + ((v != null ? v : "Dado não extraído") + delimiter);
+		    	List<String> alternatives = questionsAndAlternative.get(headRead.getQuestionName()); 
+		    	
+		    	int count = headRead.getAlternatives().size();
+		    	
+		    	if (count == 0){
+		    		String alt = alternatives != null ? alternatives.get(0) : "Dado não extraído";
+		    		data = data + (alt + delimiter);
+		    	}else{		    		
+		    		for (int i = 0; i < count; i++) {
+//						if (headRead.getAlternatives().get(i).equals(alternatives.get(0))){
+		    			String alt =headRead.getAlternatives().get(i);
+		    			if (alternatives == null){
+		    				data = data +  "Dado não extraído" + delimiter;
+		    				continue;
+		    			}
+		    			
+		    			if (alternatives.contains(alt)){
+							data = data +  "1;";
+						}else{
+							data = data +  "0;";
+						}
+					}
+		    	}
+
 			} 
 //		    writer.append('\n');
 		    data += "\n";
@@ -771,13 +853,21 @@ public class ExtractionController {
 	}
 	
 
-	private String[] questionsName(MapStudy mapStudy){//, String defaultExtraction[]) {
+	private QuestionAndAlternativeCSV[] questionsName(MapStudy mapStudy){//, String defaultExtraction[]) {
 		int count = mapStudy.getForm().getQuestions().size();// + defaultExtraction.length;
-		String[] head = new String[count];		
+		QuestionAndAlternativeCSV[] head = new QuestionAndAlternativeCSV[count];		
 		
 		int i = 0;
 		for (Question q : mapStudy.getForm().getQuestions()) {
-			head[i] = q.getName();
+			List<String> alternatives = new ArrayList<String>();
+			
+			if (!q.getType().equals(QuestionType.SIMPLE)){
+				for (Alternative a : q.getAlternatives()) {
+					alternatives.add(a.getValue());
+				}							
+			}
+			
+			head[i] = new QuestionAndAlternativeCSV(q.getName(), alternatives);
 			++i;
 		}
 		
@@ -789,6 +879,14 @@ public class ExtractionController {
 		Set<Alternative> alternatives= question.getAlternatives();
 		
 		result.use(Results.json()).indented().withoutRoot().from(alternatives).recursive().serialize();	
+	}
+	
+	private String newCol(int count){
+		String s = "";
+		for (int i = 0; i < count; i++) {
+			s = s + ";";
+		}
+		return s;
 	}
 
 }

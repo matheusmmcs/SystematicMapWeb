@@ -108,7 +108,6 @@ public class UsersController {
 	@Get
 	@Public
 	public void profile(Long id) {
-		System.out.println(id);
 		User user = userDao.find(id);
 		
 		validator.check(user != null, new SimpleMessage("user", "user.non-existent"));

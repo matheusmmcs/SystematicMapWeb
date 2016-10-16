@@ -28,6 +28,7 @@ public class Alternative implements Serializable{
 	@Id
 	@GeneratedValue
 	private Long id;
+	
 	@Lob
 	private String value;
 	

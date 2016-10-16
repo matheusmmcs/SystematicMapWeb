@@ -8,7 +8,9 @@
         <properties>
             <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
 	        <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/systematicmap?autoReconnect=true"/>
-	        <property name="javax.persistence.jdbc.user" value="root"/>
+<!-- 	        <property name="javax.persistence.jdbc.user" value="root"/> -->
+<!-- 	        <property name="javax.persistence.jdbc.password" value="server123456"/> -->
+			<property name="javax.persistence.jdbc.user" value="root"/>
 	        <property name="javax.persistence.jdbc.password" value=""/>
 	        
 	        <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>

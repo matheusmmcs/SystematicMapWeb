@@ -64,8 +64,11 @@
 </script>
 
 <div class="row">
-	<div class="col-md-6 col-md-offset-3">
-		<div class="login-panel panel panel-default">
+	<div class="col-md-4">
+	</div>
+	
+	<div class="col-md-4">
+		<div class="login-panel panel panel-default" >
 		   <div class="panel-heading">
 		       <h3 class="panel-title"><fmt:message key="signup"/></h3>
 		   </div>

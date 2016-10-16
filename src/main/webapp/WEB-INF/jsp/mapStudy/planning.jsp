@@ -390,12 +390,12 @@
 		});
 		
 		var viewType = function(type){
-			console.log(type);
+// 			console.log(type);
 			if (type == "SIMPLE"){
 				return "Texto";
 			}else if (type == "LIST"){
 				return "Listagem";
-			}else if (type == "LIST"){
+			}else if (type == "MULT"){
 				return "Multiplas opções";
 			}
 		}
@@ -544,7 +544,7 @@
 		}
 		
 		function renderLinhaQuestion(id, name, type) {
-			console.log(type);
+// 			console.log(type);
 			var str = '<tr><td>'+name+'</td><td class="text-center">'+type+'</td><td class="text-center">';
 			str += '<a style="width: 48%;" class="btn btn-primary btn-sm subquestions-extraction-edit" data-question-id="'+id+'" href="#"><i class="glyphicon glyphicon-pencil"></i> Editar</a>';
 			str += '<a style="width: 48%;" class="btn btn-danger btn-sm confirmation-modal subquestions-extraction-remove" data-question-id="'+id+'" data-conf-modal-body="<fmt:message key="mapstudy.excluir.message" />" href="#" data-conf-modal-callback="window.removeSubQuestion('+id+')" ><i class="glyphicon glyphicon-remove"></i> Remover</a>';

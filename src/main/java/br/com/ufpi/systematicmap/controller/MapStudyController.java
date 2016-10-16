@@ -159,7 +159,30 @@ public class MapStudyController {
 		result.include("notice", new SimpleMessage("mapstudy", "mapstudy.remove.sucess"));
 		result.redirectTo(this).list();
 	}
-
+	
+	@Get("/maps/{mapId}/edit")
+	public void edit(Long mapId) {
+		validator.onErrorForwardTo(this).list();
+		MapStudy mapStudy = mapStudyDao.find(mapId);
+		
+		validator.check(mapStudy != null, new SimpleMessage("mapstudy", "mapstudy.is.not.exist"));
+		validator.onErrorRedirectTo(this).list();
+		
+		validator.check(mapStudy.isCreator(userInfo.getUser()), new SimpleMessage("user", "user.is.not.creator"));
+		validator.onErrorRedirectTo(this).list();
+		
+		result.include("mapstudy", mapStudy);
+	}
+	
+	@Post("/maps/update")
+	public void update(final @NotNull @Valid MapStudy mapstudy){
+		validator.onErrorForwardTo(this).create();
+		
+		mapStudyDao.update(mapstudy);
+		
+		result.include("notice", new SimpleMessage("mapstudy", "mapstudy.update.sucess"));
+		result.redirectTo(this).list();
+	}
 	
 	@Get("/maps/{id}")
 	public void show(Long id) {
@@ -171,7 +194,7 @@ public class MapStudyController {
 			validator.onErrorRedirectTo(this).list();
 		}
 
-		validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.is.not.mapstudy"));
+		validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.does.not.have.access"));
 		if (!(mapStudy.members().contains(user))) {
 			validator.onErrorRedirectTo(this).list();
 		}
@@ -208,6 +231,25 @@ public class MapStudyController {
 	    result.include("mapStudyUsers", mapStudyUsers);
 	    result.include("mapStudyArentUsers", mapStudyArentUsers);
 	}
+	
+		@Get("/maps/{id}/exit/{userId}")
+		public void exit(Long id, Long userId){
+			validator.onErrorForwardTo(this).show(id);
+
+			MapStudy mapStudy = mapStudyDao.find(id);
+			User user = userDao.find(userId);
+			
+			validator.check(mapStudy != null, new SimpleMessage("mapstudy", "mapstudy.is.not.exist"));
+			validator.onErrorRedirectTo(this).list();
+			
+			// Um usuario esta associado a avaliações e outras coisas caso o mesmo seja removido apos o inicio dos trabalhos devemos ocultar suas avaliações mas não removelas
+			
+			mapStudy.removeParticipant(user);
+			mapStudyDao.update(mapStudy);
+			
+			result.include("notice", new SimpleMessage("mapstudy", "member.exit.sucess"));
+			result.redirectTo(this).list();
+		}
 
 	//TODO Verificar que ação deve ser tomada ao remover um membro
 	@Get("/maps/{id}/removemember/{userId}")
@@ -285,6 +327,8 @@ public class MapStudyController {
 	public void addarticles(Long id, UploadedFile upFile, ArticleSourceEnum source){
 		validator.onErrorForwardTo(this).identification(id);
 		
+		BibtexUtils bibtexUtils = new BibtexUtils();
+		
 		MapStudy mapStudy = mapStudyDao.find(id);
 		
 		validator.check(mapStudy.isCreator(userInfo.getUser()), new SimpleMessage("user", "user.is.not.creator"));
@@ -295,8 +339,9 @@ public class MapStudyController {
 		if (upFile != null){
 			files.save(upFile, mapStudy);			
 			try {
-				database = BibtexUtils.parseBibTeX(files.getFile(mapStudy));
+				database = bibtexUtils.parseBibTeX(files.getFile(mapStudy));
 			} catch (IOException | ParseException e) {
+				e.getMessage();
 			}
 		}
 		
@@ -439,7 +484,7 @@ public class MapStudyController {
 	}
 	
 	@Post("/maps/refinearticles")
-	public void refinearticles(Long id, Integer levenshtein, String regex, Integer limiartitulo, Integer limiarabstract, Integer limiarkeywords, Integer limiartotal){
+	public void refinearticles(Long id, Integer levenshtein, String regex, Integer limiartitulo, Integer limiarabstract, Integer limiarkeywords, Integer limiartotal, boolean filterAuthor, boolean filterAbstract){
 		MapStudy mapStudy = mapStudyDao.find(id);
 		
 //		List<Article> articles = articleDao.getArticles(mapStudy);
@@ -452,7 +497,7 @@ public class MapStudyController {
 //			}
 //		});
 		
-		FilterArticles filter = new FilterArticles(mapStudy.getArticles(), levenshtein, regex.trim(), limiartitulo, limiarabstract, limiarkeywords, limiartotal);
+		FilterArticles filter = new FilterArticles(mapStudy.getArticles(), levenshtein, regex.trim(), limiartitulo, limiarabstract, limiarkeywords, limiartotal, filterAuthor, filterAbstract);
 		filter.filter();
 		
 		//TODO está faltando algo aqui ?
@@ -500,10 +545,13 @@ public class MapStudyController {
 		validator.check(mapStudy != null, new SimpleMessage("mapstudy", "mapstudy.is.not.exist"));
 		validator.onErrorRedirectTo(this).list();
 		
-		validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.is.not.mapstudy"));
+		validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.does.not.have.access"));
 		validator.onErrorRedirectTo(this).list();
 		
 		validator.check((mapStudy.getExclusionCriterias().size() > 0 && mapStudy.getInclusionCriterias().size() > 0), new SimpleMessage("mapstudy", "mapstudy.is.not.criterias"));
+		validator.onErrorRedirectTo(this).show(mapid);
+		
+		validator.check(mapStudy.getArticles().size() > 0, new SimpleMessage("mapstudy", "articles.without.mapping"));
 		validator.onErrorRedirectTo(this).show(mapid);
 		
 		result.redirectTo(this).evaluateArticle(mapid, 0l);
@@ -518,17 +566,23 @@ public class MapStudyController {
 
 		List<Article> articlesToEvaluate = articleDao.getArticlesToEvaluate(userInfo.getUser(), mapStudy);
 		List<Evaluation> evaluations = evaluationDao.getEvaluations(userInfo.getUser(), mapStudy);
+		
 		Article article = null, nextArticle = null;
+		
 		Long nextArticleId = null;
+		
+		// Obtem o artigo que será lido na seleção
 		if(articleid != 0){
 			article = articleDao.find(articleid);
 		}else{
 			article = getNextToEvaluate(articlesToEvaluate, null);
+			
 			if(article != null){
 				articleid = article.getId();
 			}
 		}
 		
+//		busca o próximo artigo a ser lido
 		if(article != null){
 			nextArticle = getNextToEvaluate(articlesToEvaluate, articleid);
 			if(nextArticle != null){
@@ -537,8 +591,9 @@ public class MapStudyController {
 		}
 		
 		if (article == null){
+			article = evaluations.get(0).getArticle();
 			result.include("warning", new SimpleMessage("mapstudy", "mapstudy.evaluate.articles.none"));
-			result.redirectTo(this).show(mapid);
+//			result.redirectTo(this).show(mapid);
 		}
 		
 //		validator.check((article != null), new SimpleMessage("mapstudy", "mapstudy.evaluate.articles.none"));
@@ -664,6 +719,7 @@ public class MapStudyController {
 		
 		//remove last evaluation
 		Evaluation existingEvaluation = evaluationDao.getEvaluation(userInfo.getUser(), mapStudy, article);
+		
 		if(existingEvaluation != null){
 			evaluationDao.delete(existingEvaluation.getId());
 		}
@@ -708,6 +764,8 @@ public class MapStudyController {
 		
 		List<Evaluation> evaluationsImpacted = new ArrayList<Evaluation>();
 		List<Evaluation> evaluationsRemoved = new ArrayList<Evaluation>();
+		
+		// for seleçoes
 		for(Evaluation e : evaluations){
 			if(e.getExclusionCriterias().size() == 1 &&
 				e.getExclusionCriterias().contains(criteria)){
@@ -809,7 +867,7 @@ public class MapStudyController {
 		validator.check(mapStudy != null, new SimpleMessage("mapstudy", "mapstudy.is.not.exist"));
 		validator.onErrorRedirectTo(this).list();
 		
-		validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.is.not.mapstudy"));
+		validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.does.not.have.access"));
 		validator.onErrorRedirectTo(this).list();		
 		
 		List<Evaluation> evaluations = evaluationDao.getEvaluations(user, mapStudy);
@@ -993,18 +1051,23 @@ public class MapStudyController {
 		String contentType = "text/csv";
 		return new FileDownload(file, contentType, filename);
 	}
+	@Path("/maps/equalSelections")
+	@Post
+	public void equalSelections(Long mapStudyId){
+		result.redirectTo(this).compareEvaluations(mapStudyId, true);
+	}
 	
 	//comparar as avaliações dos usuários
 	@Path("/maps/{mapStudyId}/compare")
 	@Get
-	public void compareEvaluations(Long mapStudyId){
+	public void compareEvaluations(Long mapStudyId, boolean equalSelections){
 		MapStudy mapStudy = mapStudyDao.find(mapStudyId);
 		User user = userInfo.getUser();
 		
 		validator.check(mapStudy != null, new SimpleMessage("mapstudy", "mapstudy.is.not.exist"));
 		validator.onErrorRedirectTo(this).list();
 		
-		validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.is.not.mapstudy"));
+		validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.does.not.have.access"));
 		validator.onErrorRedirectTo(this).list();
 		
 		Double percentEvaluatedDouble = mapStudy.percentEvaluatedDouble(articleDao, user);
@@ -1018,7 +1081,7 @@ public class MapStudyController {
 		Collections.sort(members, new Comparator<User>() {
 			@Override
 			public int compare(User u1, User u2){
-				return u1.getLogin().compareTo(u2.getLogin());
+				return u1.getName().compareTo(u2.getName());
 			}
 		});
 		
@@ -1041,12 +1104,16 @@ public class MapStudyController {
 					}
 				}
 			}
-//TODO Seta se ceito ou recusado se todas as avaliações forem iguais			
-			if (!hasAccepted){
-				a.setFinalEvaluation(EvaluationStatusEnum.REJECTED);
-			}else if (all){
-				a.setFinalEvaluation(EvaluationStatusEnum.ACCEPTED);
-			}	
+			//TODO Seta se ceito ou recusado se todas as avaliações forem iguais
+			if (equalSelections){	
+				if (!hasAccepted){
+					a.setFinalEvaluation(EvaluationStatusEnum.REJECTED);
+				}else if (all){
+					a.setFinalEvaluation(EvaluationStatusEnum.ACCEPTED);
+				}else{
+					a.setFinalEvaluation(EvaluationStatusEnum.NOT_EVALUATED);
+				}
+			}
 			
 			ArticleCompareVO acvo = new ArticleCompareVO(a, members, evaluations);
 			articlesCompare.add(acvo);
@@ -1075,7 +1142,8 @@ public class MapStudyController {
 		Article article = articleDao.find(articleId);
 		article.setFinalEvaluation(evaluation);
 		articleDao.update(article);
-		result.redirectTo(this).compareEvaluations(mapStudyId);
+		
+		result.redirectTo(this).compareEvaluations(mapStudyId, false);
 	}
 	
 	@Path("/maps/kappa")
@@ -1173,7 +1241,7 @@ public class MapStudyController {
 				validator.onErrorRedirectTo(this).list();
 			}
 			
-			validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.is.not.mapstudy"));
+			validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.does.not.have.access"));
 			if (!(mapStudy.members().contains(user))){
 				validator.onErrorRedirectTo(this).list();
 			}
@@ -1212,7 +1280,7 @@ public class MapStudyController {
 		validator.check(mapStudy != null, new SimpleMessage("mapstudy",	"mapstudy.is.not.exist"));
 		validator.onErrorRedirectTo(this).list();
 
-		validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.is.not.mapstudy"));
+		validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.does.not.have.access"));
 		validator.onErrorRedirectTo(this).list();
 		
 		List<ArticleSourceEnum> sources = asList(ArticleSourceEnum.values());
@@ -1233,7 +1301,7 @@ public class MapStudyController {
 		validator.check(mapStudy != null, new SimpleMessage("mapstudy",	"mapstudy.is.not.exist"));
 		validator.onErrorRedirectTo(this).list();
 		
-		validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.is.not.mapstudy"));
+		validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.does.not.have.access"));
 		validator.onErrorRedirectTo(this).list();
 		
 		mapStudy.setGoals(goals);
@@ -1311,7 +1379,6 @@ public class MapStudyController {
 	
 	@Get("/maps/{mapid}/removequestion/{questid}")
 	public void removequestion(Long mapid, Long questid){
-		System.out.println(mapid + " - " + questid);
 		MapStudy mapStudy = mapStudyDao.find(mapid);
 		
 		mapStudy.removeResearchQuestion(questid);

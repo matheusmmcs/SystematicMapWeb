@@ -8,7 +8,7 @@ package br.com.ufpi.systematicmap.model.enums;
  *
  */
 public enum Roles {
-	CREATOR("Criador"), PARTICIPANT("Participante");
+	CREATOR("Criador"), PARTICIPANT("Participante"), SUPERVISOR("Supervisor");
 	
 	private String description;
 	

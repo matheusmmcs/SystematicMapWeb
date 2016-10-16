@@ -50,7 +50,7 @@ $(document).ready(function(){
 		var setQuestions = function (extraction){
 			if (extraction.length > 0){
 				$.each(extraction, function( index, elemento ) {
-					console.log('set');
+// 					console.log('set');
 // 					  console.log(elemento.question.id + " | " + elemento.question.type + " | " + elemento.question.name);
 
 					  if (elemento.question.type == 'LIST'){
@@ -58,7 +58,7 @@ $(document).ready(function(){
 // 						  '<option selected="selected" value="15">2</option>'
 						  $.each(elemento.question.alternatives, function( index2, elemento2 ) {
 							  if (elemento2.value == elemento.alternative.value){
-								  console.log('alternativa selecionada: ' + elemento.alternative.value);
+// 								  console.log('alternativa selecionada: ' + elemento.alternative.value);
 // 								  $("#alternative_id_" + index).attr('selectedIndex', index2);
 								$("#alternative_id_" + index).val(elemento.alternative.id);	
 								var test = $('#select2-alternative_id_' + index + '-container');

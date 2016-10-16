@@ -35,7 +35,7 @@ public class FilesUtils {
     		Path path = DEFAULT_FOLDER.resolve(map.getId().toString());
     		
     		try(InputStream in = file.getFile()) {
-    		    Files.copy(in, path,StandardCopyOption.REPLACE_EXISTING);
+    		    Files.copy(in, path, StandardCopyOption.REPLACE_EXISTING);
     		} catch (IOException e) {
     		    throw new IllegalStateException(e);
     		}

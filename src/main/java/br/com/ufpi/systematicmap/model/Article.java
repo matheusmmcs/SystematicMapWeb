@@ -156,14 +156,18 @@ public class Article implements Serializable {
 		return null;
 	}
 	
-	public Alternative alternative(Question question, User user){
+	public List<Alternative> alternative(Question question, User user) {
+		List<Alternative> alternatives = new ArrayList<Alternative>();
+
 		for (EvaluationExtraction ev : evaluationExtractions) {
-			if (ev.getQuestion().equals(question) && ev.getUser().equals(user)){
-				return ev.getAlternative();
+			if (ev.getQuestion().equals(question) && ev.getUser().equals(user)) {
+				alternatives.add(ev.getAlternative());
 			}
 		}
 		
-		return null;
+//		System.out.println(question.getId() + " | " + user.getId() + " | " + alternatives);
+
+		return alternatives;
 	}
 		
 	
@@ -433,6 +437,7 @@ public class Article implements Serializable {
 		List<EvaluationExtraction> eval = new ArrayList<>();
 		for (EvaluationExtraction ev : evaluationExtractions) {
 			if (ev.getUser().equals(user)){
+//				System.out.println("EV: " + ev);
 				eval.add(ev);
 			}
 		}
@@ -530,6 +535,7 @@ public class Article implements Serializable {
 		
 		return questionsAndAlternative;
 	}
+	
 
 	public HashMap<String, String> getEvaluateFinalExtractionAlternative(User user) {
 		HashMap<String, String> questionsAndAlternative = new HashMap<String, String>();
@@ -542,6 +548,47 @@ public class Article implements Serializable {
 		
 		return questionsAndAlternative;
 	}
+	
+	public  HashMap<String, List<String>> getEvaluateFinalExtractionAlternatives(){
+		 HashMap<String, List<String>> questionsAndAlternative =  new HashMap<String, List<String>>();
+		 List<String> alternatives = null;
+		
+		for (EvaluationExtractionFinal ee : getEvaluationExtractionsFinal()) {
+			if (questionsAndAlternative.containsKey(ee.getQuestion().getName())){
+				alternatives = questionsAndAlternative.get(ee.getQuestion().getName());
+			}else{
+				alternatives = new ArrayList<String>();				
+			}			
+			
+			alternatives.add(ee.getAlternative().getValue());
+			questionsAndAlternative.put(ee.getQuestion().getName(), alternatives);	
+		}
+		
+		return questionsAndAlternative;
+	}
+	
+	public  HashMap<String, List<String>> getEvaluateFinalExtractionAlternatives(User user) {
+		HashMap<String, List<String>> questionsAndAlternative =  new HashMap<String, List<String>>();
+		 List<String> alternatives = null;
+		
+		for (EvaluationExtraction ee : getEvaluationExtractions()) {
+			if (ee.getUser().equals(user)){
+				if (questionsAndAlternative.containsKey(ee.getQuestion().getName())){
+					alternatives = questionsAndAlternative.get(ee.getQuestion().getName());
+				}else{
+					alternatives = new ArrayList<String>();				
+				}			
+				
+				alternatives.add(ee.getAlternative().getValue());
+				questionsAndAlternative.put(ee.getQuestion().getName(), alternatives);
+			}
+		}
+		
+		return questionsAndAlternative;
+	}
+	
+	
+	
 	
 	/**
 	 * @return the score
