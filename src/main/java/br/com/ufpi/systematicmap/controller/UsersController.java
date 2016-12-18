@@ -14,8 +14,14 @@ import br.com.caelum.vraptor.Post;
 import br.com.caelum.vraptor.Result;
 import br.com.caelum.vraptor.validator.SimpleMessage;
 import br.com.caelum.vraptor.validator.Validator;
+import br.com.ufpi.systematicmap.dao.ArticleDao;
+import br.com.ufpi.systematicmap.dao.EvaluationDao;
+import br.com.ufpi.systematicmap.dao.MapStudyDao;
 import br.com.ufpi.systematicmap.dao.UserDao;
 import br.com.ufpi.systematicmap.interceptor.Public;
+import br.com.ufpi.systematicmap.model.Article;
+import br.com.ufpi.systematicmap.model.Evaluation;
+import br.com.ufpi.systematicmap.model.MapStudy;
 import br.com.ufpi.systematicmap.model.User;
 import br.com.ufpi.systematicmap.utils.GenerateHashPasswordUtil;
 import br.com.ufpi.systematicmap.utils.Linker;
@@ -35,21 +41,27 @@ public class UsersController {
 	private final UserDao userDao;
 	private final MailUtils mailUtils;
 	private final Linker linker;
+	private ArticleDao articleDao;
+	private EvaluationDao evaluationDao;
+	private MapStudyDao mapStudyDao;
 
 	/**
 	 * @deprecated CDI eyes only
 	 */
 	protected UsersController() {
-		this(null, null, null, null, null);
+		this(null, null, null, null, null, null, null, null);
 	}
 
 	@Inject
-	public UsersController(UserDao dao, Result result, Validator validator, MailUtils mailUtils, Linker linker) {
+	public UsersController(UserDao dao, Result result, Validator validator, MailUtils mailUtils, Linker linker, ArticleDao articleDao, EvaluationDao evaluationDao, MapStudyDao mapStudyDao) {
 		this.userDao = dao;
 		this.result = result;
 		this.validator = validator;
 		this.mailUtils = mailUtils;
 		this.linker = linker;
+		this.articleDao = articleDao;
+		this.evaluationDao = evaluationDao;
+		this.mapStudyDao = mapStudyDao;
 	}
 
 	@Get("/users")
@@ -135,5 +147,24 @@ public class UsersController {
 		result.redirectTo(UsersController.class).home();
 	}
     */
-
+	
+	@Get("/map/{mapid}/transfer/{userIdOne}/to/{userIdTwo}")
+	public void transferEvaluate(Long mapid, Long userIdOne, Long userIdTwo){
+		User userOne = userDao.find(userIdOne);
+		User userTwo = userDao.find(userIdTwo);
+		MapStudy mapStudy = mapStudyDao.find(mapid);
+		
+		List<Article> articles = articleDao.getArticlesToEvaluate(mapStudy);
+		
+		for(Article a : articles){
+			Evaluation evaluation = a.getEvaluation(userOne);
+			evaluation.setId(null);
+			evaluation.setUser(userTwo);
+			
+			evaluationDao.insert(evaluation);
+		}		
+		
+		result.redirectTo(HomeController.class).login();
+	}
+	
 }

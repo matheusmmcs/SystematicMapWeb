@@ -51,6 +51,7 @@ $(document).ready(function(){
 
 		//alterar dados do artigo
 		$('#articleReadId').html(article.id);
+		$('#articleIdFiltro').val(article.id);
 		$('#articleReadTitle').html(article.title);
 		$('#articleReadAbstract').html(article.abstrct);
 		$('#articleReadKeywords').html(article.keywords);
@@ -300,12 +301,45 @@ $(document).ready(function(){
 </h3>
 <hr/>
 
-<div class="progress">
-	<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="${percentEvaluated}" aria-valuemin="0" aria-valuemax="100" style="min-width: 3em; width: ${percentEvaluated}%">
-		${percentEvaluated}%
+<div class="row">
+	<div class="col-md-3">
+		<h4 class="color-primary" style="margin-top: 0px;">Andamento da seleção:</h4> 
 	</div>
-</div>
+	<div class="col-md-9">
+		<div class="progress">
+			<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="${percentEvaluated}" aria-valuemin="0" aria-valuemax="100" style="min-width: 3em; width: ${percentEvaluated}%">
+				${percentEvaluated}%
+			</div>
+		</div>
+	</div>
+</div>	
+
 <div class="clear-both"></div>
+
+<hr>
+<div class="row">
+	<div class="col-md-6"></div>
+  	<div class="col-md-6">
+  		<form id="formClassification" action="${linkTo[MapStudyController].classificationArticle}" method="post">
+  			<input type="hidden" name="mapid" value="${map.id}" />
+			<input type="hidden" id="articleIdFiltro" name="articleid" value="${article.id}" />
+			<div class="row">
+				<div class="col-md-6">
+					<button type="submit" id="submitClass" class="btn btn-primary form-control">Filtrar Manualmente</button>
+				</div>
+				<div class="col-md-6">
+					<select class="form-control" name="classification">
+						<c:forEach var="classif" items="${classifications}">
+							<option value="${classif}">${classif.description}</option>
+						</c:forEach>
+					</select>
+				</div>
+			</div>
+  		</form>
+  	</div>
+</div>
+
+<!-- <hr> -->
 
 <div class="row">
   	<div class="col-lg-12">
@@ -336,9 +370,14 @@ $(document).ready(function(){
 						  	</c:if>
 						</c:forEach>
 						
-						<div class="form-group">
-		                	<input class="inclusions" type="checkbox" name="inclusions[${c.index}]" value="${criteria.id}" ${containsExc ? 'checked="checked"' : '' } />  
-			                ${criteria.description}<br/>  
+<!-- 						<div class="form-group"> -->
+<%-- 		                	<input id="${criteria.id}" class="inclusions" type="checkbox" name="inclusions[${c.index}]" value="${criteria.id}" ${containsExc ? 'checked="checked"' : '' } />   --%>
+<%-- 			                <label for="${criteria.id}">${criteria.description}</label>  --%>
+<!-- 						</div> -->
+						<div class="checkbox">
+						    <label>
+						       <input id="${criteria.id}" class="inclusions" type="checkbox" name="inclusions[${c.index}]" value="${criteria.id}" ${containsExc ? 'checked="checked"' : '' } /> ${criteria.description}
+						    </label>
 						</div>
 			        </c:forEach>
 					
@@ -365,10 +404,16 @@ $(document).ready(function(){
 						    	<c:set var="containsExc" value="true" />
 						  	</c:if>
 						</c:forEach>
-						<div class="form-group">
-			                <input class="exclusions" type="checkbox" name="exclusions[${c.index}]" value="${criteria.id}" ${containsExc ? 'checked="checked"' : '' } />
-			                ${criteria.description}<br/>
-		                </div>
+<!-- 						<div class=""> -->
+<%-- 			                <input id="${criteria.id}" class="exclusions" type="checkbox" name="exclusions[${c.index}]" value="${criteria.id}" ${containsExc ? 'checked="checked"' : '' } /> --%>
+<%-- 							<label for="${criteria.id}">${criteria.description}</label> --%>
+<%-- 			                ${criteria.description}<br/> --%>
+<!-- 		                </div> -->
+		                <div class="checkbox">
+						    <label>
+						       <input id="${criteria.id}" class="exclusions" type="checkbox" name="exclusions[${c.index}]" value="${criteria.id}" ${containsExc ? 'checked="checked"' : '' } /> ${criteria.description}
+						    </label>
+						</div>
 		            </c:forEach>
 					<p><strong><fmt:message key="mapstudy.article.comments"/>:</strong><br/>
 					<textarea class="form-control" id="commentExclude" name="comment" rows="5" cols="">${evaluationDone.comment}</textarea></p>

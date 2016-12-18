@@ -327,6 +327,7 @@ public class ExtractionController {
 		result.include("percentExtracted", mapStudy.percentEvaluated(percentExtractedDouble));
 		result.include("extractions", extractions); // artigos já avaliados
 		result.include("form", mapStudy.getForm());
+		
 	}
 	
 	private static Article getNextToEvaluate(List<Article> articlesToExtraction, Long actual){
@@ -368,6 +369,7 @@ public class ExtractionController {
 		int numberQuestions = questionVO.getQuestions().size();
 		
 //		System.out.println(numberQuestions);
+		article.addComment(userInfo.getUser(), questionVO.getComment());
 		
 		for (int i = 0; i < numberQuestions; i++) {
 			Set<Alternative> auxList = questionVO.getQuestions().get(i).getAlternatives();
@@ -446,6 +448,8 @@ public class ExtractionController {
 			nextArticleL.setId(-1l);
 		}
 		
+		articleDao.update(article);
+		
 //		System.out.println("Next article: " + nextArticle);
 
 		returns.put("extraction", extraction);
@@ -454,7 +458,6 @@ public class ExtractionController {
 
 		result.use(Results.json()).indented().withoutRoot().from(returns).recursive().serialize();
 //		System.out.println("deu update ?");
-		articleDao.update(article);
 	}
 	
 
@@ -488,6 +491,7 @@ public class ExtractionController {
 		
 		returns.put("extraction", extraction);
 		returns.put("article", article);
+		returns.put("comment", article.getComment(userInfo.getUser()));
 		
 		result.use(Results.json()).indented().withoutRoot().from(returns).recursive().serialize();		
 	}
@@ -536,8 +540,11 @@ public class ExtractionController {
 		}
         
         
-        validator.check(extractions.size() > 0, new SimpleMessage("mapstudy.articles", "mapstudy.extraction.none"));
-        validator.onErrorRedirectTo(MapStudyController.class).show(mapid);
+        if (!mapStudy.isSupervisor(user)){
+        	validator.check(extractions.size() > 0, new SimpleMessage("mapstudy.articles", "mapstudy.extraction.none"));
+        	validator.onErrorRedirectTo(MapStudyController.class).show(mapid);
+        	
+        }
         
         Double percentEvaluatedDouble = mapStudy.percentExtractedDouble(this.articleDao, user);
         
@@ -577,8 +584,11 @@ public class ExtractionController {
 		
 		Double percentEvaluatedDouble = mapStudy.percentExtractedDouble(articleDao, user);
 		
-		validator.check((percentEvaluatedDouble >= 100.0), new SimpleMessage("mapstudy", "mapstudy.evaluations.compare.undone"));
-		validator.onErrorRedirectTo(MapStudyController.class).list();
+		if (!mapStudy.isSupervisor(user)){
+			validator.check((percentEvaluatedDouble >= 100.0), new SimpleMessage("mapstudy", "mapstudy.evaluations.compare.undone"));
+			validator.onErrorRedirectTo(MapStudyController.class).list();
+			
+		}
 		
 		result.redirectTo(this).finalExtractionLoad(mapid, 0l);		
 	}
@@ -586,8 +596,8 @@ public class ExtractionController {
 	@Get("/maps/{mapid}/articleCompare/{articleid}")
 	public void finalExtractionLoad (Long mapid, Long articleid){
 		MapStudy mapStudy = mapStudyDao.find(mapid);
-//		User user = userInfo.getUser();
-		
+		User user = userInfo.getUser();
+//		
 		validator.check(mapStudy != null, new SimpleMessage("mapstudy", "mapstudy.is.not.exist"));
 		validator.onErrorRedirectTo(MapStudyController.class).list();
 		
@@ -621,6 +631,11 @@ public class ExtractionController {
 //		validator.onErrorRedirectTo(MapStudyController.class).show(mapid);
 
 		List<User> members = userDao.mapStudyUsers(mapStudy);
+		
+		if (mapStudy.isSupervisor(user)){
+			members.remove(user);
+		}
+		
 		Collections.sort(members, new Comparator<User>() {
 			@Override
 			public int compare(User u1, User u2){
@@ -628,11 +643,15 @@ public class ExtractionController {
 			}
 		});
 		
-		ExtractionCompareVO articleLoad = new ExtractionCompareVO(article);
+		ExtractionCompareVO articleLoad = new ExtractionCompareVO(article); // Faz comparação de extrações
 		
+		/**
+		 * Obter as extrações feitas por cada usuário
+		 */
 		for(User u : members){
-			List<EvaluationExtraction> extractionsList = article.getEvaluationExtraction(u);
+			List<EvaluationExtraction> extractionsList = article.getEvaluationExtraction(u); // Extrações feitas pelo usuário u
 			
+			// Para cada extração obter os dados dela
 			for (EvaluationExtraction ee : extractionsList) {
 				articleLoad.addQueston(ee.getQuestion(), ee.getAlternative(), ee.getUser());
 			}	

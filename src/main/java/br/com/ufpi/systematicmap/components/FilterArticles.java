@@ -9,6 +9,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.inject.Inject;
+
+import br.com.ufpi.systematicmap.interceptor.UserInfo;
 import br.com.ufpi.systematicmap.model.Article;
 import br.com.ufpi.systematicmap.model.enums.ClassificationEnum;
 import br.com.ufpi.systematicmap.model.enums.FieldEnum;
@@ -28,6 +31,9 @@ public class FilterArticles {
 	private Integer limiartotal;
 	private boolean filterAuthor;
 	private boolean filterAbstract;
+	
+	@Inject
+	private UserInfo userInfo;
 	
 	/*
 	 * {{
@@ -92,7 +98,8 @@ public class FilterArticles {
 		for(Article p : papers){
 			if(p.getAuthor().equals("")){
 				p.setClassification(ClassificationEnum.WITHOUT_AUTHORS);
-				p.setComments(p.getComments() + ClassificationEnum.WITHOUT_AUTHORS.toString());
+//				p.setComments(p.getComments() + ClassificationEnum.WITHOUT_AUTHORS.toString());
+				p.addComment(userInfo.getUser(), p.getComment(userInfo.getUser()) + ClassificationEnum.WITHOUT_AUTHORS.toString());
 				count++;
 			}
 		}
@@ -104,7 +111,8 @@ public class FilterArticles {
 		for(Article p : papers){
 			if(p.getAbstrct().equals("")){
 				p.setClassification(ClassificationEnum.WITHOUT_ABSTRACT);
-				p.setComments(p.getComments() + ClassificationEnum.WITHOUT_ABSTRACT.toString());
+//				p.setComments(p.getComments() + ClassificationEnum.WITHOUT_ABSTRACT.toString());
+				p.addComment(userInfo.getUser(), p.getComment(userInfo.getUser()) + ClassificationEnum.WITHOUT_ABSTRACT.toString());
 				count++;
 			}
 		}
@@ -156,8 +164,9 @@ public class FilterArticles {
 //							System.out.println("p1:" + p + " p2: " +p2);
 							
 							p2.setClassification(ClassificationEnum.REPEAT);
-							String comment = p.getComments() != null ? p.getComments() : "";
-							p2.setComments(comment + " " + ClassificationEnum.REPEAT.toString());
+							String comment = p.getComment(userInfo.getUser()) != null ? p.getComment(userInfo.getUser()) : "";
+//							p2.setComments(comment + " " + ClassificationEnum.REPEAT.toString());
+							p2.addComment(userInfo.getUser(), comment + " " + p.getComment(userInfo.getUser()) + ClassificationEnum.REPEAT.toString());
 							p2.setMinLevenshteinDistance(dist);
 							p2.setPaperMinLevenshteinDistance(p);
 							//
@@ -221,7 +230,8 @@ public class FilterArticles {
 		
 		if(count < limiar){
 			p.setClassification(ClassificationEnum.WORDS_DONT_MATCH);
-			p.setComments(p.getComments()+" "+ClassificationEnum.WORDS_DONT_MATCH.toString()+"-"+fieldEnum.toString()+" DONT contains=("+comment+");");
+//			p.setComments(p.getComments()+" "+ClassificationEnum.WORDS_DONT_MATCH.toString()+"-"+fieldEnum.toString()+" DONT contains=("+comment+");");
+			p.addComment(userInfo.getUser(), p.getComment(userInfo.getUser())+" "+ClassificationEnum.WORDS_DONT_MATCH.toString()+"-"+fieldEnum.toString()+" DONT contains=("+comment+");");
 		}
 		
 		return termos;

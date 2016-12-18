@@ -70,6 +70,29 @@
 				</tbody>
 			</table>
 		</div>
+		
+		<div class="row">
+			<div class="col-md-12">
+				<strong><fmt:message key="mapstudy.article.comments"/>:</strong><br/>
+				<c:choose>
+				    <c:when test="${article.article.comments != null && not empty article.article.comments}">
+						<c:forEach var="comment" items="${article.article.comments}" varStatus="count">
+							<strong>${comment.user.name}:</strong><br/>	
+								<p>
+									${comment.value}
+								</p>
+								<hr>
+						</c:forEach>			
+				    </c:when>    
+				    <c:otherwise>
+				        <p>
+							Sem coment&aacute;rios.
+						</p>
+				    </c:otherwise>
+				</c:choose>
+			</div>
+		</div>
+		
 		<button type="submit" id="submit" class="btn btn-large btn-primary">
 			<fmt:message key="salve" />
 		</button>

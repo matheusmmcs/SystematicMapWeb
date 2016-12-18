@@ -29,7 +29,7 @@ public class EvaluationDao extends Dao<Evaluation> {
 	
 	public List<Evaluation> getEvaluations(User user, MapStudy mapStudy){
 		List<Evaluation> e = entityManager
-			.createQuery("select e from Evaluation e where e.mapStudy = :mapStudy and e.user = :user order by e.article.title asc", Evaluation.class)
+			.createQuery("select e from Evaluation e where e.mapStudy = :mapStudy and e.user = :user and e.article.classification = null order by e.article.title asc", Evaluation.class)
 				.setParameter("user", user)
 				.setParameter("mapStudy", mapStudy)
 				.getResultList();

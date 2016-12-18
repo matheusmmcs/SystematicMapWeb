@@ -30,16 +30,19 @@ public class FilesUtils {
 		}
 	}
 	
-	public void save(UploadedFile file, MapStudy map) {
+	public boolean save(UploadedFile file, MapStudy map) {
 		if(file != null) {
     		Path path = DEFAULT_FOLDER.resolve(map.getId().toString());
     		
     		try(InputStream in = file.getFile()) {
     		    Files.copy(in, path, StandardCopyOption.REPLACE_EXISTING);
+    		    return true;
     		} catch (IOException e) {
-    		    throw new IllegalStateException(e);
+//    		    throw new IllegalStateException(e);
+    			return false;
     		}
 		}
+		return false;
 	}
 
 	protected String getFileName(MapStudy map) {

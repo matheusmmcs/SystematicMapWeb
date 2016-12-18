@@ -187,7 +187,7 @@ public class ArticleDao extends Dao<Article> {
 
 	public List<Article> getArticlesToExtraction(User user, MapStudy mapStudy) {
 		List<Article> articles = entityManager
-				.createQuery("select a from Article a where a.finalEvaluation = :finalEvaluation and a.mapStudy = :mapStudy and a.id not in (select e.article.id from EvaluationExtraction e where e.user = :user) order by a.title asc", Article.class)
+				.createQuery("select a from Article a where a.classification = null and a.finalEvaluation = :finalEvaluation and a.mapStudy = :mapStudy and a.id not in (select e.article.id from EvaluationExtraction e where e.user = :user) order by a.title asc", Article.class)
 					.setParameter("user", user)
 					.setParameter("mapStudy", mapStudy)
 					.setParameter("finalEvaluation", EvaluationStatusEnum.ACCEPTED)
@@ -206,7 +206,7 @@ public class ArticleDao extends Dao<Article> {
 	
 	public List<Article> getExtractions(User user, MapStudy mapStudy) {
 		List<Article> extractions = entityManager
-				.createQuery("select distinct(e.article) from EvaluationExtraction e where e.user = :user and e.article.mapStudy = :mapStudy order by e.article.id asc", Article.class)
+				.createQuery("select distinct(e.article) from EvaluationExtraction e where e.article.classification = null and e.user = :user and e.article.mapStudy = :mapStudy order by e.article.id asc", Article.class)
 					.setParameter("user", user)
 					.setParameter("mapStudy", mapStudy)
 					.getResultList();
@@ -232,7 +232,7 @@ public class ArticleDao extends Dao<Article> {
 	
 	public List<Article> getArticlesFinalExtraction(MapStudy mapStudy) {
 		List<Article> finalExtractions = entityManager
-				.createQuery("select distinct(e.article) from EvaluationExtractionFinal e where e.mapStudy = :mapStudy order by e.article.id asc", Article.class)
+				.createQuery("select distinct(e.article) from EvaluationExtractionFinal e where e.article.classification = null and e.mapStudy = :mapStudy order by e.article.id asc", Article.class)
 					.setParameter("mapStudy", mapStudy)
 					.getResultList();
 			return finalExtractions;

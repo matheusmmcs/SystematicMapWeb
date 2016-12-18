@@ -45,7 +45,7 @@ $(document).ready(function(){
 // }
 
 			
-	var actualizeArticle = function(article, extraction){
+	var actualizeArticle = function(article, extraction, comment){
 // 		console.log('entra atualiza article', article.source);
 		//alterar a url para caso seja realizado F5
 		var url = window.location.href;
@@ -81,6 +81,9 @@ $(document).ready(function(){
 		$('#articleReadYear').html(article.year);
 		$('#articlesource').val(mySource(article.source));
 		$('#articlescore').val(article.score);
+		$('#comment').val(comment);
+
+		console.log('Comentários: ' + $('#comment'). val());
 		
 // 		console.log('source encontrado', $('#articlesource'));
 
@@ -188,7 +191,7 @@ $(document).ready(function(){
 		var url = "${linkTo[ExtractionController].loadArticleAjax(0, 1)}";
 		var mapid = $('#mapid').val();
 		url = url.replace("1", actualid);
-		url = url.replace("0", mapid);
+// 		url = url.replace("0", mapid);
 		
 // 		console.log("URL: " + mapid);
 
@@ -198,9 +201,10 @@ $(document).ready(function(){
 			success: function(data){
 				var article = data['article'];
 				var extraction = data['extraction'];
+				var comment = data['comment'];
 // 				console.log('article read: ', article);
 // 				console.log('extraction: ', extraction);
-				actualizeArticle(article, extraction);
+				actualizeArticle(article, extraction, comment);
 				messages('info', 'Article '+article.id, 'Carregado com sucesso');
 			},
 			error: function(e){
@@ -326,6 +330,7 @@ $(document).ready(function(){
 		var source = $('#articlesource').val();
 		var score = $('#articlescore').val();
 		var id = null;
+		var comment = $('#comment').val();
 		
 // 		console.log($('#articlesource'));
 // 		console.log('Source eval: ', source)
@@ -351,6 +356,7 @@ $(document).ready(function(){
 	var questionVO = {"mapid" : mapid,
 					  "articleid" : articleid,
 					  "questions" : questions,
+					  "comment" : comment,
 					  "nextArticle" : id
 					};
 
@@ -528,6 +534,12 @@ var messages = function (type, category, text){
 							</div>		
  						</div> 
 					</c:forEach>		
+					
+<!-- 					Comentários -->
+					<p>
+						<strong><fmt:message key="mapstudy.article.comments"/>:</strong><br/>
+						<textarea class="form-control" id="comment" name="comment" rows="5" cols="">${article.getComment(userInfo.user)}</textarea>
+					</p>
 								
 					<button type="submit" id="submit" class="btn btn-large btn-primary buttonextraction">
 						<fmt:message key="salve" />

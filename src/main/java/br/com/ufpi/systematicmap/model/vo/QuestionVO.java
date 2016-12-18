@@ -16,18 +16,20 @@ public class QuestionVO {
 	private Long articleid;
 	private List<Question> questions;
 	private Long nextArticle;
+	private String comment;
 	/**
 	 * @param mapid
 	 * @param articleid
 	 * @param questions
 	 * @param nextArticle
 	 */
-	public QuestionVO(Long mapid, Long articleid, List<Question> questions, Long nextArticle) {
+	public QuestionVO(Long mapid, Long articleid, List<Question> questions, Long nextArticle, String comment) {
 		super();
 		this.mapid = mapid;
 		this.articleid = articleid;
 		this.questions = questions;
 		this.nextArticle = nextArticle;
+		this.comment = comment;
 	}
 	/**
 	 * @return the mapid
@@ -76,6 +78,19 @@ public class QuestionVO {
 	 */
 	public void setNextArticle(Long nextArticle) {
 		this.nextArticle = nextArticle;
+	}
+	
+	/**
+	 * @return the comment
+	 */
+	public String getComment() {
+		return comment;
+	}
+	/**
+	 * @param comment the comment to set
+	 */
+	public void setComment(String comment) {
+		this.comment = comment;
 	}
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()

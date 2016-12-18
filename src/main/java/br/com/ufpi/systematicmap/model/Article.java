@@ -97,8 +97,8 @@ public class Article implements Serializable {
 	@SkipSerialization
 	@Enumerated(EnumType.STRING)
 	private ClassificationEnum classification;
-	@SkipSerialization
-	private String comments; 
+//	@SkipSerialization
+//	private String comments; 
 	@SkipSerialization
 	private Integer regexTitle = 0;
 	@SkipSerialization
@@ -126,6 +126,10 @@ public class Article implements Serializable {
 	@OrderBy("question")
 	@SkipSerialization
 	private Set<EvaluationExtractionFinal> evaluationExtractionsFinal = new HashSet<>();
+	
+	@OneToMany(mappedBy="article", cascade=CascadeType.ALL)
+	@SkipSerialization
+	private List<Comment> comments = new ArrayList<Comment>();
 	
 	public void addExtractionFinal(EvaluationExtraction evaluationExtraction){
 		EvaluationExtractionFinal evaluationExtractionFinal = new EvaluationExtractionFinal();
@@ -179,13 +183,13 @@ public class Article implements Serializable {
 		this.classification = classification;
 	}
 
-	public String getComments() {
-		return comments;
-	}
-
-	public void setComments(String comments) {
-		this.comments = comments;
-	}
+//	public String getComments() {
+//		return comments;
+//	}
+//
+//	public void setComments(String comments) {
+//		this.comments = comments;
+//	}
 
 	public Integer getRegexTitle() {
 		return regexTitle;
@@ -624,6 +628,51 @@ public class Article implements Serializable {
 	@Override
 	public String toString() {
 		return "Article [id=" + id + "]";
+	}
+
+	/**
+	 * @return the comments
+	 */
+	public List<Comment> getComments() {
+		return comments;
+	}
+
+	/**
+	 * @param comments the comments to set
+	 */
+	public void setComments(List<Comment> comments) {
+		this.comments = comments;
+	}
+	
+	public void addComment(User user, String comment){
+		for(Comment com : comments){
+			if (com.getUser().equals(user)){
+				com.setValue(comment);
+				return;
+			}
+		}
+		
+		Comment com = new Comment();
+		com.setArticle(this);
+		com.setMapStudy(mapStudy);
+		com.setUser(user);
+		com.setValue(comment);
+		
+		comments.add(com);
+		
+	}
+
+	public String getComment(User user) {
+		return getComment(user.getId());
+	}
+	
+	public String getComment(Long id) {
+		for(Comment com : comments){
+			if (com.getUser().getId().equals(id)){
+				return com.getValue();
+			}
+		}
+		return "";
 	}
 	
 	

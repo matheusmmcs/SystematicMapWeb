@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
@@ -38,6 +39,9 @@ public class EvaluationExtractionFinal implements Serializable{
 	@JoinColumn(name = "article_id")
 	@SkipSerialization
 	private Article article;
+	
+	@Lob
+	private String comment;
 	
 	@ManyToOne
 	@JoinColumn(name = "alternative_id")
@@ -177,6 +181,20 @@ public class EvaluationExtractionFinal implements Serializable{
 		return "EvaluationExtractionFinal [id=" + id + ", mapStudy=" + mapStudy.getId()
 				+ ", article=" + article.getId() + ", alternative=" + alternative.getId()
 				+ ", question=" + question.getId() + "]";
+	}
+
+	/**
+	 * @return the comment
+	 */
+	public String getComment() {
+		return comment;
+	}
+
+	/**
+	 * @param comment the comment to set
+	 */
+	public void setComment(String comment) {
+		this.comment = comment;
 	}
 	
 	

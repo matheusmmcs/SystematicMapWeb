@@ -285,7 +285,23 @@ public class MapStudy implements Serializable{
 		getUsersMapStudys().add(usersMapStudys);
 	}
 	
-	public void removeParticipant(User user) {
+	public void addUser(User user, Roles role) {
+		for (UsersMapStudys u : usersMapStudys) {
+			if (u.getUser().equals(user) && u.isRemoved()){
+				u.setRole(role);
+				u.setRemoved(false);
+				return;
+			}
+		}
+		
+		UsersMapStudys usersMapStudys = new UsersMapStudys();
+		usersMapStudys.setUser(user);
+		usersMapStudys.setMapStudy(this);
+		usersMapStudys.setRole(role);		
+		getUsersMapStudys().add(usersMapStudys);		
+	}
+	
+	public void removeUserMap(User user) {
 		for (UsersMapStudys u : usersMapStudys) {
 			if (u.getUser().equals(user)){
 				u.setRemoved(true);
@@ -314,6 +330,30 @@ public class MapStudy implements Serializable{
 		}	
 		
 		return false;
+	}
+	
+	public boolean isSupervisor(User user) {
+		for (UsersMapStudys u : usersMapStudys) {
+			if (u.getUser().equals(user)){
+				if (u.getRole().equals(Roles.SUPERVISOR)){
+					return true;
+				}else{
+					return false;
+				}
+			}
+		}	
+		
+		return false;
+	}
+	
+	public Roles role(User user) {
+		for (UsersMapStudys u : usersMapStudys) {
+			if (u.getUser().equals(user)){
+				return u.getRole();
+			}
+		}	
+		
+		return null;
 	}
 	
 	public List<User> members(){
@@ -409,6 +449,8 @@ public class MapStudy implements Serializable{
 			form.setMapStudy(this);
 		}
 	}
+
+	
 
 //	/**
 //	 * @return the dataExtractionForm

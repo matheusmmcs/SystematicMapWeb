@@ -4,7 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.ufpi.systematicmap.model.Question;
+import br.com.ufpi.systematicmap.model.enums.QuestionType;
 
+/**
+ * @author Gleison Andrade
+ *
+ */
 public class ExtractionVO {
     private Question question;
     private List<UserAndAlternative> userAndAlternatives;
@@ -70,5 +75,22 @@ public class ExtractionVO {
 	public String toString() {
         return "ExtractionVO [question=" + this.question + ", userAndAlternatives=" + this.userAndAlternatives + "]";
     }
+
+	
+	/**
+	 * Se não exister uma alternativa com mesma resposta por outro usuário adiciona a lista
+	 * @param userAndAlternative
+	 */
+	public void addUserAndAlternatives(UserAndAlternative userAndAlternative, Question question) {
+		if(!question.getType().equals(QuestionType.MULT)){
+			userAndAlternatives.add(userAndAlternative);
+			return;
+		}
+		for(UserAndAlternative ua : userAndAlternatives){
+			if(!ua.getAlternative().getValue().equalsIgnoreCase(userAndAlternative.getAlternative().getValue())){
+				userAndAlternatives.add(userAndAlternative);
+			}
+		}		
+	}
 }
 

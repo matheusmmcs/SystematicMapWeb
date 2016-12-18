@@ -1,7 +1,7 @@
 package br.com.ufpi.systematicmap.model.enums;
 
 public enum ClassificationEnum {
-	WITHOUT_AUTHORS("Sem Autores"), REPEAT("Duplicados"), WORDS_DONT_MATCH("Limiar Baixo"), WITHOUT_ABSTRACT("Sem Abstract");
+	WITHOUT_AUTHORS("Sem Autores"), REPEAT("Duplicado"), WORDS_DONT_MATCH("Limiar Baixo"), WITHOUT_ABSTRACT("Sem Abstract");
 	
 	private String description;
 	

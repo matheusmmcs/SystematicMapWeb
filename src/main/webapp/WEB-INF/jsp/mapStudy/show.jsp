@@ -120,14 +120,21 @@ $(document).ready(function(){
 					<input type="hidden" name="id" value="${map.id}" />
 	
 					<div class="form-group">
-						<div class="col-md-8 padding-left-none">
+						<div class="col-md-6 padding-left-none">
 							<select data-placeholder="<fmt:message key="mapstudy.members.choose" />" class="form-control select2" name="userId" tabindex="2">
 								<c:forEach var="member" items="${mapStudyArentUsers}">
 									<option value="${member.id}" data-email="${member.email}">${member.name}</option>
 								</c:forEach>
 							</select>
 						</div>
-						<button type="submit" id="submit" class="btn btn-large btn-primary col-md-4 float-right">
+						<div class="col-md-4">
+							<select class="form-control" name="role">
+								<c:forEach var="role" items="${roles}">
+									<option value="${role}">${role.description}</option>
+								</c:forEach>
+							</select>
+						</div>
+						<button type="submit" id="submit" class="btn btn-large btn-primary col-md-2 float-right">
 							<i class="glyphicon glyphicon-user"></i> <fmt:message key="add" />
 						</button>
 						<div class="clear-both"></div>
@@ -144,6 +151,7 @@ $(document).ready(function(){
 							<tr>
 								<th class="text-center">#</th>
 								<th>Participante</th>
+								<th>Função</th>
 								<th class="text-center"><fmt:message key="mapstudy.evaluations.percentconclusion" /></th>
 								<th class="text-center"><fmt:message key="mapstudy.extraction.percentconclusion" /></th>
 								
@@ -163,6 +171,7 @@ $(document).ready(function(){
 								<tr>
 									<td class="text-center">${s.index + 1}</td>
 									<td>${member.key.name}</td>
+									<td>${map.role(member.key).description}</td>
 									<td class="text-center">${member.value.selection}</td>
 									<td class="text-center">${member.value.extraction}</td>
 										<c:choose>
