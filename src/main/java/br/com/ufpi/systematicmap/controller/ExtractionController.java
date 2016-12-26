@@ -369,7 +369,7 @@ public class ExtractionController {
 		int numberQuestions = questionVO.getQuestions().size();
 		
 //		System.out.println(numberQuestions);
-		article.addComment(userInfo.getUser(), questionVO.getComment());
+		article.addComments(userInfo.getUser(), questionVO.getComment());
 		
 		for (int i = 0; i < numberQuestions; i++) {
 			Set<Alternative> auxList = questionVO.getQuestions().get(i).getAlternatives();
@@ -381,6 +381,7 @@ public class ExtractionController {
 //					System.out.println("ALTERNATIVES " + alternative);
 					
 					EvaluationExtraction evaluationExtraction = new EvaluationExtraction();
+					
 				
 					if (alternative.getId() == null){
 //						System.out.println("Questões MapId = " + mapStudy.getId() + "\n" + mapStudy.getForm().getQuestions());
@@ -491,7 +492,7 @@ public class ExtractionController {
 		
 		returns.put("extraction", extraction);
 		returns.put("article", article);
-		returns.put("comment", article.getComment(userInfo.getUser()));
+		returns.put("comment", article.getComments(userInfo.getUser()));
 		
 		result.use(Results.json()).indented().withoutRoot().from(returns).recursive().serialize();		
 	}
@@ -643,7 +644,7 @@ public class ExtractionController {
 			}
 		});
 		
-		ExtractionCompareVO articleLoad = new ExtractionCompareVO(article); // Faz comparação de extrações
+		ExtractionCompareVO extractionCompareVO = new ExtractionCompareVO(article); // Faz comparação de extrações
 		
 		/**
 		 * Obter as extrações feitas por cada usuário
@@ -653,7 +654,7 @@ public class ExtractionController {
 			
 			// Para cada extração obter os dados dela
 			for (EvaluationExtraction ee : extractionsList) {
-				articleLoad.addQueston(ee.getQuestion(), ee.getAlternative(), ee.getUser());
+				extractionCompareVO.addQueston(ee.getQuestion(), ee.getAlternative(), ee.getUser());
 			}	
 		}
 		
@@ -661,7 +662,7 @@ public class ExtractionController {
 		result.include("members", members);
 		result.include("articlesFinalExtracted", articlesFinalExtracted);
 		result.include("articlesToCompare", articlesToCompare);
-		result.include("article", articleLoad);
+		result.include("extractionCompareVO", extractionCompareVO);
 		result.include("notice", new SimpleMessage("mapstudy.article", "mapstudy.article.load.success"));
 		
 //		result.use(Results.json()).indented().withoutRoot().from(articlesCompare).recursive().serialize();
@@ -682,15 +683,27 @@ public class ExtractionController {
 		int count = questions.size();
 		
 		for (int i = 0; i < count; i++) {
-			eef = new EvaluationExtractionFinal();
-			eef.setMapStudy(mapStudy);
-			eef.setArticle(article);		
 			
 			Question question = questionDao.find(questions.get(i).getQuestionId());
+			boolean enter = true;
 			
-			for (Long alt : questions.get(i).getAlternatives()) { 
-				Long alternative_id = alt;
+			for (Long alternative_id : questions.get(i).getAlternatives()) { 
+//				Long alternative_id = alt;
 				if(!alternative_id.equals(0)){
+					if (question.getType().equals(QuestionType.MULT)){
+						if (enter){
+							article.removeEvaluationExtractionFinal(question, evaluationExtractionFinalDao);
+							enter = false;	
+						}
+					}else{
+						article.removeEvaluationExtractionFinal(question, alternative_id, evaluationExtractionFinalDao);
+//   					articleDao.removeEvaluationExtractionFinal(question);
+					}
+					
+					eef = new EvaluationExtractionFinal();
+					eef.setMapStudy(mapStudy);
+					eef.setArticle(article);
+					
 					Alternative alternative = alternativeDao.find(alternative_id);
 					
 					eef.setQuestion(question);

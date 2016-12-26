@@ -28,12 +28,12 @@
 		<p> 
 			<strong>
 				<fmt:message key="mapstudy.article.title"/>:
-			</strong> <span id="articleReadTitle">${article.article.title}</span>
+			</strong> <span id="articleReadTitle">${extractionCompareVO.article.title}</span>
 		<p>
 		
 		<form id="formExtractionFinal" action="${linkTo[ExtractionController].finalExtraction}" method="post">
 			<input type="hidden" id="mapid" name="mapid" value="${mapStudy.id}" />
-			<input type="hidden" id="articleid" name="articleid" value="${article.article.id}" />	
+			<input type="hidden" id="articleid" name="articleid" value="${extractionCompareVO.article.id}" />	
 		<div class="dataTable_wrapper">
 			<table class="table table-striped table-bordered table-hover">
 				<thead>
@@ -44,7 +44,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					<c:forEach var="ext" items="${article.extractions}" varStatus="s">
+					<c:forEach var="ext" items="${extractionCompareVO.extractions}" varStatus="s">
 					<input type="hidden" name="questions[${s.index}].questionId" value="${ext.question.id}"/>
 						<tr class="${s.index % 2 == 0 ? 'even' : 'odd'} gradeA article-to-read">
 							<td class="question-name">${ext.question.name}</td>
@@ -75,8 +75,8 @@
 			<div class="col-md-12">
 				<strong><fmt:message key="mapstudy.article.comments"/>:</strong><br/>
 				<c:choose>
-				    <c:when test="${article.article.comments != null && not empty article.article.comments}">
-						<c:forEach var="comment" items="${article.article.comments}" varStatus="count">
+				    <c:when test="${extractionCompareVO.article.comments != null && not empty extractionCompareVO.article.comments}">
+						<c:forEach var="comment" items="${extractionCompareVO.article.comments}" varStatus="count">
 							<strong>${comment.user.name}:</strong><br/>	
 								<p>
 									${comment.value}

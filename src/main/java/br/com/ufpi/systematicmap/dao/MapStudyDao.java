@@ -51,7 +51,7 @@ public class MapStudyDao extends Dao<MapStudy> {
 		try {
 			mapStudy = entityManager.createQuery("select m from MapStudy m where m.id =:id and m.removed = false", MapStudy.class).setParameter("id", id).getSingleResult();
 		} catch (Exception e) {
-			
+			System.out.println(e.getMessage());
 		}
 		
 		return mapStudy;

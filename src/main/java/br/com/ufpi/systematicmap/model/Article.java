@@ -24,6 +24,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import br.com.caelum.vraptor.serialization.SkipSerialization;
+import br.com.ufpi.systematicmap.dao.EvaluationExtractionFinalDao;
 import br.com.ufpi.systematicmap.model.enums.ArticleSourceEnum;
 import br.com.ufpi.systematicmap.model.enums.ClassificationEnum;
 import br.com.ufpi.systematicmap.model.enums.EvaluationStatusEnum;
@@ -126,6 +127,9 @@ public class Article implements Serializable {
 	@OrderBy("question")
 	@SkipSerialization
 	private Set<EvaluationExtractionFinal> evaluationExtractionsFinal = new HashSet<>();
+	
+	@Lob
+	private String comment;
 	
 	@OneToMany(mappedBy="article", cascade=CascadeType.ALL)
 	@SkipSerialization
@@ -631,6 +635,20 @@ public class Article implements Serializable {
 	}
 
 	/**
+	 * @return the comment
+	 */
+	public String getComment() {
+		return comment;
+	}
+
+	/**
+	 * @param comment the comment to set
+	 */
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
+
+	/**
 	 * @return the comments
 	 */
 	public List<Comment> getComments() {
@@ -644,7 +662,7 @@ public class Article implements Serializable {
 		this.comments = comments;
 	}
 	
-	public void addComment(User user, String comment){
+	public void addComments(User user, String comment){
 		for(Comment com : comments){
 			if (com.getUser().equals(user)){
 				com.setValue(comment);
@@ -662,11 +680,11 @@ public class Article implements Serializable {
 		
 	}
 
-	public String getComment(User user) {
-		return getComment(user.getId());
+	public String getComments(User user) {
+		return getComments(user.getId());
 	}
 	
-	public String getComment(Long id) {
+	public String getComments(Long id) {
 		for(Comment com : comments){
 			if (com.getUser().getId().equals(id)){
 				return com.getValue();
@@ -674,6 +692,30 @@ public class Article implements Serializable {
 		}
 		return "";
 	}
-	
+
+	public void removeEvaluationExtractionFinal(Question question, Long alternative_id, EvaluationExtractionFinalDao eefDao) {
+		List<EvaluationExtractionFinal> removes = new ArrayList<EvaluationExtractionFinal>();
+		for(EvaluationExtractionFinal eef : getEvaluationExtractionsFinal()){
+			if(eef.getQuestion().equals(question) && !eef.getAlternative().getId().equals(alternative_id)){
+				removes.add(eef);
+				eefDao.delete(eef.getId());
+			}
+		}
+		
+		getEvaluationExtractionsFinal().removeAll(removes);
+		
+	}
+
+	public void removeEvaluationExtractionFinal(Question question, EvaluationExtractionFinalDao eefDao) {
+		List<EvaluationExtractionFinal> removes = new ArrayList<EvaluationExtractionFinal>();
+		for(EvaluationExtractionFinal eef : getEvaluationExtractionsFinal()){
+			if(eef.getQuestion().equals(question)){
+				removes.add(eef);
+				eefDao.delete(eef.getId());
+			}
+		}
+		
+		getEvaluationExtractionsFinal().removeAll(removes);		
+	}	
 	
 }

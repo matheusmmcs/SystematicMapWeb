@@ -82,15 +82,15 @@ public class ExtractionVO {
 	 * @param userAndAlternative
 	 */
 	public void addUserAndAlternatives(UserAndAlternative userAndAlternative, Question question) {
-		if(!question.getType().equals(QuestionType.MULT)){
-			userAndAlternatives.add(userAndAlternative);
-			return;
+		if(question.getType().equals(QuestionType.MULT)){
+			for(UserAndAlternative ua : userAndAlternatives){
+				//Se existir um mesma resposta por outro usuário ignorar essa
+				if(ua.getAlternative().getValue().equalsIgnoreCase(userAndAlternative.getAlternative().getValue())){
+					return;
+				}
+			}		
 		}
-		for(UserAndAlternative ua : userAndAlternatives){
-			if(!ua.getAlternative().getValue().equalsIgnoreCase(userAndAlternative.getAlternative().getValue())){
-				userAndAlternatives.add(userAndAlternative);
-			}
-		}		
+		userAndAlternatives.add(userAndAlternative);
 	}
 }
 

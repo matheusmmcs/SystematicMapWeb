@@ -126,4 +126,6 @@ public class Evaluation implements Serializable {
 	public EvaluationStatusEnum getEvaluationStatus(){
 		return inclusionCriterias.size() > 0 ? EvaluationStatusEnum.ACCEPTED : (exclusionCriterias.size() > 0 ? EvaluationStatusEnum.REJECTED : EvaluationStatusEnum.NOT_EVALUATED);
 	}
+	
+	
 }

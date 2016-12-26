@@ -53,6 +53,17 @@ public class ExtractionFinalVO {
 	 */
 	public void setAlternatives(List<Long> alternatives) {
 		this.alternatives = alternatives;
-	}	
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "ExtractionFinalVO [questionId=" + questionId
+				+ ", alternatives=" + alternatives + "]";
+	}
+	
+	
 
 }

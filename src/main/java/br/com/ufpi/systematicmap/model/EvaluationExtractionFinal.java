@@ -40,9 +40,6 @@ public class EvaluationExtractionFinal implements Serializable{
 	@SkipSerialization
 	private Article article;
 	
-	@Lob
-	private String comment;
-	
 	@ManyToOne
 	@JoinColumn(name = "alternative_id")
 	private Alternative alternative;
@@ -181,20 +178,6 @@ public class EvaluationExtractionFinal implements Serializable{
 		return "EvaluationExtractionFinal [id=" + id + ", mapStudy=" + mapStudy.getId()
 				+ ", article=" + article.getId() + ", alternative=" + alternative.getId()
 				+ ", question=" + question.getId() + "]";
-	}
-
-	/**
-	 * @return the comment
-	 */
-	public String getComment() {
-		return comment;
-	}
-
-	/**
-	 * @param comment the comment to set
-	 */
-	public void setComment(String comment) {
-		this.comment = comment;
 	}
 	
 	

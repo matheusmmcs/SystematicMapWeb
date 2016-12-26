@@ -98,8 +98,8 @@ public class FilterArticles {
 		for(Article p : papers){
 			if(p.getAuthor().equals("")){
 				p.setClassification(ClassificationEnum.WITHOUT_AUTHORS);
-//				p.setComments(p.getComments() + ClassificationEnum.WITHOUT_AUTHORS.toString());
-				p.addComment(userInfo.getUser(), p.getComment(userInfo.getUser()) + ClassificationEnum.WITHOUT_AUTHORS.toString());
+				p.setComment(p.getComment() + ClassificationEnum.WITHOUT_AUTHORS.toString());
+//				p.addComment(userInfo.getUser(), p.getComment(userInfo.getUser()) + ClassificationEnum.WITHOUT_AUTHORS.toString());
 				count++;
 			}
 		}
@@ -111,8 +111,8 @@ public class FilterArticles {
 		for(Article p : papers){
 			if(p.getAbstrct().equals("")){
 				p.setClassification(ClassificationEnum.WITHOUT_ABSTRACT);
-//				p.setComments(p.getComments() + ClassificationEnum.WITHOUT_ABSTRACT.toString());
-				p.addComment(userInfo.getUser(), p.getComment(userInfo.getUser()) + ClassificationEnum.WITHOUT_ABSTRACT.toString());
+				p.setComment(p.getComment() + ClassificationEnum.WITHOUT_ABSTRACT.toString());
+//				p.addComment(userInfo.getUser(), p.getComment(userInfo.getUser()) + ClassificationEnum.WITHOUT_ABSTRACT.toString());
 				count++;
 			}
 		}
@@ -164,9 +164,11 @@ public class FilterArticles {
 //							System.out.println("p1:" + p + " p2: " +p2);
 							
 							p2.setClassification(ClassificationEnum.REPEAT);
-							String comment = p.getComment(userInfo.getUser()) != null ? p.getComment(userInfo.getUser()) : "";
-//							p2.setComments(comment + " " + ClassificationEnum.REPEAT.toString());
-							p2.addComment(userInfo.getUser(), comment + " " + p.getComment(userInfo.getUser()) + ClassificationEnum.REPEAT.toString());
+							String comment = p.getComment() != null ? p.getComment() : "";
+							p2.setComment(comment + " " + ClassificationEnum.REPEAT.toString());
+//							String comment = p.getComment(userInfo.getUser()) != null ? p.getComment(userInfo.getUser()) : "";
+//							p2.setComment(comment + " " + ClassificationEnum.REPEAT.toString());
+//							p2.addComment(userInfo.getUser(), comment + " " + p.getComment(userInfo.getUser()) + ClassificationEnum.REPEAT.toString());
 							p2.setMinLevenshteinDistance(dist);
 							p2.setPaperMinLevenshteinDistance(p);
 							//
@@ -230,8 +232,8 @@ public class FilterArticles {
 		
 		if(count < limiar){
 			p.setClassification(ClassificationEnum.WORDS_DONT_MATCH);
-//			p.setComments(p.getComments()+" "+ClassificationEnum.WORDS_DONT_MATCH.toString()+"-"+fieldEnum.toString()+" DONT contains=("+comment+");");
-			p.addComment(userInfo.getUser(), p.getComment(userInfo.getUser())+" "+ClassificationEnum.WORDS_DONT_MATCH.toString()+"-"+fieldEnum.toString()+" DONT contains=("+comment+");");
+			p.setComment(p.getComment()+" "+ClassificationEnum.WORDS_DONT_MATCH.toString()+"-"+fieldEnum.toString()+" DONT contains=("+comment+");");
+//			p.addComment(userInfo.getUser(), p.getComment(userInfo.getUser())+" "+ClassificationEnum.WORDS_DONT_MATCH.toString()+"-"+fieldEnum.toString()+" DONT contains=("+comment+");");
 		}
 		
 		return termos;

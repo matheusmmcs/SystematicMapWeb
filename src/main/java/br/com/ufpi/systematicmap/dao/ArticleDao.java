@@ -12,6 +12,7 @@ import javax.persistence.criteria.Root;
 
 import br.com.ufpi.systematicmap.model.Article;
 import br.com.ufpi.systematicmap.model.MapStudy;
+import br.com.ufpi.systematicmap.model.Question;
 import br.com.ufpi.systematicmap.model.User;
 import br.com.ufpi.systematicmap.model.enums.EvaluationStatusEnum;
 
@@ -79,7 +80,7 @@ public class ArticleDao extends Dao<Article> {
 	
 	public List<Article> getArticlesFinalAccepted(MapStudy mapStudy){
 		List<Article> articles = entityManager
-			.createQuery("select a from Article a where a.finalEvaluation = :finalEvaluation and a.mapStudy = :mapStudy order by a.title asc", Article.class)
+			.createQuery("select a from Article a where a.classification = null and a.finalEvaluation = :finalEvaluation and a.mapStudy = :mapStudy order by a.title asc", Article.class)
 				.setParameter("mapStudy", mapStudy)
 				.setParameter("finalEvaluation", EvaluationStatusEnum.ACCEPTED)
 				.getResultList();
@@ -91,7 +92,7 @@ public class ArticleDao extends Dao<Article> {
 		
 		try {
 			count = entityManager
-				.createQuery("select count(1) from Article a where a.finalEvaluation = :finalEvaluation and a.mapStudy = :mapStudy", Long.class)
+				.createQuery("select count(1) from Article a where a.classification = null and a.finalEvaluation = :finalEvaluation and a.mapStudy = :mapStudy", Long.class)
 				.setParameter("mapStudy", mapStudy)
 				.setParameter("finalEvaluation", EvaluationStatusEnum.ACCEPTED)
 				.getSingleResult();
@@ -150,7 +151,7 @@ public class ArticleDao extends Dao<Article> {
 		
 		try{
 			count = entityManager
-					.createQuery("select count(1) from Article a where a.finalEvaluation = :finalEvaluation and a.mapStudy = :mapStudy and a.id not in (select e.article.id from EvaluationExtraction e where e.user = :user)", Long.class)
+					.createQuery("select count(1) from Article a where a.classification = null and a.finalEvaluation = :finalEvaluation and a.mapStudy = :mapStudy and a.id not in (select e.article.id from EvaluationExtraction e where e.user = :user)", Long.class)
 					.setParameter("user", user)
 					.setParameter("mapStudy", mapStudy)
 					.setParameter("finalEvaluation", EvaluationStatusEnum.ACCEPTED)
@@ -206,8 +207,9 @@ public class ArticleDao extends Dao<Article> {
 	
 	public List<Article> getExtractions(User user, MapStudy mapStudy) {
 		List<Article> extractions = entityManager
-				.createQuery("select distinct(e.article) from EvaluationExtraction e where e.article.classification = null and e.user = :user and e.article.mapStudy = :mapStudy order by e.article.id asc", Article.class)
-					.setParameter("user", user)
+				.createQuery("select distinct(e.article) from EvaluationExtraction e where e.article.classification = null and e.article.finalEvaluation = :finalEvaluation and e.user = :user and e.article.mapStudy = :mapStudy order by e.article.id asc", Article.class)
+				.setParameter("finalEvaluation", EvaluationStatusEnum.ACCEPTED)	
+				.setParameter("user", user)
 					.setParameter("mapStudy", mapStudy)
 					.getResultList();
 			return extractions;
@@ -215,7 +217,8 @@ public class ArticleDao extends Dao<Article> {
 	
 	public List<Article> getExtractions(MapStudy mapStudy) {
 		List<Article> extractions = entityManager
-				.createQuery("select distinct(e.article) from EvaluationExtraction e where e.article.mapStudy = :mapStudy order by e.article.id asc", Article.class)
+				.createQuery("select distinct(e.article) from EvaluationExtraction e where e.article.classification = null and e.article.mapStudy = :mapStudy and e.article.finalEvaluation = :finalEvaluation order by e.article.id asc", Article.class)
+					.setParameter("finalEvaluation", EvaluationStatusEnum.ACCEPTED)
 					.setParameter("mapStudy", mapStudy)
 					.getResultList();
 			return extractions;
@@ -232,7 +235,8 @@ public class ArticleDao extends Dao<Article> {
 	
 	public List<Article> getArticlesFinalExtraction(MapStudy mapStudy) {
 		List<Article> finalExtractions = entityManager
-				.createQuery("select distinct(e.article) from EvaluationExtractionFinal e where e.article.classification = null and e.mapStudy = :mapStudy order by e.article.id asc", Article.class)
+				.createQuery("select distinct(e.article) from EvaluationExtractionFinal e where e.article.classification = null and e.article.finalEvaluation = :finalEvaluation and e.mapStudy = :mapStudy order by e.article.id asc", Article.class)
+					.setParameter("finalEvaluation", EvaluationStatusEnum.ACCEPTED)
 					.setParameter("mapStudy", mapStudy)
 					.getResultList();
 			return finalExtractions;

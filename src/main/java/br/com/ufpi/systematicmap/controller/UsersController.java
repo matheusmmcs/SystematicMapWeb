@@ -16,11 +16,15 @@ import br.com.caelum.vraptor.validator.SimpleMessage;
 import br.com.caelum.vraptor.validator.Validator;
 import br.com.ufpi.systematicmap.dao.ArticleDao;
 import br.com.ufpi.systematicmap.dao.EvaluationDao;
+import br.com.ufpi.systematicmap.dao.ExclusionCriteriaDao;
+import br.com.ufpi.systematicmap.dao.InclusionCriteriaDao;
 import br.com.ufpi.systematicmap.dao.MapStudyDao;
 import br.com.ufpi.systematicmap.dao.UserDao;
 import br.com.ufpi.systematicmap.interceptor.Public;
 import br.com.ufpi.systematicmap.model.Article;
 import br.com.ufpi.systematicmap.model.Evaluation;
+import br.com.ufpi.systematicmap.model.ExclusionCriteria;
+import br.com.ufpi.systematicmap.model.InclusionCriteria;
 import br.com.ufpi.systematicmap.model.MapStudy;
 import br.com.ufpi.systematicmap.model.User;
 import br.com.ufpi.systematicmap.utils.GenerateHashPasswordUtil;
@@ -36,24 +40,26 @@ import br.com.ufpi.systematicmap.validation.LoginAvailable;
 @Controller
 public class UsersController {
 
-	private final Validator validator;
-	private final Result result;
-	private final UserDao userDao;
-	private final MailUtils mailUtils;
-	private final Linker linker;
+	private Validator validator;
+	private Result result;
+	private UserDao userDao;
+	private MailUtils mailUtils;
+	private Linker linker;
 	private ArticleDao articleDao;
 	private EvaluationDao evaluationDao;
 	private MapStudyDao mapStudyDao;
+	private InclusionCriteriaDao inclusionDao;
+	private ExclusionCriteriaDao exclusionDao;
 
 	/**
 	 * @deprecated CDI eyes only
 	 */
 	protected UsersController() {
-		this(null, null, null, null, null, null, null, null);
+		this(null, null, null, null, null, null, null, null, null, null);
 	}
 
 	@Inject
-	public UsersController(UserDao dao, Result result, Validator validator, MailUtils mailUtils, Linker linker, ArticleDao articleDao, EvaluationDao evaluationDao, MapStudyDao mapStudyDao) {
+	public UsersController(UserDao dao, Result result, Validator validator, MailUtils mailUtils, Linker linker, ArticleDao articleDao, EvaluationDao evaluationDao, MapStudyDao mapStudyDao, InclusionCriteriaDao inclusionDao, ExclusionCriteriaDao exclusionDao) {
 		this.userDao = dao;
 		this.result = result;
 		this.validator = validator;
@@ -62,6 +68,8 @@ public class UsersController {
 		this.articleDao = articleDao;
 		this.evaluationDao = evaluationDao;
 		this.mapStudyDao = mapStudyDao;
+		this.inclusionDao = inclusionDao;
+		this.exclusionDao = exclusionDao;
 	}
 
 	@Get("/users")
@@ -150,18 +158,33 @@ public class UsersController {
 	
 	@Get("/map/{mapid}/transfer/{userIdOne}/to/{userIdTwo}")
 	public void transferEvaluate(Long mapid, Long userIdOne, Long userIdTwo){
+		MapStudy mapStudy = mapStudyDao.find(mapid);
 		User userOne = userDao.find(userIdOne);
 		User userTwo = userDao.find(userIdTwo);
-		MapStudy mapStudy = mapStudyDao.find(mapid);
 		
+		System.out.println("MAP: " + mapStudy + " user1: " + userOne + " user2: " + userTwo);
 		List<Article> articles = articleDao.getArticlesToEvaluate(mapStudy);
 		
 		for(Article a : articles){
-			Evaluation evaluation = a.getEvaluation(userOne);
-			evaluation.setId(null);
-			evaluation.setUser(userTwo);
+			Evaluation evaluationOne = a.getEvaluation(userOne);
+			Evaluation evaluationTwo = new Evaluation();
+			evaluationTwo.setArticle(evaluationOne.getArticle());
+			evaluationTwo.setComment(evaluationOne.getComment());
 			
-			evaluationDao.insert(evaluation);
+			for (ExclusionCriteria ex : evaluationOne.getExclusionCriterias()){
+				evaluationTwo.addExclusion(ex);	
+				exclusionDao.update(ex);
+			}
+			
+			for (InclusionCriteria ex : evaluationOne.getInclusionCriterias()){
+				evaluationTwo.addInclusion(ex);		
+				inclusionDao.update(ex);
+			}
+			
+			evaluationTwo.setMapStudy(mapStudy);
+			evaluationTwo.setUser(userTwo);
+			
+			evaluationDao.insert(evaluationTwo);
 		}		
 		
 		result.redirectTo(HomeController.class).login();

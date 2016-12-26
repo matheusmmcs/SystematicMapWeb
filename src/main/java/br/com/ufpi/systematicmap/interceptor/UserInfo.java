@@ -26,5 +26,12 @@ public class UserInfo implements Serializable {
     public void logout() {
         this.user = null;
     }
-    
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "UserInfo [user=" + user + "]";
+	}
 }

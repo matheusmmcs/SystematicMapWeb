@@ -34,7 +34,13 @@ public class Percent {
 	public void setExtraction(String extraction) {
 		this.extraction = extraction;
 	}
-	
-	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "Percent [selection=" + selection + ", extraction=" + extraction
+				+ "]";
+	}
 
 }

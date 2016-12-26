@@ -228,8 +228,14 @@ public class MapStudyController {
 			Percent p = new Percent();
 			p.setSelection(mapStudy.percentEvaluated(percentEvaluatedDouble));
 			p.setExtraction(mapStudy.percentEvaluated(percentExtractedDouble));
+			
+//			System.out.println(p);
+			
 			mapStudyUsers.put(u, p);
 		}
+		
+//		System.out.println(totalPercentEvaluated);
+//		System.out.println(totalPercentExtracted);
 		
 		totalPercentEvaluated = totalPercentEvaluated / (double) (mapStudyUsersList.size() - countSuper);
 		totalPercentExtracted = totalPercentExtracted / (double) (mapStudyUsersList.size() - countSuper);
@@ -365,6 +371,7 @@ public class MapStudyController {
 		if (upFile != null){
 			validator.check(files.save(upFile, mapStudy), new SimpleMessage("user", "error.generating.file"));
 			validator.onErrorRedirectTo(this).identification(id);
+			
 			try {
 				database = bibtexUtils.parseBibTeX(files.getFile(mapStudy));
 			} catch (IOException | ParseException e) {
@@ -548,14 +555,15 @@ public class MapStudyController {
 			article.setRegexTitle(0);
 			article.setScore(0);
 			article.setClassification(null);
+			article.setComment("");
 			
-			if (article.getComments() != null){
-				List<ClassificationEnum> classifications = asList(ClassificationEnum.values());
-				for (ClassificationEnum classificationEnum : classifications) {
-					String comment = article.getComment(userInfo.getUser()).replace(classificationEnum.toString(), "");
-					article.addComment(userInfo.getUser(), comment);
-				}
-			}
+//			if (article.getComments() != null){
+//				List<ClassificationEnum> classifications = asList(ClassificationEnum.values());
+//				for (ClassificationEnum classificationEnum : classifications) {
+//					String comment = article.getComment(userInfo.getUser()).replace(classificationEnum.toString(), "");
+//					article.addComment(userInfo.getUser(), comment);
+//				}
+//			}
 		}
 		
 		//TODO está faltando algo aqui ?
