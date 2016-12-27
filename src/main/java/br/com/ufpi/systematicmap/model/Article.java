@@ -164,6 +164,19 @@ public class Article implements Serializable {
 		return null;
 	}
 	
+	//FIXME Add question a tabela mudar logica
+		public List<Alternative> alternativeFinal(Question question){
+			List<Alternative> alternatives = new ArrayList<Alternative>();
+			
+			for (EvaluationExtractionFinal ev : evaluationExtractionsFinal) {
+				if (ev.getQuestion().equals(question)){
+					alternatives.add(ev.getAlternative());
+				}
+			}
+			
+			return alternatives;
+		}
+	
 	public List<Alternative> alternative(Question question, User user) {
 		List<Alternative> alternatives = new ArrayList<Alternative>();
 

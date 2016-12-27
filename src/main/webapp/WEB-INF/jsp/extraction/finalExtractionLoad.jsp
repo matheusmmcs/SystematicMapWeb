@@ -1,6 +1,35 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+<script type="text/javascript">
+	$(document).ready(function(){
+		var selectAlternative = function(){
+			$('.alternative_list_id').each(function(idx){
+//	 			console.log('ele ', $(this));
+				var qid = $(this).attr('id');
+				var i = qid.lastIndexOf('_');
+				qid = qid.slice(i + 1, qid.length);		
+
+				var aid = $(this).val();
+
+				var value = $('#alternative_list_value_' + qid).val();
+
+				$("#alternative_id_" + qid).val(aid);	
+// 				var test = $('#select2-alternative_id_' + qid + '-container');
+// 				select2-alternative_id_0
+// 				select2-alternative_id_2
+				var test = $('#select2-alternative_id_' + qid);
+				test.attr('title', value);
+				test.html(value);
+			});
+
+		};
+
+		selectAlternative();
+			
+	});
+</script>
+
 <ol class="breadcrumb u-margin-top">
   <li><a href="<c:url value="/" />"><fmt:message key="home"/></a></li>
   <li><a href="${linkTo[MapStudyController].show(mapStudy.id)}"><fmt:message key="mapstudy.details"/></a></li>
@@ -45,24 +74,36 @@
 				</thead>
 				<tbody>
 					<c:forEach var="ext" items="${extractionCompareVO.extractions}" varStatus="s">
-					<input type="hidden" name="questions[${s.index}].questionId" value="${ext.question.id}"/>
+						<input type="hidden" name="questions[${s.index}].questionId" value="${ext.question.id}"/>
 						<tr class="${s.index % 2 == 0 ? 'even' : 'odd'} gradeA article-to-read">
 							<td class="question-name">${ext.question.name}</td>
 							<td class="alternatives-values">
 								<c:if test="${ext.question.type == 'MULT'}">
 									<c:forEach var="alt" items="${ext.userAndAlternatives}" varStatus="a">
+										<c:set var="containsExc" value="false" />
+										<c:forEach var="done" items="${extractionCompareVO.article.alternativeFinal(ext.question)}">
+											<c:if test="${alt.alternative.id eq done.id}">
+												<c:set var="containsExc" value="true" />
+											</c:if>
+										</c:forEach>
+									
 										<div class="checkbox">
-											<input class="questionMult" name="questions[${s.index}].alternatives[${a.index}]" type="checkbox" value="${alt.alternative.id}" checked="checked" alt-value="${alt.alternative.value}" />${alt.alternative.value} 
+											<input class="questionMult" name="questions[${s.index}].alternatives[${a.index}]" type="checkbox" value="${alt.alternative.id}" ${containsExc ? 'checked="checked"' : '' } alt-value="${alt.alternative.value}" />${alt.alternative.value} 
 										</div>
 									</c:forEach>
 								</c:if>
 							
 								<c:if test="${ext.question.type != 'MULT'}">
-									<select data-placeholder="<fmt:message key="mapstudy.alternatives.choose" />" class="form-control select2-alternative-compare" name="questions[${s.index}].alternatives[0]" tabindex="2">
+									<select data-placeholder="<fmt:message key="mapstudy.alternatives.choose" />" class="form-control select2-alternative-compare group_alternative_id" name="questions[${s.index}].alternatives[0]" id="alternative_id_${s.index}" tabindex="2">
 										<c:forEach var="alt" items="${ext.userAndAlternatives}" varStatus="myAlt">
 											<option value="${alt.alternative.id}" data-email="${alt.user.name}">${alt.alternative.value}</option>
 										</c:forEach>
-									</select>							
+									</select>	
+									
+									<c:if test="${not empty extractionCompareVO.article.alternativeFinal(ext.question)}">
+										<input type="hidden" value="${extractionCompareVO.article.alternativeFinal(ext.question).get(0).id}" class="alternative_list_id" id="alternative_list_id_${s.index}"/>
+										<input type="hidden" value="${extractionCompareVO.article.alternativeFinal(ext.question).get(0).value}" class="alternative_list_value" id="alternative_list_value_${s.index}"/>
+									</c:if>															
 								</c:if>							
 							</td>						
 						</tr>
