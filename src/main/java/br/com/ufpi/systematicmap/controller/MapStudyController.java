@@ -518,7 +518,7 @@ public class MapStudyController {
 	}
 	
 	@Post("/maps/refinearticles")
-	public void refinearticles(Long id, Integer levenshtein, String regex, Integer limiartitulo, Integer limiarabstract, Integer limiarkeywords, Integer limiartotal, boolean filterAuthor, boolean filterAbstract){
+	public void refinearticles(Long id, Integer levenshtein, String regex, Integer limiartitulo, Integer limiarabstract, Integer limiarkeywords, Integer limiartotal, boolean filterAuthor, boolean filterAbstract, boolean filterLevenshtein){
 		MapStudy mapStudy = mapStudyDao.find(id);
 		
 //		List<Article> articles = articleDao.getArticles(mapStudy);
@@ -531,11 +531,14 @@ public class MapStudyController {
 //			}
 //		});
 		
-		FilterArticles filter = new FilterArticles(mapStudy.getArticles(), levenshtein, regex.trim(), limiartitulo, limiarabstract, limiarkeywords, limiartotal, filterAuthor, filterAbstract);
-		filter.filter();
+		FilterArticles filter = new FilterArticles(mapStudy.getArticles(), levenshtein, regex.trim(), limiartitulo, limiarabstract, limiarkeywords, limiartotal, filterAuthor, filterAbstract, filterLevenshtein);
+		boolean filterStatus = filter.filter();
+		
+		validator.check(filterStatus, new SimpleMessage("mapstudy.filter", "error.filter"));
+		validator.onErrorRedirectTo(this).identification(id);
 		
 		//TODO está faltando algo aqui ?
-		validator.onErrorForwardTo(this).identification(id);
+//		validator.onErrorForwardTo(this).identification(id);
 		
 		result.include("notice", new SimpleMessage("mapstudy", "refine.articles.sucess"));
 		result.redirectTo(this).identification(id);

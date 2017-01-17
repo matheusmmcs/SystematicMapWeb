@@ -25,6 +25,11 @@
 	  <filter-class>com.opensymphony.sitemesh.webapp.SiteMeshFilter</filter-class>
 	</filter>
 	
+	  <!-- Define a session timeout to 60 minutes -->
+	<session-config>
+		<session-timeout>60</session-timeout>
+	</session-config>
+	
 	<filter-mapping>
 	  <filter-name>sitemesh</filter-name>
 	  <url-pattern>/*</url-pattern>

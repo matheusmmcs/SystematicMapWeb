@@ -13,9 +13,9 @@
 
 <script type="text/javascript">
 	$(document).ready(function(){
-		var alternatives = function(questionId, div){
+		var alternatives = function(questionId, mapid, div){
 			var address = "${linkTo[ExtractionController].alternatives}";
-			var param = {"questionId": questionId};
+			var param = {"questionId": questionId, "mapid": mapid};
 			$.ajax({
 		        url: address,
 		        type: 'GET',
@@ -62,8 +62,9 @@
 		$(document).on('change', '.select-quest', function(){
 			var question_id = $(this).val();
 			var div = 'div' + $(this).attr('id');
+			var mapid = $("#mapid").html();
 			
-			alternatives(question_id, div);			
+			alternatives(question_id, mapid, div);			
 		});
 		
 		var bubbleData = function (mapid, q1, q2){
@@ -107,6 +108,22 @@
 				}
 			});	
 		};
+
+		$(document).on('click', '.buttonbubblenewguia', function(event){
+			event.preventDefault();
+			var q1 = $('#question_x').val();
+			var q2 = $('#question_y').val();
+			var mapid = $('#mapid').html();
+			
+// 			console.log(q1, q2, mapid);		
+// 			bubbleData(mapid, q1, q2);	
+			var link = "${linkTo[GraphicsController].bubbleNew(-1, -2, -3)}";
+			link = link.replace("-1", mapid);
+			link = link.replace("-2", q1);
+			link = link.replace("-3", q2);
+
+			 window.open(link);			
+		});
 		
 		$(document).on('click', '.buttonbubble', function(event){
 			event.preventDefault();
@@ -359,9 +376,9 @@
 							</div>										
 						</div>
 						<hr/><div id="bubbleGraph" class="col-md-12"></div>
-						<div class="col-md-12 text-right">	
-							<hr/>
-					    	<a href="#" style="width: 140px;" class="btn btn-primary buttonbubble"><i class="fa fa-print"></i> Exibir Gráfico </a>
+						<div class="col-md-12">	
+					    	<a href="#" class="btn btn-primary buttonbubblenewguia text-lefth"><i class="fa fa-print"></i> Exibir Gráfico (Nova Guia) </a>
+					    	<a href="#" class="btn btn-primary buttonbubble text-rigth"><i class="fa fa-print"></i> Exibir Gráfico </a>
 			    		</div>
 				    </div>
 				  </div>

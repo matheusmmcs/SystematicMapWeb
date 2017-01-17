@@ -31,6 +31,7 @@ public class FilterArticles {
 	private Integer limiartotal;
 	private boolean filterAuthor;
 	private boolean filterAbstract;
+	private boolean filterLevenshtein;
 	
 	@Inject
 	private UserInfo userInfo;
@@ -44,7 +45,7 @@ public class FilterArticles {
 	}}
 	 */
 	
-	public FilterArticles(Set<Article> set, Integer levenshtein, String regex, Integer limiartitulo, Integer limiarabstract, Integer limiarkeywords, Integer limiartotal, boolean filterAuthor, boolean filterAbstract){
+	public FilterArticles(Set<Article> set, Integer levenshtein, String regex, Integer limiartitulo, Integer limiarabstract, Integer limiarkeywords, Integer limiartotal, boolean filterAuthor, boolean filterAbstract, boolean filterLevenshtein){
 		super();
 		this.papers = set;
 		this.levenshtein = levenshtein;
@@ -55,41 +56,119 @@ public class FilterArticles {
 		this.limiartotal = limiartotal;
 		this.filterAbstract = filterAbstract;
 		this.filterAuthor = filterAuthor;
+		this.filterLevenshtein = filterLevenshtein;
 	}
 	
-	public void filter(){
-		try{
-//			System.out.println("Regex: "+regex);
-			
-			String[] termos = regex.split(";");
-			for(String t : termos){
-				if (t.length() > 1){
-					String[] strings = t.split(":");
-					regexList.put(strings[0], strings[1]);
-				}				
-			}
-			
-//			System.out.println("Total de artigos: "+papers.size());
-//			System.out.println("Probs autores: "+filterAuthors());
+	private void generateListRegex(){
+		String[] termos = regex.split(";");
+		for(String t : termos){
+			if (t.length() > 1){
+				String[] strings = t.split(":");
+				regexList.put(strings[0], strings[1]);
+			}				
+		}
+	}
+	
+	private void filterAll(){
+		for(Article p : papers){
 			if (filterAuthor){
-				filterAuthors();				
+				if(p.getAuthor().equals("")){
+					p.setClassification(ClassificationEnum.WITHOUT_AUTHORS);
+					p.setComment(p.getComment() + ClassificationEnum.WITHOUT_AUTHORS.toString());
+//				p.addComment(userInfo.getUser(), p.getComment(userInfo.getUser()) + ClassificationEnum.WITHOUT_AUTHORS.toString());
+					continue;
+				}
 			}
-//			System.out.println("Patentes: "+filterPatents());
 			
 			if (filterAbstract){
-				filterPatents();				
+				if(p.getAbstrct().equals("")){
+					p.setClassification(ClassificationEnum.WITHOUT_ABSTRACT);
+					p.setComment(p.getComment() + ClassificationEnum.WITHOUT_ABSTRACT.toString());
+//					p.addComment(userInfo.getUser(), p.getComment(userInfo.getUser()) + ClassificationEnum.WITHOUT_ABSTRACT.toString());
+					continue;
+				}
 			}
 			
-			filterRegex(limiartitulo, limiarabstract, limiarkeywords, limiartotal);
+			int sumLimiar = limiartitulo + limiarabstract + limiarkeywords + limiartotal;
 			
-			if(levenshtein != -1){
-				calcTitleLevenshteinDistance(levenshtein);
+			if (sumLimiar > 0){
+				generateListRegex();
+				
+				Set<String> termos = new HashSet<String>();
+				
+				termos = countRegex(p, FieldEnum.TITLE, limiartitulo, termos);
+//				System.out.println("Termos[T]: " + termos.size());
+				termos = countRegex(p, FieldEnum.ABS, limiarabstract, termos);
+//				System.out.println("Termos[A]: " + termos.size());
+				termos = countRegex(p, FieldEnum.KEYS, limiarkeywords, termos);
+//				System.out.println("Termos[K]: " + termos.size());
+				
+				
+//				System.out.println("Termos: " +termos );
+//				System.out.println("SIze: " +termos.size() );
+//				
+//				System.out.println("ABS: " + p.getRegexAbs());
+//				System.out.println("KEY: " + p.getRegexKeys());
+//				System.out.println("TIT: " + p.getRegexTitle());
+				
+//				p.setScore(p.getRegexAbs() + p.getRegexKeys() + p.getRegexTitle())
+				
+				if (sumLimiar > 0){
+					p.setScore(termos.size());				
+				}
+				
+				if(termos.size() < limiartotal){
+					p.setClassification(ClassificationEnum.WORDS_DONT_MATCH);
+				}
+			}			
+		}		
+	}
+	
+	public void filterTitleEquals(){
+//		double count = 0, size = papers.size();
+		for(Article p : papers){
+			if(p.getClassification() == null){
+				for(Article p2 : papers){
+					if(p.getId() != p2.getId() && p2.getClassification() == null){
+						
+						if(p.getTitle().equalsIgnoreCase(p2.getTitle())){
+							
+//							System.out.println("p1:" + p + " p2: " +p2);
+							
+							p2.setClassification(ClassificationEnum.REPEAT);
+							String comment = p.getComment() != null ? p.getComment() : "";
+							p2.setComment(comment + " " + ClassificationEnum.REPEAT.toString());
+//							String comment = p.getComment(userInfo.getUser()) != null ? p.getComment(userInfo.getUser()) : "";
+//							p2.setComment(comment + " " + ClassificationEnum.REPEAT.toString());
+//							p2.addComment(userInfo.getUser(), comment + " " + p.getComment(userInfo.getUser()) + ClassificationEnum.REPEAT.toString());
+							p2.setMinLevenshteinDistance(0);
+							p2.setPaperMinLevenshteinDistance(p);
+							//
+							p.setMinLevenshteinDistance(0);
+							p.setPaperMinLevenshteinDistance(p2);
+						}
+						
+					}
+				}
 			}
+//			count++;
+//			System.out.println("loading:"+(count/size)*100);
+		}
+	}
+	
+	public boolean filter(){
+		try{
+			filterAll();
 			
-//			System.out.println("Probs lenshtein: "+countPapers(ClassificationEnum.REPEAT));
-//			System.out.println("Probs palavras: "+countPapers(ClassificationEnum.WORDS_DONT_MATCH));
+			if(filterLevenshtein){
+				calcTitleLevenshteinDistance(levenshtein == -1 ? 0 : levenshtein);
+			}else{
+				filterTitleEquals();
+			}
+			return true;
 		}catch(Exception e){
-			e.printStackTrace();
+//			e.printStackTrace();
+			return false;
 		}
 	} 
 	
@@ -151,7 +230,7 @@ public class FilterArticles {
 	}
 	
 	private void calcTitleLevenshteinDistance(int limiar) {
-		double count = 0, size = papers.size();
+//		double count = 0, size = papers.size();
 		for(Article p : papers){
 			if(p.getClassification() == null){
 				for(Article p2 : papers){
@@ -179,7 +258,7 @@ public class FilterArticles {
 					}
 				}
 			}
-			count++;
+//			count++;
 //			System.out.println("loading:"+(count/size)*100);
 		}
 	}

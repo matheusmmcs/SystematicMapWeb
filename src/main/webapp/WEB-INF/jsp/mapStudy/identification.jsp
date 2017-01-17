@@ -65,7 +65,7 @@ $(document).ready(function(){
 				<h4 style="margin-top: 40px;"><fmt:message key="mapstudy.articles.list" /></h4>
 				<hr/>
 					<div class="dataTable_wrapper">
-						<table class="table table-striped table-bordered table-hover personalized-table">
+						<table class="table table-striped table-bordered table-hover personalized-table-simple">
 							<thead>
 								<tr>
 									<th class="text-center">ID</th>
@@ -138,6 +138,10 @@ tecnica:(evalu.*|assess.*|measur.*|experiment.*|stud.*|test.*|method.*|techni.*|
 							
 							<label class="checkbox-inline">
 								<input type="checkbox" name="filterAbstract" id="filterAbstract" data-toggle="popover" data-trigger="hover" data-placement="left" datacontainer="body" data-content='<fmt:message key="mapstudy.article.refine.filterabstrat" />' data-title='<fmt:message key="mapstudy.article.refine.information" />'> Filtro abstract
+							</label>
+							
+							<label class="checkbox-inline">
+								<input type="checkbox" name="filterLevenshtein" id="filterLevenshtein" data-toggle="popover" data-trigger="hover" data-placement="left" datacontainer="body" data-content='<fmt:message key="mapstudy.article.refine.filterlevenshtein" />' data-title='<fmt:message key="mapstudy.article.refine.information" />'> Filtro Levenshtein
 							</label>
 						</div>
 						

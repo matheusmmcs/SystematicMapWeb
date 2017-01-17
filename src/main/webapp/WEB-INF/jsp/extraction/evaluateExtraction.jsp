@@ -67,6 +67,10 @@ $(document).ready(function(){
 				return "Outros";
 			}else if (s =="MANUALLY"){
 				return "Manual";
+			}else if (s == "PUBMED"){
+				return "PubMed";
+			}else if (s == "APA"){
+				return "American Psychological Association";
 			}	
 		};
 
@@ -75,15 +79,15 @@ $(document).ready(function(){
 		$('#articleReadTitle').html(article.title);
 		$('#articleReadAbstract').html(article.abstrct);
 		$('#articleReadKeywords').html(article.keywords);
-		$('#articleReadSource').html(article.source);
 		$('#articleReadAuthor').html(article.author);
 		$('#articleReadDoctype').html(article.docType);
 		$('#articleReadYear').html(article.year);
 		$('#articlesource').val(mySource(article.source));
+		$('#articleReadSource').html($('#articlesource').val());
 		$('#articlescore').val(article.score);
 		$('#comment').val(comment);
 
-		console.log('Comentários: ' + $('#comment'). val());
+// 		console.log('Comentários: ' + $('#comment'). val());
 		
 // 		console.log('source encontrado', $('#articlesource'));
 

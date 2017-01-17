@@ -217,17 +217,17 @@ $(document).ready(function(){
 		</div>
 		
 		<!-- Inicio artigos -->
-		<div class="clear-both"></div>
-		<div class="hide" id="infoarticle">
-			<h2><fmt:message key="mapstudy.article"/> - <span id="articleReadId">${article.id}</span></h2>
+<!-- 		<div class="clear-both"></div> -->
+<!-- 		<div class="hide" id="infoarticle"> -->
+<%-- 			<h2><fmt:message key="mapstudy.article"/> - <span id="articleReadId">${article.id}</span></h2> --%>
 			
-			<p><strong><fmt:message key="mapstudy.article.title"/>:</strong> <span id="articleReadTitle">${article.title}</span></p>
-			<p><strong><fmt:message key="mapstudy.article.abstract"/>:</strong> <span id="articleReadAbstract">${article.abstrct}</span></p>
-			<p><strong><fmt:message key="mapstudy.article.key"/>:</strong> <span id="articleReadKeywords">${article.keywords}</span></p>
-			<p><strong><fmt:message key="mapstudy.article.author"/>:</strong> <span id="articleReadAuthor">${article.author}</span></p>
-			<p><strong><fmt:message key="mapstudy.article.source"/>:</strong> <span id="articleReadSource">${article.source}</span></p>
-			<hr/>
-		</div>
+<%-- 			<p><strong><fmt:message key="mapstudy.article.title"/>:</strong> <span id="articleReadTitle">${article.title}</span></p> --%>
+<%-- 			<p><strong><fmt:message key="mapstudy.article.abstract"/>:</strong> <span id="articleReadAbstract">${article.abstrct}</span></p> --%>
+<%-- 			<p><strong><fmt:message key="mapstudy.article.key"/>:</strong> <span id="articleReadKeywords">${article.keywords}</span></p> --%>
+<%-- 			<p><strong><fmt:message key="mapstudy.article.author"/>:</strong> <span id="articleReadAuthor">${article.author}</span></p> --%>
+<%-- 			<p><strong><fmt:message key="mapstudy.article.source"/>:</strong> <span id="articleReadSource">${article.source}</span></p> --%>
+<!-- 			<hr/> -->
+<!-- 		</div> -->
 	</div>
 </div>
 

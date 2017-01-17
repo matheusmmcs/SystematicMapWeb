@@ -39,26 +39,9 @@ $(document).ready(function(){
 					<a class="btn btn-primary pull-right" href="${linkTo[MapStudyController].edit(map.id)}" ><i class="glyphicon glyphicon-pencil"></i> <fmt:message key="edit" /></a> 
 				</div>
 			</div>
-				<hr />
+			
+			<hr />
 				
-				<div class="row">
-					<div class="col-md-6">
-						<p><strong><fmt:message key="mapstudy.evaluation.selection.rate" />:</strong></p>
-						<div class="progress">
-							<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="${percentEvaluated}" aria-valuemin="0" aria-valuemax="100"
-								style="min-width: 3em; width: ${percentEvaluated}%"> ${percentEvaluated}%
-							</div>
-						</div>
-					</div>
-					<div class="col-md-6">
-						<p><strong><fmt:message key="mapstudy.extraction.rate" />:</strong></p>
-						<div class="progress">
-							<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="${percentExtracted}" aria-valuemin="0" aria-valuemax="100"
-								style="min-width: 3em; width: ${percentExtracted}%"> ${percentExtracted}%
-							</div>
-						</div>
-					</div>
-				</div>
 				<div class="row">
 					<div class="col-md-12">
 						<a style="width: 22.9%;" class="btn btn-default" href="${linkTo[MapStudyController].planning(map.id)}">
@@ -82,6 +65,8 @@ $(document).ready(function(){
 						</a>
 					</div>
 				</div>
+				
+					
 				<div class="row" style="margin-top: 5px;">
 					<div class="col-md-12">
 						<a style="width: 22.9%;" class="btn btn-default" href="${linkTo[ExtractionController].extraction(map.id)}">
@@ -100,6 +85,28 @@ $(document).ready(function(){
 						</a>
 					</div>
 				</div>
+				
+				<hr />
+				
+				<div class="row">
+					<div class="col-md-6">
+						<p><strong><fmt:message key="mapstudy.evaluation.selection.rate" />:</strong></p>
+						<div class="progress">
+							<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="${percentEvaluated}" aria-valuemin="0" aria-valuemax="100"
+								style="min-width: 3em; width: ${percentEvaluated}%"> ${percentEvaluated}%
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<p><strong><fmt:message key="mapstudy.extraction.rate" />:</strong></p>
+						<div class="progress">
+							<div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="${percentExtracted}" aria-valuemin="0" aria-valuemax="100"
+								style="min-width: 3em; width: ${percentExtracted}%"> ${percentExtracted}%
+							</div>
+						</div>
+					</div>
+				</div>				
+				
 			</div>
 		</div>
 	</div>

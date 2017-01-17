@@ -348,8 +348,8 @@ public class GraphicsController {
 //		System.out.println("hash : " + articles.size());
 		
 		HashMap<String, HashMap<String, Long>> map = new HashMap<String, HashMap<String, Long>>();
-		Set<Alternative> alternativeX = question1.getAlternatives();
-		Set<Alternative> alternativeY = question2.getAlternatives();
+		List<Alternative> alternativeX = questionDao.getAlternativesFinalExtraction(question1, mapStudy);
+		List<Alternative> alternativeY = questionDao.getAlternativesFinalExtraction(question2, mapStudy);
 		
 		for (Alternative x : alternativeX) {
 			HashMap<String, Long> v = new HashMap<String, Long>();
@@ -464,6 +464,13 @@ public class GraphicsController {
 		}
 		
 		result.use(json()).indented().withoutRoot().from(column).recursive().serialize();
+	}
+	
+	@Get("/map/{mapid}/graphics/bubble/{q1}/{q2}")
+	public void bubbleNew(Long mapid, Long q1, Long q2){
+		result.include("mapid", mapid);
+		result.include("q1", q1);
+		result.include("q2", q2);
 	}
 	
 

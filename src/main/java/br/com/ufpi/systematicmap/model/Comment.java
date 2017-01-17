@@ -20,7 +20,7 @@ import br.com.caelum.vraptor.serialization.SkipSerialization;
 @Entity
 public class Comment {
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
 	@Lob

@@ -370,10 +370,13 @@
 			$('.subquestion-alternative').each(function(idx){
 				var id = $(this).find('.subquestion-alternative-id').val();
 				var title = $(this).find('.subquestion-alternative-title').val();
-				alternatives.push({
-					value: title
-				});
+				if (title !== ""){
+					alternatives.push({
+						value: title
+					});
+				}
 			});
+			
 			question.alternatives = alternatives;
 			
 			saveQuestion(question);

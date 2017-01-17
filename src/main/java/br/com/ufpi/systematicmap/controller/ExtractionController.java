@@ -203,6 +203,7 @@ public class ExtractionController {
 					for (Alternative a : q.getAlternatives()){
 						alternativeDao.delete(a);
 					}
+					
 					q.getAlternatives().clear();
 					questionDao.delete(q);	
 					evaluationExtrationDao.removeQuestion(q);
@@ -212,9 +213,15 @@ public class ExtractionController {
 		}
 		
 		question.setId(null);
+		
 		for (Alternative a : question.getAlternatives()) {
-			a.setQuestion(question);
+			if (!a.getValue().equals("")){
+				a.setQuestion(question);				
+			}else{
+				question.removeAlternative(a);
+			}
 		}
+		
 		form.addQuestion(question);
 		mapStudy.addForm(form);
 		mapStudyDao.update(mapStudy);
@@ -229,6 +236,7 @@ public class ExtractionController {
 		Question question = questionDao.find(questionId);
 		
 		boolean containsQuestion = false;
+		
 		for (Question q : mapStudy.getForm().getQuestions()) {
 			if (question.getId().equals(q.getId())) {
 				containsQuestion = true;
@@ -501,6 +509,7 @@ public class ExtractionController {
 	public void showExtractionEvaluates(Long mapid){
 		MapStudy mapStudy = this.mapStudyDao.find(mapid);
         User user = this.userInfo.getUser();
+        Double percentEvaluatedDouble = 0d;
         
         validator.check(mapStudy != null, new SimpleMessage("mapstudy", "mapstudy.is.not.exist"));
         validator.onErrorRedirectTo(MapStudyController.class).list();
@@ -508,49 +517,55 @@ public class ExtractionController {
         validator.check(mapStudy.members().contains(user), new SimpleMessage("user", "user.does.not.have.access"));
         validator.onErrorRedirectTo(MapStudyController.class).list();
         
-        List<Article> extractions = this.articleDao.getExtractions(this.userInfo.getUser(), mapStudy);
+        List<Article> extractions = new ArrayList<Article>();
         
         HashMap<String,HashMap<String, Long>> ext = new HashMap<String, HashMap<String,Long>>();
         
-        for (Article article : extractions) {
-			for (EvaluationExtraction ee : article.getEvaluationExtraction(user)) {
-				String questionName = "";
-				if (ee.getQuestion() != null){
-					questionName = ee.getQuestion().getName();
-				}
-//				else{
-//					System.out.println("Problema com nome da questão!");
-//				}
-				
-				HashMap<String, Long> aux = new HashMap<String, Long>();
-				
-				if (ext.containsKey(questionName)){					
-					aux = ext.get(questionName);
-				}
-				
-				String alternativeValue = ee.getAlternative().getValue();
-				Long count = 1l;
-				
-				if (aux.containsKey(alternativeValue)){
-					count = aux.get(alternativeValue) + 1;
-				}		
-				
-				aux.put(alternativeValue, count);
-				ext.put(questionName, aux);				
-			}
-		}
-        
         
         if (!mapStudy.isSupervisor(user)){
-        	validator.check(extractions.size() > 0, new SimpleMessage("mapstudy.articles", "mapstudy.extraction.none"));
-        	validator.onErrorRedirectTo(MapStudyController.class).show(mapid);
+	       	extractions = this.articleDao.getExtractions(this.userInfo.getUser(), mapStudy);
+	       	
+	       	validator.check(extractions.size() > 0, new SimpleMessage("mapstudy.articles", "mapstudy.extraction.none"));
+	       	validator.onErrorRedirectTo(MapStudyController.class).show(mapid);
+	        
+	        for (Article article : extractions) {
+				for (EvaluationExtraction ee : article.getEvaluationExtraction(user)) {
+					String questionName = "";
+					if (ee.getQuestion() != null){
+						questionName = ee.getQuestion().getName();
+					}
+	//				else{
+	//					System.out.println("Problema com nome da questão!");
+	//				}
+					
+					HashMap<String, Long> aux = new HashMap<String, Long>();
+					
+					if (ext.containsKey(questionName)){					
+						aux = ext.get(questionName);
+					}
+					
+					String alternativeValue = ee.getAlternative().getValue();
+					Long count = 1l;
+					
+					if (aux.containsKey(alternativeValue)){
+						count = aux.get(alternativeValue) + 1;
+					}		
+					
+					aux.put(alternativeValue, count);
+					ext.put(questionName, aux);				
+				}
+			}
+        
+        
         	
+        	percentEvaluatedDouble = mapStudy.percentExtractedDouble(this.articleDao, user);
+        	this.result.include("article", extractions.get(0));
+        }else{
+        	percentEvaluatedDouble = 100d;
         }
         
-        Double percentEvaluatedDouble = mapStudy.percentExtractedDouble(this.articleDao, user);
         
         this.result.include("map", mapStudy);
-        this.result.include("article", extractions.get(0));
         this.result.include("extractions", ext);
         this.result.include("form", mapStudy.getForm());
         this.result.include("percentEvaluatedDouble", percentEvaluatedDouble);
@@ -906,9 +921,11 @@ public class ExtractionController {
 		return head;
 	}
 	
-	public void alternatives(Long questionId){
+	public void alternatives(Long questionId, Long mapid){
+		MapStudy mapStudy = mapStudyDao.find(mapid);
 		Question question = questionDao.find(questionId);
-		Set<Alternative> alternatives= question.getAlternatives();
+		
+		List<Alternative> alternatives = questionDao.getAlternativesFinalExtraction(question, mapStudy);
 		
 		result.use(Results.json()).indented().withoutRoot().from(alternatives).recursive().serialize();	
 	}

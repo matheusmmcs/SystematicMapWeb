@@ -12,6 +12,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
@@ -38,7 +39,7 @@ public class Article implements Serializable {
 	//Falta o anotation do artigo
 	
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
 	private int score;
@@ -627,7 +628,7 @@ public class Article implements Serializable {
 
 	public Long alternativesCount(Alternative x, Alternative y) {
 //		System.out.println("entrou count");
-		Long c=0l;
+		Long c = 0l;
 		for (EvaluationExtractionFinal ee : getEvaluationExtractionsFinal()) {
 //			System.out.println(ee);
 			if (ee.getAlternative().equals(x) || ee.getAlternative().equals(y)){

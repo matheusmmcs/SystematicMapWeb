@@ -162,7 +162,7 @@ public class UsersController {
 		User userOne = userDao.find(userIdOne);
 		User userTwo = userDao.find(userIdTwo);
 		
-		System.out.println("MAP: " + mapStudy + " user1: " + userOne + " user2: " + userTwo);
+		System.out.println("MAP: " + mapStudy + "\nuser1: " + userOne + "\nuser2: " + userTwo);
 		List<Article> articles = articleDao.getArticlesToEvaluate(mapStudy);
 		
 		for(Article a : articles){
