@@ -1100,6 +1100,7 @@ public class MapStudyController {
 		result.redirectTo(this).compareEvaluations(mapStudyId, true);
 	}
 	
+	//TODO members
 	//comparar as avaliações dos usuários
 	@Path("/maps/{mapStudyId}/compare")
 	@Get
@@ -1116,11 +1117,15 @@ public class MapStudyController {
 		Double percentEvaluatedDouble = mapStudy.percentEvaluatedDouble(articleDao, user);
 		List<User> members = userDao.mapStudyUsers(mapStudy);
 		
+		for (int i = 0; i < members.size(); i++){
+			if (mapStudy.isSupervisor(members.get(i))){
+				members.remove(i);
+			}
+		}
+		
 		if (!mapStudy.isSupervisor(user)){
 			validator.check((percentEvaluatedDouble >= 100), new SimpleMessage("mapstudy", "mapstudy.evaluations.compare.undone"));
 			validator.onErrorRedirectTo(this).list();
-		}else{
-			members.remove(user);
 		}
 		
 		List<Article> articles = articleDao.getArticlesToEvaluate(mapStudy);
