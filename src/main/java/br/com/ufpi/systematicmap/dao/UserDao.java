@@ -77,6 +77,14 @@ public class UserDao extends Dao<User> {
 		return users;
 	}
 	
+	public List<User> mapStudyUsersNotSuper(MapStudy mapStudy) {
+		List<User> users = entityManager
+				.createQuery("select u from User u left join u.usersMapStudys ums where ums.mapStudy = :mapStudy and ums.removed = false and u.removed = false and (ums.role = 'PARTICIPANT' OR ums.role = 'CREATOR')", User.class)	
+				.setParameter("mapStudy", mapStudy)
+					.getResultList();
+		return users;
+	}
+	
 	public List<User> mapStudyArentUsers(MapStudy mapStudy) {
 		List<User> users = entityManager
 				.createQuery("select distinct u from User u where u.id not in (select distinct u.id from User u left join u.usersMapStudys ums where ums.mapStudy = :mapStudy and ums.removed = false and u.removed = false)", User.class)

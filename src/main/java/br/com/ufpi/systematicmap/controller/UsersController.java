@@ -156,7 +156,17 @@ public class UsersController {
 	}
     */
 	
-	@Get("/map/{mapid}/transfer/{userIdOne}/to/{userIdTwo}")
+	@Get("/map/{mapid}/transfer/")
+	public void transfer(Long mapid){
+		MapStudy mapStudy = mapStudyDao.find(mapid);
+		
+		List<User> users = userDao.mapStudyUsersNotSuper(mapStudy);
+		
+		result.include("mapStudy", mapStudy);
+		result.include("users", users);
+	}
+	
+	@Post("/map/transfer/")
 	public void transferEvaluate(Long mapid, Long userIdOne, Long userIdTwo){
 		MapStudy mapStudy = mapStudyDao.find(mapid);
 		User userOne = userDao.find(userIdOne);
@@ -167,24 +177,26 @@ public class UsersController {
 		
 		for(Article a : articles){
 			Evaluation evaluationOne = a.getEvaluation(userOne);
-			Evaluation evaluationTwo = new Evaluation();
-			evaluationTwo.setArticle(evaluationOne.getArticle());
-			evaluationTwo.setComment(evaluationOne.getComment());
-			
-			for (ExclusionCriteria ex : evaluationOne.getExclusionCriterias()){
-				evaluationTwo.addExclusion(ex);	
-				exclusionDao.update(ex);
+			if (evaluationOne != null && a.getEvaluation(userTwo) == null){
+				Evaluation evaluationTwo = new Evaluation();
+				evaluationTwo.setArticle(a);
+				evaluationTwo.setComment(evaluationOne.getComment());
+				
+				for (ExclusionCriteria ex : evaluationOne.getExclusionCriterias()){
+					evaluationTwo.addExclusion(ex);	
+					exclusionDao.update(ex);
+				}
+				
+				for (InclusionCriteria ex : evaluationOne.getInclusionCriterias()){
+					evaluationTwo.addInclusion(ex);		
+					inclusionDao.update(ex);
+				}
+				
+				evaluationTwo.setMapStudy(mapStudy);
+				evaluationTwo.setUser(userTwo);
+				
+				evaluationDao.insert(evaluationTwo);
 			}
-			
-			for (InclusionCriteria ex : evaluationOne.getInclusionCriterias()){
-				evaluationTwo.addInclusion(ex);		
-				inclusionDao.update(ex);
-			}
-			
-			evaluationTwo.setMapStudy(mapStudy);
-			evaluationTwo.setUser(userTwo);
-			
-			evaluationDao.insert(evaluationTwo);
 		}		
 		
 		result.redirectTo(HomeController.class).login();

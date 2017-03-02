@@ -1071,9 +1071,13 @@ public class MapStudyController {
 		
 		for(Article a : articles){
 			writer.append(a.getId()+delimiter);
-			writer.append(a.getTitle()+delimiter);
-			writer.append(a.getAuthor()+delimiter);
-			writer.append((a.getJournal() != null ? a.getJournal() : "" ) +delimiter);
+			String title = a.getTitle().replace('\n', ' ').replace(';', ' ');
+			writer.append(title+delimiter);
+			String author = a.getAuthor().replace('\n', ' ').replace(';', ' ');
+			writer.append(author+delimiter);
+			String journal = a.getJournal();
+			journal = (journal != null ? journal.replace('\n', ' ').replace(';', ' ') : "" );
+			writer.append(journal +delimiter);
 //		    writer.append(a.getJournal()+delimiter);
 //			writer.append(a.getYear()+delimiter);
 //			writer.append(a.getPages()+delimiter);

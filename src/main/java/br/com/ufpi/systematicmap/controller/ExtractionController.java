@@ -188,11 +188,53 @@ public class ExtractionController {
 		result.use(json()).indented().withoutRoot().from(retorno).recursive().serialize();
 	}
 	
+//	@Post
+//	@Consumes("application/json")
+//	public void addQuestion(Long mapid, Question question){
+//		Form form = new Form();		
+//		MapStudy mapStudy = mapStudyDao.find(mapid);
+//		
+//		//se já existir form no mapeamento
+//		if (mapStudy.getForm() != null && question.getId() != null) {
+//			Set<Question> questions = new HashSet<Question>(mapStudy.getForm().getQuestions());
+//			for (Question q : questions) {
+//				//verifico se já existe algum com o id passado
+//				if (question.getId().equals(q.getId())) {
+//					for (Alternative a : q.getAlternatives()){
+//						alternativeDao.delete(a);
+//					}
+//					
+//					q.getAlternatives().clear();
+//					questionDao.delete(q);	
+//					evaluationExtrationDao.removeQuestion(q);
+//					mapStudy.getForm().getQuestions().remove(q);
+//				}
+//			}
+//		}
+//		
+//		question.setId(null);
+//		
+//		for (Alternative a : question.getAlternatives()) {
+//			if (!a.getValue().equals("")){
+//				a.setQuestion(question);				
+//			}else{
+//				question.removeAlternative(a);
+//			}
+//		}
+//		
+//		form.addQuestion(question);
+//		mapStudy.addForm(form);
+//		mapStudyDao.update(mapStudy);
+//
+//		result.use(json()).indented().withoutRoot().from(mapStudy).recursive().serialize();
+//	}
+	
 	@Post
 	@Consumes("application/json")
 	public void addQuestion(Long mapid, Question question){
 		Form form = new Form();		
 		MapStudy mapStudy = mapStudyDao.find(mapid);
+		Question questionEquals = null;
 		
 		//se já existir form no mapeamento
 		if (mapStudy.getForm() != null && question.getId() != null) {
@@ -200,32 +242,67 @@ public class ExtractionController {
 			for (Question q : questions) {
 				//verifico se já existe algum com o id passado
 				if (question.getId().equals(q.getId())) {
-					for (Alternative a : q.getAlternatives()){
-						alternativeDao.delete(a);
+					if(question.getType().equals(QuestionType.SIMPLE) && !q.getType().equals(QuestionType.SIMPLE)){
+						//remove todas as questões
+						for (Alternative a : q.getAlternatives()){
+							a.setQuestion(null);
+						}	
+						q.getAlternatives().clear();
+					}else{
+						for (Alternative a : q.getAlternatives()){
+							boolean remove = true;
+							for (Alternative a2 : question.getAlternatives()){
+								if (a.getValue().equals(a2.getValue())){
+									a2.setId(a.getId());
+//								a2.setQuestion(a.getQuestion());
+									remove = false;
+									break;
+								}
+							}
+							
+							if(remove){
+								a.setQuestion(null);
+								alternativeDao.delete(a);
+							}
+						}
 					}
 					
-					q.getAlternatives().clear();
-					questionDao.delete(q);	
-					evaluationExtrationDao.removeQuestion(q);
-					mapStudy.getForm().getQuestions().remove(q);
+					questionEquals = q;
+					
 				}
 			}
 		}
 		
-		question.setId(null);
-		
-		for (Alternative a : question.getAlternatives()) {
-			if (!a.getValue().equals("")){
-				a.setQuestion(question);				
-			}else{
-				question.removeAlternative(a);
+		if (questionEquals != null){
+			questionEquals.setName(question.getName());
+			questionEquals.setType(question.getType());
+			questionEquals.getAlternatives().clear();
+			
+			for (Alternative a : question.getAlternatives()) {
+				if (!a.getValue().equals("")){
+					questionEquals.addAlternative(a);
+				}else{
+					questionEquals.removeAlternative(a);
+				}
+			}	
+			
+			questionDao.update(questionEquals);
+		}else{
+			question.setId(null);
+			
+			for (Alternative a : question.getAlternatives()) {
+				if (!a.getValue().equals("")) {
+					a.setQuestion(question);
+				} else {
+					question.removeAlternative(a);
+				}
 			}
+			
+			form.addQuestion(question);
+			mapStudy.addForm(form);
 		}
 		
-		form.addQuestion(question);
-		mapStudy.addForm(form);
 		mapStudyDao.update(mapStudy);
-
 		result.use(json()).indented().withoutRoot().from(mapStudy).recursive().serialize();
 	}
 	
@@ -845,10 +922,21 @@ public class ExtractionController {
 //		    writer.append((a.getDocType() != null ? a.getDocType() : "" ) + delimiter);
 //		    writer.append(a.getSource() + delimiter);
 			
-			data += a.getId() + delimiter;
-			data += a.getTitle() + delimiter;
-			data += a.getAuthor() + delimiter;
-			data += (a.getJournal() != null ? a.getJournal() : "Dado não extraído") + delimiter;
+//			data += a.getId() + delimiter;
+//			data += a.getTitle() + delimiter;
+//			data += a.getAuthor() + delimiter;
+//			data += (a.getJournal() != null ? a.getJournal() : "Dado não extraído") + delimiter;
+			
+			data +=(a.getId()+delimiter);
+			String title = a.getTitle().replace('\n', ' ').replace(';', ' ');
+			data +=(title+delimiter);
+			String author = a.getAuthor().replace('\n', ' ').replace(';', ' ');
+			data +=(author+delimiter);
+			String journal = a.getJournal();
+			journal = (journal != null ? journal.replace('\n', ' ').replace(';', ' ') : "Dado não extraído" );
+			data +=(journal +delimiter);
+			
+			
 			data += (a.getYear() != null ? a.getYear() : "Dado não extraído") +delimiter;
 			data += (a.getDocType() != null && !a.getDocType().equals("") ? a.getDocType() : "Dado não extraído") + delimiter;
 			data += a.sourceView(a.getSource()) + delimiter;
