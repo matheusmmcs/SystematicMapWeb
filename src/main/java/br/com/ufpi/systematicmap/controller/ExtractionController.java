@@ -236,38 +236,43 @@ public class ExtractionController {
 		MapStudy mapStudy = mapStudyDao.find(mapid);
 		Question questionEquals = null;
 		
+		
+		
 		//se já existir form no mapeamento
 		if (mapStudy.getForm() != null && question.getId() != null) {
 			Set<Question> questions = new HashSet<Question>(mapStudy.getForm().getQuestions());
-			for (Question q : questions) {
+			for (Question questionActual : questions) {
 				//verifico se já existe algum com o id passado
-				if (question.getId().equals(q.getId())) {
-					if(question.getType().equals(QuestionType.SIMPLE) && !q.getType().equals(QuestionType.SIMPLE)){
+				if (question.getId().equals(questionActual.getId())) {
+					if(question.getType().equals(QuestionType.SIMPLE) && !questionActual.getType().equals(QuestionType.SIMPLE)){
 						//remove todas as questões
-						for (Alternative a : q.getAlternatives()){
-							a.setQuestion(null);
+						for (Alternative altActual : questionActual.getAlternatives()){
+							altActual.setQuestion(null);
 						}	
-						q.getAlternatives().clear();
+						questionActual.getAlternatives().clear();
 					}else{
-						for (Alternative a : q.getAlternatives()){
+						for (Alternative altActual : questionActual.getAlternatives()){
 							boolean remove = true;
-							for (Alternative a2 : question.getAlternatives()){
-								if (a.getValue().equals(a2.getValue())){
-									a2.setId(a.getId());
-//								a2.setQuestion(a.getQuestion());
+							//Objetivo aqui é remover as alternativas que não existem mais
+							for (Alternative newAlt : question.getAlternatives()){
+								if (altActual.getValue().equals(newAlt.getValue()) || 
+									altActual.getId().equals(newAlt.getId())){
+									System.out.println("Alterntives edit: A1: " + altActual + " A2: " + newAlt );
+									newAlt.setId(altActual.getId());
+//									a2.setQuestion(a.getQuestion());
 									remove = false;
 									break;
 								}
 							}
 							
 							if(remove){
-								a.setQuestion(null);
-								alternativeDao.delete(a);
+								altActual.setQuestion(null);
+								alternativeDao.delete(altActual);
 							}
 						}
 					}
 					
-					questionEquals = q;
+					questionEquals = questionActual;
 					
 				}
 			}
@@ -278,11 +283,11 @@ public class ExtractionController {
 			questionEquals.setType(question.getType());
 			questionEquals.getAlternatives().clear();
 			
-			for (Alternative a : question.getAlternatives()) {
-				if (!a.getValue().equals("")){
-					questionEquals.addAlternative(a);
+			for (Alternative newAlt : question.getAlternatives()) {
+				if (!newAlt.getValue().equals("")){
+					questionEquals.addAlternative(newAlt);
 				}else{
-					questionEquals.removeAlternative(a);
+					questionEquals.removeAlternative(newAlt);
 				}
 			}	
 			
@@ -577,7 +582,7 @@ public class ExtractionController {
 		
 		returns.put("extraction", extraction);
 		returns.put("article", article);
-		returns.put("comment", article.getComments(userInfo.getUser()));
+		returns.put("comment", article.getComments(userInfo.getUser().getId()));
 		
 		result.use(Results.json()).indented().withoutRoot().from(returns).recursive().serialize();		
 	}
@@ -677,11 +682,11 @@ public class ExtractionController {
 		
 		Double percentEvaluatedDouble = mapStudy.percentExtractedDouble(articleDao, user);
 		
-		if (!mapStudy.isSupervisor(user)){
-			validator.check((percentEvaluatedDouble >= 100.0), new SimpleMessage("mapstudy", "mapstudy.evaluations.compare.undone"));
-			validator.onErrorRedirectTo(MapStudyController.class).list();
-			
-		}
+//		if (!mapStudy.isSupervisor(user)){
+//			validator.check((percentEvaluatedDouble >= 100.0), new SimpleMessage("mapstudy", "mapstudy.evaluations.compare.undone"));
+//			validator.onErrorRedirectTo(MapStudyController.class).list();
+//			
+//		}
 		
 		result.redirectTo(this).finalExtractionLoad(mapid, 0l);		
 	}

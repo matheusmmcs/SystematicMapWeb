@@ -1,6 +1,8 @@
 *.class
 *.classpath
 *.project
+.settings/*
+src/main/webapp/WEB-INF/classes/*
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
@@ -23,3 +25,4 @@ backups/systematicmap_2015_06_24.sql
 backups/systematicmap_2015_06_08.sql
 backups/systematicmap_fixed_2015_06_04.sql
 000-default.conf
+/target/

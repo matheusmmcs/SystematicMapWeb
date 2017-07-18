@@ -694,9 +694,9 @@ public class Article implements Serializable {
 		
 	}
 
-	public String getComments(User user) {
-		return getComments(user.getId());
-	}
+//	public String getComments(User user) {
+//		return getComments(user.getId());
+//	}
 	
 	public String getComments(Long id) {
 		for(Comment com : comments){

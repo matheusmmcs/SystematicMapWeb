@@ -370,6 +370,9 @@
 			$('.subquestion-alternative').each(function(idx){
 				var id = $(this).find('.subquestion-alternative-id').val();
 				var title = $(this).find('.subquestion-alternative-title').val();
+
+				console.log("alternative dados: " + id + "|" + title);
+				
 				if (title !== ""){
 					alternatives.push({
 						value: title
@@ -378,6 +381,8 @@
 			});
 			
 			question.alternatives = alternatives;
+
+			console.log('QA: ' + question);
 			
 			saveQuestion(question);
 		});
@@ -386,6 +391,7 @@
 			e.preventDefault();
 			var questionId = $(this).attr('data-question-id');
 			loadQuestion(questionId, function(data) {
+				console.log('questionId: ' + questionId + ' dados: ' + data);
 				if (data.status == 'SUCESSO' && data.data) {
 					renderQuestionEdit(data.data);
 				}
@@ -469,6 +475,9 @@
 
 		function saveQuestion(question) {
 			showPreloader();
+
+			console.log("SQ: " + question);
+			
 			$.ajax({
 				url : '${linkTo[ExtractionController].addQuestion}',
 				dataType : 'json',
@@ -537,6 +546,7 @@
 			$divAlternativesExt.html('');
 			for (var i in question.alternatives) {
 				var a = question.alternatives[i];
+				console.log('reender alt: ' + a);
 				$divAlternativesExt.append(renderAlternative(a.id, a.value));
 			}
 			showFormSubQuesiton();
@@ -686,7 +696,8 @@
 				<div id="div-table-subquestions-extraction">
 					<h4>
 						<fmt:message key="mapstudy.extraction.subquestions.list" />
-						<a id="btn-add-subquestion-extraction" href="#" class="btn btn-primary u-btn-pull-right"><fmt:message key="mapstudy.extraction.subquestions.add" /></a> 
+						<a id="btn-add-subquestion-extraction" href="#" class="btn btn-primary u-btn-pull-right">
+						<fmt:message key="mapstudy.extraction.subquestions.add" /></a> 
 					</h4>
 					<hr/>
 					<table id="table-subquestions-extraction" class="table table-striped table-bordered table-hover">

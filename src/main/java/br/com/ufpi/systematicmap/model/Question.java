@@ -50,6 +50,20 @@ public class Question implements Serializable{
 	@OrderBy("value")
 	private Set<Alternative> alternatives = new HashSet<>();
 	
+	
+	public Question() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public Question(Long id, String name, QuestionType type, Set<Alternative> alternatives) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.type = type;
+		this.alternatives = alternatives;
+	}
+
 	public void addAlternative(Alternative alternative){
 			this.alternatives.add(alternative);
 			alternative.setQuestion(this);

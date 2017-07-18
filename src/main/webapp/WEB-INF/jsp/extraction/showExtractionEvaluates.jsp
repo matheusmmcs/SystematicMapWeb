@@ -168,10 +168,12 @@ $(document).ready(function(){
 				<dl class="dl-horizontal">
 					<dt class="mydt"><strong><fmt:message key="mapstudy.extractions.compare"/>:</strong></dt>
 					<dd class="mydd" style="margin-bottom: 10px;">
-						<c:if test="${percentEvaluatedDouble >= 100}">
+<%-- 						<c:if test="${percentEvaluatedDouble >= 100}"> --%>
 							<a class="btn btn-primary btn-xs" style="width: 170px;" href="${linkTo[ExtractionController].compare(map.id)}"><fmt:message key="mapstudy.evaluations.compare"/></a>
-						</c:if>
-						<c:if test="${percentEvaluatedDouble < 100}"><fmt:message key="mapstudy.extractions.compare.undone"/></c:if>
+<%-- 						</c:if> --%>
+<%-- 						<c:if test="${percentEvaluatedDouble < 100}"> --%>
+<%-- 							<fmt:message key="mapstudy.extractions.compare.undone"/> --%>
+<%-- 						</c:if> --%>
 					</dd>
 				  	<dt class="mydt"><strong><fmt:message key="mapstudy.extractions.export"/>:</strong></dt>
 				  	<dd class="mydd">

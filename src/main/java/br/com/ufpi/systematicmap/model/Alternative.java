@@ -36,6 +36,17 @@ public class Alternative implements Serializable{
 	@SkipSerialization
 	@JoinColumn(name = "question_id")
 	private Question question;
+	
+	public Alternative() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	public Alternative(Long id, String value) {
+		super();
+		this.id = id;
+		this.value = value;
+	}
 
 	/**
 	 * @return the id
