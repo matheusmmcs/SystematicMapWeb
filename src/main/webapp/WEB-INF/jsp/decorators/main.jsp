@@ -345,8 +345,8 @@
 					client: "THEEND", //nome abreviado do sistema monitorado
 					version: 1, //versao do script de captura
 		
-// 					url: "http://easii.ufpi.br/useskill-capture/actions/create",
-					url: "http://10.94.15.204:8080/oracle-test/backend/actions",
+					url: "http://easii.ufpi.br/oracle-test/backend/actions",
+// 					url: "http://localhost:8080/oracle-test/backend/actions",
 					waitdomready: false, //se for verdadeiro, aguarda o evento DOMContentLoaded ser disparado, caso contrario ja executa a captura
 					sendactions: true, //enviar acoes para o servidor
 					debug: false, //apresentar dados no console
